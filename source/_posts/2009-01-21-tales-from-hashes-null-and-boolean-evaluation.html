@@ -1,0 +1,69 @@
+---
+author: BjRo
+date: '2009-01-21 17:39:15'
+layout: post
+slug: tales-from-hashes-null-and-boolean-evaluation
+status: publish
+title: Tales from hashes, null and boolean evaluation
+wordpress_id: '214'
+? ''
+: - C#
+  - C#
+  - Ruby
+  - Ruby
+---
+
+A common programming situation when dealing with dictionary or hashtable classes is tryingÂ  to get a value from the hashtable and returning a default value in case nothing was found. In C# you could probably do it like this:
+
+[sourcecode language="csharp"] 
+public class StringMapper : IMapper<string,string>
+{      
+      private IDictionary mapping;      
+  
+      public Mapper(IDictionary<string,string> mapping)     
+      {          
+              this.mapping = mapping;      
+      }       
+
+      public string Map(string input)     
+      {  
+              string output;              
+ 
+              if(!this.mapping.TryGetValue(input, out output)) 
+              {            
+                   return "defaultValue";       
+              }           
+
+               return output;  
+      } 
+} 
+[/sourcecode]
+You could write similar code in Ruby.  
+[sourcecode language="Ruby"] 
+class StringMapper   
+
+  def initialize(hash_map)     
+    @hash_map = hash_map   
+  end    
+
+  def map(input)     
+    output = @hash_map[input] 
+    return (output.nil?) ? "defaultValue" : output   
+  end 
+
+end  
+[/sourcecode]
+
+However the way the map method is written is not the way Ruby is intended to be used and how Ruby sources are mostly written. You could rework this into this short fragment.
+[sourcecode language="Ruby"] 
+def map(input) 
+  @hash_map[input] or "defaultValue" 
+end 
+[/sourcecode]
+
+You might yourself now ask (as I did) why this code works? It works because
+<ol>
+	<li>Ruby automatically treats the last evaluated expression inside a method as the return value. Because of that you're able to omit the return statements.</li>
+	<li><em>Nil</em> (the Ruby equivalent of C#s <em>null</em> ) is actually an instance, an instance of the <em>NilClass</em>). Yeah right, you have the Null-Object-Pattern in the language here :-)</li>
+	<li>Every object instance can be evaluated to a boolean. Every instance other than an instance of the <em>NilClass</em> evaluates to an instance of the <em>TrueClass</em>. The <em>NilClass</em> is the only class I met so far which evaluates to an instance of the <em>FalseClass</em>.</li>
+</ol>

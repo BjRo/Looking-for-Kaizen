@@ -1,0 +1,56 @@
+---
+author: BjRo
+date: '2008-09-27 01:11:29'
+layout: post
+slug: 80-hours-later
+status: publish
+title: 80 hours later . . .
+wordpress_id: '138'
+? ''
+: - Uncategorized
+  - Uncategorized
+  - Nothing but .NET
+  - Nothing but .NET
+  - Training
+  - Training
+---
+
+<a href="http://www.bjoernrochel.de/wp-content/uploads/2008/09/done.jpg"><img style="0px" src="http://www.bjoernrochel.de/wp-content/uploads/2008/09/done-thumb.jpg" border="0" alt="done" width="504" height="337" /></a>
+
+[Concern(typeof(NothingButDotNetBootCamp))]
+public class when_the_boot_camp_is_over :
+InstanceContextSpecification&lt;NothingButDotNetBootCamp&gt;
+{   
+    INothingButDotNetParticipant bjoern;
+
+    public void establish_context()
+    {
+      bjoern = dependency&lt;INothingButDotNetParticipant&gt;();
+    }
+    
+    public NothingButDotNetBootCamp create_sut()
+    {
+      return new NothingButDotNetBootCamp(bjoern);
+    }
+
+    [Observation]
+    public void should_be_proud_to_have_survived_80_hours_of_coding()
+    {
+        bjoern.should_be_proud_to_have_survived_80_hours_of_coding();
+    }
+
+    [Observation]
+    public void should_be_proud_of_having_reached_330_revisions()
+    {
+        bjoern.should_be_proud_of_having_reached_330_revisions();
+    }
+
+    [Observation]
+    public void should_be_thankful_to_have_met_a_guy_like_JP()
+    {
+        bjoern.should_be_thankful_to_have_met_a_guy_like_JP();
+    }
+}
+
+----------------------------------------------------------------------------------------------------------
+All tests finished: 3 Successful, 0 Failed; 0 Ignored in 80 hours
