@@ -6,19 +6,15 @@ slug: kata-fizzbuzz-in-f
 status: publish
 title: Kata FizzBuzz in F#
 wordpress_id: '797'
-? ''
-: - F#
-  - F#
-  - F#; Code Kata ; FizzBuzz
-  - F#; Code Kata ; FizzBuzz
+categories: [FSharp, Code Kata, FizzBuzz]
+comments: true
+footer: true
 ---
 
 Last F# book club meeting in Munich was awesome (as usual). 2 weeks ago we decided to do a Code Kata on each subsequent meeting. This week was our first, with Kata FizzBuzz.
-
 This is what we came up with. (BTW: Partial function application and pipelining rocks !!!)
 
-[sourcecode language="csharp"]  
-
+``` csharp Kata FizzBuzz in F#
 open Xunit  
 
 let fizzBuzz number =      
@@ -54,7 +50,7 @@ let Should_return_FizzBuzz_for_digits_dividable_by_3_and_5() =
     [15;30;45;60]     
     |> List.map fizzBuzz      
     |> List.iter (areEqual "FizzBuzz")  
+```
 
-[/sourcecode]
-
-If anyone of you hardcore functional guys out there notices something utterly wrong or something that could radically simplified, please let me know. We’re eager to learn more.
+If anyone of you hardcore functional guys out there notices something utterly wrong or something that could radically simplified, please let me know. 
+We’re eager to learn more.
