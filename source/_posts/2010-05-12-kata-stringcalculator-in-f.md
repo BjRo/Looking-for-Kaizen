@@ -7,28 +7,22 @@ status: publish
 title: Kata StringCalculator in F#
 comments: true
 wordpress_id: '803'
-? ''
-: - F#
-  - F#
-  - Code Kata
-  - Code Kata
-  - F#
-  - F#
-  - StringCalculator
-  - StringCalculator
+categories: [FSharp, Code Kata, StringCalculator]
+footer: true
 ---
 
-<p>
-Yesterday's F# bookclub meeting in Munich was awesome as usual. It’s very interesting to see our overall understanding of functional programming progressing. Slowly, but steady. Main topics we discussed on the last meeting were Currying and Tail Recursion. Finally "got that" (at least I think so ;-))
-</p>
-<p>
-Two meetings ago we decided to do some coding on every meeting. The previous meeting we solved Kata FizzBuzz and on yesterday’s meeting we tried to dance with <a href="http://osherove.com/tdd-kata-1/">Roy Osheroves Kata StringCalculator</a>. We didn't make it completely to the end, but I think we solved most of the Kata. You can find yesterdays code at the end of this post. I'm sure in parts it smells a bit imperative and it definitely uses too much Regex - KungFu, but overall I'm pleased with the result. 
-</p>
-<p>
-We've tried to incorporate the feedback we got on the Kata FizzBuzz code. I would love to get feedback on this one as well. What could be done better, cleaner or simply differently?
-</p>
+Yesterday's F# bookclub meeting in Munich was awesome as usual. It’s very interesting to see our overall understanding of functional programming progressing. 
+Slowly, but steady. Main topics we discussed on the last meeting were Currying and Tail Recursion. Finally "got that" (at least I think so ;-))
 
-[sourcecode language="csharp"]
+Two meetings ago we decided to do some coding on every meeting. The previous meeting we solved Kata FizzBuzz and on yesterday’s meeting we tried to dance with 
+[Roy Osheroves StringCalculator](http://osherove.com/tdd-kata-1/). We didn't make it completely to the end, but I think we solved most of the Kata. 
+You can find yesterdays code at the end of this post. I'm sure in parts it smells a bit imperative and it definitely uses too much Regex - KungFu, 
+but overall I'm pleased with the result. 
+
+We've tried to incorporate the feedback we got on the Kata FizzBuzz code. I would love to get feedback on this one as well. 
+What could be done better, cleaner or simply differently?
+
+``` csharp Kata StringCalculator in F#
 open System
 open System.Text.RegularExpressions
 open Xunit
@@ -120,4 +114,4 @@ let ``When using more than two digits with with a custom separator of multiple c
     ["//asdf\n1asdf4asdf5"; "//as\n3as4as"]
     |> List.map add
     |> List.iter2 shouldBeEqualTo [10;7]
-[/sourcecode]
+```
