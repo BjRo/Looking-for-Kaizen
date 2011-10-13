@@ -4,18 +4,19 @@ date: '2010-03-15 21:28:45'
 layout: post
 slug: cutting-the-fluff-from-service-registration-with-structuremap-revisited
 status: publish
-title: Cutting the fluff from Service registration with StructureMap revisited
+title: Cutting the fluff from Service registration with StructureMap - revisited
 wordpress_id: '781'
-? ''
-: - StructureMap
-  - StructureMap
+comments: true
+categories: StructureMap
 ---
 
-This is just a quick update of an <a href="http://www.bjoernrochel.de/2009/07/24/cutting-the-fluff-from-service-registration-or-how-to-do-funky-stuff-with-coc-castledynamicproxy-structuremap/">older post of mine</a>. Since StructureMap's convention API has <a href="http://www.bjoernrochel.de/2010/01/05/changes-in-structuremap-254/ ">changed quite a bit</a>, here is the updated version of the code used in the post using the new APIs introduced in StructureMap 2.5.4.
+This is just a quick update of an [older post of mine](/2009/07/24/cutting-the-fluff-from-service-registration-or-how-to-do-funky-stuff-with-coc-castledynamicproxy-structuremap/). 
+Since StructureMap's convention API has [changed quite a bit](/2010/01/05/changes-in-structuremap-254/), 
+here is the updated version of the code used in the post using the new APIs introduced in StructureMap 2.5.4.
 
 The new code is actually easier. It should look something like this . . . . 
 
-[sourcecode language="csharp"]
+``` csharp Singleton registration convention
 
     public class ServicesAreSingletonsAndProxies : IRegistrationConvention
     {
@@ -39,9 +40,9 @@ The new code is actually easier. It should look something like this . . . .
                 .For(pluginType)
                 .Singleton()
                 .Use(new ConfiguredInstance(type)
-                     {
-                         Interceptor = new DynamicProxyInterceptor(pluginType)
-                     });
+                {
+                  Interceptor = new DynamicProxyInterceptor(pluginType)
+                });
         }
 
         #endregion
@@ -62,4 +63,4 @@ The new code is actually easier. It should look something like this . . . .
         }
     }
 
-[/sourcecode] 
+```
