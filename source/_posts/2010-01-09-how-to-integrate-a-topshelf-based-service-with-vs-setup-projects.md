@@ -6,22 +6,17 @@ slug: how-to-integrate-a-topshelf-based-service-with-vs-setup-projects
 status: publish
 title: 'How to: Integrate a Topshelf based service with VS Setup projects'
 wordpress_id: '749'
-? ''
-: - Tools
-  - Tools
-  - Topshelf
-  - Topshelf
-  - MSI
-  - MSI
-  - Topshelf
-  - Topshelf
+comments: true
+footer: true
+categories: [Tools, Topshelf, MSI]
 ---
-
 We’ve recently started to migrate all of our Windows Services from a classic ServiceBase based approach to the hosting framework Topshelf. 
 
-Previously we used the standard ServiceInstaller / ServiceProcessInstaller tandem to integrate our services with MSI deployment. This does not work with Topshelf (since Topshelf does the service installation itself via the Registry). However it’s pretty easy to write a custom installer for that. You can do something like this:
+Previously we used the standard ServiceInstaller / ServiceProcessInstaller tandem to integrate our services with MSI deployment. 
+This does not work with Topshelf (since Topshelf does the service installation itself via the Registry). 
+However it’s pretty easy to write a custom installer for that. You can do something like this:
 
-[sourcecode language="csharp"]
+``` csharp An installer for Topshelf
     public class TopshelfInstaller : Installer
     {
         private const string AssemblyIdentifier = "TopshelfAssembly";
@@ -60,14 +55,16 @@ Previously we used the standard ServiceInstaller / ServiceProcessInstaller tande
             }
         }
     }
-[/sourcecode]
+```
 
 The interesting part is this line:
-[sourcecode language="csharp"]
+``` csharp
 var topshelfAssembly = Context.Parameters[InstallUtilAssemblyParameter];
-[/sourcecode]
-Took me some time to find this. During installation the Parameter Dictionary attached to the Context contains the full target filename of the assembly being installed (key is “assemblypath”). With this path you can directly launch the “/install” or “/uninstall” command for the Topshelf based exe.
+```
+Took me some time to find this. During installation the Parameter Dictionary attached to the Context 
+contains the full target filename of the assembly being installed (key is “assemblypath”). 
+With this path you can directly launch the “/install” or “/uninstall” command for the Topshelf based exe.
 
 HTH
 
-P.S.:  <a href="http://devcity.net/Articles/339/3/article.aspx">This</a> resource pointed me in the right direction.
+P.S.: [This](http://devcity.net/Articles/339/3/article.aspx) resource pointed me in the right direction.
