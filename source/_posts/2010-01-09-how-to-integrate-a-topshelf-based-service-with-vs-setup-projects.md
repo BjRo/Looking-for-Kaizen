@@ -62,8 +62,8 @@ The interesting part is this line:
 var topshelfAssembly = Context.Parameters[InstallUtilAssemblyParameter];
 ```
 Took me some time to find this. During installation the Parameter Dictionary attached to the Context 
-contains the full target filename of the assembly being installed (key is “assemblypath”). 
-With this path you can directly launch the “/install” or “/uninstall” command for the Topshelf based exe.
+contains the full target filename of the assembly being installed (key is `assemblypath`). 
+With this path you can directly launch the `/install` or `/uninstall` command for the Topshelf based exe.
 
 HTH
 

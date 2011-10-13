@@ -17,13 +17,13 @@ needed to update my last post [11.2](/2010/01/09/diving-into-the-storyteller-tru
 to reflect the changes. Today I would like to conclude my trip through StoryTellers UI infrastructure with a look at how Commands are integrated 
 into the Screen Activation Lifecycle.  
 
-Some of my older posts on the topic showed that the component responsible for Screen activation and deactivation in StoryTeller is the ScreenConductor. 
-However, when the ScreenConductor activates or deactivates a Screen, it delegates a major part of work to the so called IShellService. 
-The only implementer of this interface, the ShellService, is just a little facade around three things.
+Some of my older posts on the topic showed that the component responsible for Screen activation and deactivation in StoryTeller is the `ScreenConductor`. 
+However, when the `ScreenConductor` activates or deactivates a Screen, it delegates a major part of work to the so called `IShellService`. 
+The only implementer of this interface, the `ShellService`, is just a little facade around three things.
 
-1. The ICommandbar, which is the main toolbar of StoryTeller,
-2. the IOptionsMenu, which is a kind of Shortcut menu for StoryTellers Commands and
-3. the IScreenObjectRegistry, which acts as a store  / front-end for the current Command registration.
+1. The `ICommandbar`, which is the main toolbar of StoryTeller,
+2. the `IOptionsMenu`, which is a kind of Shortcut menu for StoryTellers Commands and
+3. the `IScreenObjectRegistry`, which acts as a store  / front-end for the current Command registration.
 
 
 ``` csharp The ShellService
@@ -78,10 +78,10 @@ You can see some interesting aspects in the short code above.
 Permanent Commands and transient Commands. Permanent Commands are displayed, well permanently, while transient Commands are 
 what I depicted as contextual Commands. They are Commands which should be only visible in a particular context. 
 2. Contextualization of Commands is handled on a per Screen basis in StoryTeller. Every time a Screen gets activated or 
-deactivated the ICommandBar and the IOptionsMenu get reset and completely rebuild. With this you can have a very different Command UI 
+deactivated the `ICommandBar` and the `IOptionsMenu` get reset and completely rebuild. With this you can have a very different Command UI 
 depending on which Screen is activated.
-3. The actual Command configuration in the Screen Activation Lifecycle is completely delegated to the active Screen. In his Activate() method he 
-receives a reference to the IScreenObjectRegistry which can be used in order to start the Command configuration via a small fluent API. 
+3. The actual Command configuration in the Screen Activation Lifecycle is completely delegated to the active Screen. In his `Activate()` method he 
+receives a reference to the `IScreenObjectRegistry` which can be used in order to start the Command configuration via a small fluent API. 
 
 ``` csharp IScreenObjectRegistry 
     public interface IScreenObjectRegistry
