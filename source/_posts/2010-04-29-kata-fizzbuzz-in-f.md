@@ -12,7 +12,7 @@ footer: true
 ---
 
 Last F# book club meeting in Munich was awesome (as usual). 2 weeks ago we decided to do a Code Kata on each subsequent meeting. This week was our first, with Kata FizzBuzz.
-This is what we came up with. (BTW: Partial function application and pipelining rocks !!!)
+<!--more-->This is what we came up with. (BTW: Partial function application and pipelining rocks !!!)
 
 ``` csharp Kata FizzBuzz in F#
 open Xunit  

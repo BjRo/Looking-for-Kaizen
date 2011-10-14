@@ -24,6 +24,7 @@ If a domain model consists only of POCOs it should be called data model
 
 My first thought was a) does he mean anemic domain models and b) what has POCO to do with that? As I found out he didn’t mean
 [anemic domain models](http://twitter.com/ralfw/status/9493173442). So let’s take a look at the POCO aspect.
+<!--more-->
 
 POCO / POJO / PONO / POwhatever
 ---------------------------------

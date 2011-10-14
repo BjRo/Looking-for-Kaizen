@@ -16,6 +16,7 @@ More often as I like skipping blogging seems to be the easiest way to regain som
 I’m really sorry for that, but you know I try to do my best. 
 On the other hand this is a new blog post, so things can’t be that bad, can’t they? 
 Although I haven’t slept much the last 3 days, something inside me urges to write this post.
+<!--more-->
 
 Most of the time of the past weekend I spend in Karlsruhe at the .NET Open Space Süd. To sum it up in 5 words: **The event was a blast**. 
 I had an unbelievable amount of fun coding, chatting, learning with some of smartest people in the German .NET Community.    

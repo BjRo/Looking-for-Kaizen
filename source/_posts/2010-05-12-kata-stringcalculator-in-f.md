@@ -16,10 +16,10 @@ Slowly, but steady. Main topics we discussed on the last meeting were Currying a
 
 Two meetings ago we decided to do some coding on every meeting. The previous meeting we solved Kata FizzBuzz and on yesterday’s meeting we tried to dance with 
 [Roy Osheroves StringCalculator](http://osherove.com/tdd-kata-1/). We didn't make it completely to the end, but I think we solved most of the Kata. 
-You can find yesterdays code at the end of this post. I'm sure in parts it smells a bit imperative and it definitely uses too much Regex - KungFu, 
-but overall I'm pleased with the result. 
+<!--more-->
 
-We've tried to incorporate the feedback we got on the Kata FizzBuzz code. I would love to get feedback on this one as well. 
+You can find yesterdays code at the end of this post. I'm sure in parts it smells a bit imperative and it definitely uses too much Regex - KungFu, 
+but overall I'm pleased with the result. We've tried to incorporate the feedback we got on the Kata FizzBuzz code. I would love to get feedback on this one as well. 
 What could be done better, cleaner or simply differently?
 
 ``` csharp Kata StringCalculator in F#

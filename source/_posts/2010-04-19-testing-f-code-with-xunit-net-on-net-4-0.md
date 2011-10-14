@@ -16,6 +16,7 @@ preferred way of a) learning the F# language and b) to develop code.
 Writing unit tests simply for the purpose of learning and understanding of a language/component/system (aka &quot;Learning tests&quot;) seems to be a better fit, 
 at least for me. So, I sat down in order to see how I can use my beloved xUnit.net for this. 
 As it turns out it's not that difficult, but it's got some hurdles. 
+<!--more-->
 
 Possible runtime differences
 ----------------------------

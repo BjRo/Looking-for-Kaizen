@@ -16,6 +16,7 @@ If you're not aware of what I'm talking about, it's StoryTellers command story. 
 needed to update my last post [11.2](/2010/01/09/diving-into-the-storyteller-trunk-part-11-2-more-on-commands/) quite a bit in order 
 to reflect the changes. Today I would like to conclude my trip through StoryTellers UI infrastructure with a look at how Commands are integrated 
 into the Screen Activation Lifecycle.  
+<!--more-->
 
 Some of my older posts on the topic showed that the component responsible for Screen activation and deactivation in StoryTeller is the `ScreenConductor`. 
 However, when the `ScreenConductor` activates or deactivates a Screen, it delegates a major part of work to the so called `IShellService`. 
