@@ -1,2 +1,18 @@
 // This File is imported last, and will override other styles in the cascade
 // Add styles here to make changes without digging in too much
+ul.badges {
+
+	li {
+		display: inline;
+		list-style-type: none;
+		border-style: none;
+		border-width:0px;
+		@include box-shadow(#fff 0px 0px 0px);
+
+		img {
+			border-style: none;
+			@include box-shadow(#fff 0px 0px 0px);
+		}
+	}
+}
+
