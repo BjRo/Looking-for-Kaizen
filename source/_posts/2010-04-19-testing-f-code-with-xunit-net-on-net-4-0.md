@@ -6,7 +6,7 @@ slug: testing-f-code-with-xunit-net-on-net-4-0
 status: publish
 title: Testing F# code with xUnit.net (on .NET 4.0)
 wordpress_id: '784'
-categories: [Testing, FSharp, xUnit]
+categories: [dotnet, FSharp]
 comments: true
 footer: true
 ---

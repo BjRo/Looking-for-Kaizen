@@ -6,7 +6,7 @@ slug: net-open-space-sd-retrospective
 status: publish
 title: .NET Open Space Süd Retrospective
 wordpress_id: '810'
-categories: [Conference, NOS_SUED]
+categories: [Conferences]
 comments: true
 ---
 I haven't blogged in a while, mostly because time has become such a limited resource in the last weeks or to be honest actually months. 

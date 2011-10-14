@@ -7,7 +7,7 @@ status: publish
 title: 'Diving into the StoryTeller trunk, Part 11.3: Commands strike back'
 comments: true
 wordpress_id: '762'
-categories: StoryTeller
+categories: [dotnet, StoryTeller]
 footer: true
 ---
 One of the things that can hit you really hard when writing blog posts about open source software (like StoryTeller is), 

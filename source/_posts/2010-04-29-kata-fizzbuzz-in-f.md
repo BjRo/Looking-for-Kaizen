@@ -6,7 +6,7 @@ slug: kata-fizzbuzz-in-f
 status: publish
 title: Kata FizzBuzz in F#
 wordpress_id: '797'
-categories: [FSharp, Code Kata, FizzBuzz]
+categories: [dotnet, FSharp, Katas]
 comments: true
 footer: true
 ---

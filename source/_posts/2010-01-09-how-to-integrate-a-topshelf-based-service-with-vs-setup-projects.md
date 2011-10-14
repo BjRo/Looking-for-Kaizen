@@ -8,7 +8,7 @@ title: 'How to: Integrate a Topshelf based service with VS Setup projects'
 wordpress_id: '749'
 comments: true
 footer: true
-categories: [Tools, Topshelf, MSI]
+categories: [dotnet]
 ---
 We’ve recently started to migrate all of our Windows Services from a classic ServiceBase based approach to the hosting framework Topshelf. 
 

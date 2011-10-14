@@ -7,7 +7,7 @@ status: publish
 title: Kata StringCalculator in F#
 comments: true
 wordpress_id: '803'
-categories: [FSharp, Code Kata, StringCalculator]
+categories: [dotnet, FSharp, Katas]
 footer: true
 ---
 

@@ -7,7 +7,7 @@ status: publish
 title: Cutting the fluff from Service registration with StructureMap - revisited
 wordpress_id: '781'
 comments: true
-categories: StructureMap
+categories: [dotnet, StuctureMap]
 ---
 
 This is just a quick update of an [older post of mine](/2009/07/24/cutting-the-fluff-from-service-registration-or-how-to-do-funky-stuff-with-coc-castledynamicproxy-structuremap/). 

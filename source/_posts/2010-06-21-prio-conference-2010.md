@@ -6,7 +6,7 @@ slug: prio-conference-2010
 status: publish
 title: prio conference 2010
 wordpress_id: '813'
-categories: [Conference, Prio]
+categories: [Conferences]
 comments: true
 footer: true
 ---

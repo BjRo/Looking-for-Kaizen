@@ -7,7 +7,7 @@ status: publish
 title: Plain Old CLR / C# Object
 wordpress_id: '779'
 comments: true
-categories: POCO
+categories: [sw-design]
 ---
 Crap, time can go by so fast. On Monday a [tweet](http://twitter.com/ralfw/status/9446904971) by **Ralf Westphal** caught
 my attention and I felt the need to comment. It started as a series of Twitter replies, but to be honest Twitter isn’t suited or made for those kind of discussions.
