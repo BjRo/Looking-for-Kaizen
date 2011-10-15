@@ -16,3 +16,16 @@ ul.badges {
 	}
 }
 
+#logo {
+	display: none;
+}
+
+@media only screen and (min-width: 550px) {
+	#logo {
+		display: inline-block;
+		float: left;
+		margin-right: 1em;
+	}
+}
+
+
