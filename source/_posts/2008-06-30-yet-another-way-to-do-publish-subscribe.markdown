@@ -6,19 +6,14 @@ slug: yet-another-way-to-do-publish-subscribe
 status: publish
 title: Yet another way to do publish & subscribe . . .
 wordpress_id: '8'
-? ''
-: - Uncategorized
-  - Uncategorized
-  - CAB
-  - CAB
-  - Publish &amp; subscribe
-  - Publish &amp; subscribe
+comments: true
+footer: true
+categories: [dotnet, sw-design]
 ---
 
 About 2,5 years ago I first came across the idea of combining dependency
 injection with loosly coupled publish & subscribe. This was when I
-inspected the source code of the [Composite Application Block
-(CAB)](http://msdn.microsoft.com/en-us/library/aa480450.aspx) with its
+inspected the source code of the [Composite Application Block (CAB)](http://msdn.microsoft.com/en-us/library/aa480450.aspx) with its
 underlying InversionOfControl-container ObjectBuilder from Microsoft.
 What I liked about publish & subscribe in CAB:
 
@@ -46,13 +41,15 @@ Many frameworks or libraries I looked into over time mostly followed a
 comparable approach using either events or some other delegate-based
 solution (the EventBroker in CAB, the EventBrokerFacility in Castle
 Windsor, the EventAggregator in PRISM, ....) (Please correct me if I
-overlooked or misunderstood something :-)). The only framework I came
-across with something similar to what I had in mind is
+overlooked or misunderstood something :-)). 
+
+The only framework I came across with something similar to what I had in mind is
 [Caliburn](http://devlicio.us/blogs/rob_eisenberg/archive/2008/01/07/introducing-caliburn-an-mvc-mvp-wpf-framework.aspx).
 Unfortunately Caliburn is a WPF/ .NET 3.0 based framework, but most of
 the products of my current employer are limited to .NET 2.0 due to a
-minimum system requirement of Windows 2k. Because of that I decided to
-implement something similar for our purposes which can be easily
+minimum system requirement of Windows 2k. 
+
+Because of that I decided to implement something similar for our purposes which can be easily
 integrated into the InversionOfControl - container of our choice (which
 is Castle Windsor at the moment, by the way :-) ). I'll be describing
 the implementation and publish the source code for anyone who is

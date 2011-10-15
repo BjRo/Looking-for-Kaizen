@@ -6,11 +6,10 @@ slug: revamping-wwwbjrode
 status: publish
 title: Revamping www.bjro.de
 wordpress_id: '6'
-? ''
-: - Uncategorized
-  - Uncategorized
+comments: true
+footer: true 
+categories: [Uncategorized]
 ---
-
 My original website launched summer 2002 and accompanied myself until I
 finished my studies back in 2005. My first real job as a **software
 developer** consumed most of the time I was previously spending on my
@@ -34,8 +33,10 @@ is not limited to):
 -   and general stuff around TDD, agile methodologies and
     object-oriented design.
 
-Cheers, Björn Rochel P.S.: While you are reading this you maybe ask
-yourself: "Why does this german guy write his blog in English?". On the
+Cheers, Björn Rochel 
+
+P.S.: While you are reading this you maybe ask yourself: 
+"Why does this german guy write his blog in English?". On the
 one hand it's a thing I need to practice, because my English has become
 quite a bit rusty since I left school. Besides that it enables me to
 talk to a much greater audience.

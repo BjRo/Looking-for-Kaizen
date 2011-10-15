@@ -6,46 +6,77 @@ slug: yet-another-way-to-do-publish-subscribe-part-ii
 status: publish
 title: Yet another way to do publish & subscribe Part II . . .
 wordpress_id: '9'
-? ''
-: - Uncategorized
-  - Uncategorized
-  - Castle Windsor
-  - Castle Windsor
-  - Inversion of Control
-  - Inversion of Control
-  - Publish &amp; subscribe
-  - Publish &amp; subscribe
+comments: true
+footer: true
+categories: [dotnet, sw-design]
 ---
 
 As promised on the last post, this time I talk more about what I
 actually implemented. Let's start with the basic API. The whole API is
 very simple and message centered. In order to be able to recieve
-messages you have to implement the **ISubscriber<TMessage\>** interface.
-[sourcecode language='csharp'] public interface ISubscriber { void
-Handle(TMessage message); } [/sourcecode] The generic parameter
-**TMessage**specifies the type of message the subscriber is interested
-in.Â The message should simply be implemented by a POCO. Examples could
+messages you have to implement the `ISubscriber<TMessage>` interface.
+
+``` csharp The ISubscriber<TMessage> interface 
+public interface ISubscriber<TMessage> 
+{ 
+	void Handle(TMessage message); 
+}
+``` 
+The generic parameter `TMessage` specifies the type of message the subscriber is interested
+in. The message should simply be implemented by a POCO. Examples could
 be:
 
--   ISubscriber<ActivePatientChanged\>
--   ISubscriber<ApplicationTitleChanged\>
--   ISubscriber<CsvExportFinished\>
+-   `ISubscriber<ActivePatientChanged>`
+-   `ISubscriber<ApplicationTitleChanged>`
+-   `ISubscriber<CsvExportFinished>`
 
 A consumer class wants to publish messages or to register itsself for a
-particular message needs to have a reference to an
-**IMessageBus**implementation. This interface serves as a consumer side
-facade to the pubsub system. [sourcecode language='csharp'] public
-interface IMessageBus { void AddSubscriber(ISubscriber subscriber); void
-ReleaseSubscriber(ISubscriber subscriber); void SendMessage(TMessage
-message); } [/sourcecode] From a consumer perspective that's all your
-need to known when dealing with publish & subscribe. Together with type
-inference it's event nicer to use :-). [sourcecode language='csharp']
-public class DemoMessage { } public class MyListener : ISubscriber {
-public void Subscribe(IMessageBus bus) { bus.AddSubscriber(this); }
-public void Handle(DemoMessage message) { } } public class MyPublisher {
-private IMessageBus \_Bus; public MyPublisher(IMessageBus bus) { \_Bus =
-bus; } public void Demo() { \_Bus.SendMessage(new DemoMessage()); } }
-[/sourcecode] Some other characteristics also worth mentioning:
+particular message needs to have a reference to an `IMessageBus` implementation. 
+This interface serves as a consumer side facade to the pubsub system. 
+
+``` csharp The IMessageBus interface
+public interface IMessageBus 
+{ 
+	void AddSubscriber(ISubscriber subscriber); 
+	void ReleaseSubscriber(ISubscriber subscriber); 
+	void SendMessage(TMessage message); 
+} 
+```
+From a consumer perspective that's all your need to known when dealing with publish & subscribe. 
+Together with type inference it's event nicer to use :-). 
+
+``` csharp Putting it together
+public class DemoMessage { } 
+
+public class MyListener : ISubscriber 
+{
+	public void Subscribe(IMessageBus bus) 
+	{ 
+		bus.AddSubscriber(this); 
+	}
+
+	public void Handle(DemoMessage message)
+	{
+	}
+} 
+
+public class MyPublisher 
+{
+	IMessageBus _Bus; 
+	
+	public MyPublisher(IMessageBus bus) 
+	{ 
+		_Bus = bus; 
+	} 
+	
+	public void Demo()
+	{ 
+		_Bus.SendMessage(new DemoMessage());
+	}
+}
+```
+
+Some other characteristics also worth mentioning:
 
 -   The current implementation captures the thread context when a
     subscriber is registered. All callbacks will be handled on the same

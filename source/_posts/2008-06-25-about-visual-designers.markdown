@@ -6,14 +6,12 @@ slug: about-visual-designers
 status: publish
 title: About visual designers . . .
 wordpress_id: '7'
-? ''
-: - Uncategorized
-  - Uncategorized
-  - Designer
-  - Designer
+comments: true
+footer: true
+categories: [dotnet]
 ---
 
-Today I came across a very interesting post from jeremy miller regarding
+Today I came across a very interesting post from Jeremy Miller regarding
 [his view on visual
 designers](http://codebetter.com/blogs/jeremy.miller/archive/2008/06/24/does-our-addiction-on-visual-tooling-harm-the-rate-of-innovation-in-the-net-world.aspx).
 Everyone who works or worked with me so far knows I don't like visual
