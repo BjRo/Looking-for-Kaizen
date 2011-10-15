@@ -19,7 +19,7 @@ design.
 
 The core of the design is formed by a class called `Subscription`.
 
-![The Subscription class](/images/posts/pubsub-subscription.jpg)
+![The Subscription class]({{ root_url}}/images/posts/pubsub-subscription.jpg)
 
 The name is quite self describing, but let me say some words about its
 intended purpose in my publish & subscribe implementation. The
@@ -35,7 +35,7 @@ name implies the main responsibility of this interface is to create
 subscriptions either in an explicit (create a single subscription for a given `ISubscriber<TMessage>` instance) 
 or implicit (infer all subscriptions of a given instance / type) manner . . .
 
-![The ISubscriptionAssembler interface](/images/posts/pubsub-isubscriptionassembler.jpg "ISubscriptionAssembler")
+![The ISubscriptionAssembler interface]({{root_url}}/images/posts/pubsub-isubscriptionassembler.jpg "ISubscriptionAssembler")
 
 The current implementation (`SubscriptionAssembler`) uses a small wrapper around `SynchronizationContext` called `SyncFactory` to
 capture the thread context while building the subscription. All this factory does is that it registers a new `SynchronizationContext` via
@@ -61,7 +61,7 @@ This means:
 2.  Detecting and removing dead references (garbage collected
     instances).
 
-![The ISubscriptionManager interface](/images/posts/pubsub-isubscriptionmanager.jpg "ISubscriptionManager")
+![The ISubscriptionManager interface]({{root_url}}/images/posts/pubsub-isubscriptionmanager.jpg "ISubscriptionManager")
 
 The actual `IMessageBus` implementation called `MessageBus` is
 implemented only as a small wrapper around the `ISubscriptionAssembler` (for creating subscriptions) and the
@@ -116,11 +116,11 @@ It provides simple access points which call an `ISubscriptionAssembler` implemen
 been configured, try to infer all subscriptions when a new instance has been created and that release all subscriptions related to a particular
 instance when the instance has been removed from the container.
 
-![The bridge to the IoC container](/images/posts/pubsub-iocbridge.jpg "THe bridge to the IoC container")
+![The bridge to the IoC container]({{ root_url }}/images/posts/pubsub-iocbridge.jpg "THe bridge to the IoC container")
 
 Regarding the design of the publish & subscribe system that's all there is to tell :-) . Here is a little overview over all classes.
 
-![Overview](/images/posts/pubsub-overview.jpg "Overview")
+![Overview]({{ root_url }}/images/posts/pubsub-overview.jpg "Overview")
 
 In the last post I mentioned that my favourite IoC-container is Castle Windsor. 
 In order to use the library there still is a little piece missing. I've integrated it with the WindsorContainer by 
