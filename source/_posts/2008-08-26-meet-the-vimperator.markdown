@@ -6,25 +6,15 @@ slug: meet-the-vimperator
 status: publish
 title: Meet the Vimperator
 wordpress_id: '74'
-? ''
-: - Uncategorized
-  - Uncategorized
-  - firefox
-  - firefox
-  - Vi
-  - Vi
-  - Vimperator
-  - Vimperator
+comments: true
+footer: true
+categories: [Uncategorized]
 ---
 
-Do you know the Vimperator add-in for Firefox? I didn' t at least until
-today. It's an amazing piece of software that lets you control the
-browser completely by keyboard with the control scheme known from the
-famous VI editor. It's an open source project and can be found
-[here](http://vimperator.mozdev.org). I haven't had the 'pleasure' to
-work with VI in the past, so the start was a bit hard for me. But after
-half an hour fighting to the documentation and playing with the control
-scheme it feels really easy. Here is a list of commands I currently use
+Do you know the Vimperator add-in for Firefox? I didn' t at least until today. It's an amazing piece of software that lets you control the
+browser completely by keyboard with the control scheme known from the famous VI editor. It's an open source project and can be found
+[here](http://vimperator.mozdev.org). I haven't had the 'pleasure' to work with VI in the past, so the start was a bit hard for me. But after
+half an hour fighting to the documentation and playing with the control scheme it feels really easy. Here is a list of commands I currently use
 (and obviously need to remember :-)):
 
 -   :open url, opens the link in the current tab. (f.e.: :open bjro.de)

@@ -6,15 +6,11 @@ slug: resharper-41
 status: publish
 title: Resharper 4.1
 wordpress_id: '116'
-? ''
-: - Uncategorized
-  - Uncategorized
-  - Resharper
-  - Resharper
+comments: true
+footer: true
+categories: [Uncategorized]
 ---
 
-Cool, Jetbrains just released a new version of it's famous productivity
-enhancer. I'm going to update my development machine tomorrow. It's just
-an awesome tool . . . See
-[http://blogs.jetbrains.com/dotnet/2008/09/resharper-41-is-released/](http://blogs.jetbrains.com/dotnet/2008/09/resharper-41-is-released/)
-for more information.
+Cool, Jetbrains just released a new version of it's famous productivity enhancer. I'm going to update my development machine tomorrow. It's just an awesome tool . . . 
+
+See [http://blogs.jetbrains.com/dotnet/2008/09/resharper-41-is-released/](http://blogs.jetbrains.com/dotnet/2008/09/resharper-41-is-released/) for more information.
