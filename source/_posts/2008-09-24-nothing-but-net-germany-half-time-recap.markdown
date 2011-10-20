@@ -6,19 +6,10 @@ slug: nothing-but-net-germany-half-time-recap
 status: publish
 title: Nothing but .NET Germany - Half time recap
 wordpress_id: '128'
-? ''
-: - BDD
-  - BDD
-  - C#
-  - C#
-  - Domain Specific Languages
-  - Domain Specific Languages
-  - Nothing but .NET
-  - Nothing but .NET
-  - Training
-  - Training
+comments: true
+footer: true
+categories: [dotnet]
 ---
-
 We're now half way through the course and I must say that it's even a
 better experience than I originally expected. I've got to know a lot of
 very interesting, smart and also very kind people this week. The
@@ -38,14 +29,12 @@ ASP.NET MVC". We're basically developing a web application from scratch
 5.  continuously integrated . . .
 6.  with extensive usage of fluent interfaces / internal DSLs.
 
-It's a bit like being a kid at toy shop (of course in a developer way
-;-) ) . It's pretty exhausting, though. To give you an idea how long a
-day with JP can actually be:
+It's a bit like being a kid at toy shop (of course in a developer way ;-) ) . 
+It's pretty exhausting, though. To give you an idea how long a day with JP can actually be:
 
 1.  Monday 14h
 2.  Thursday 14h
 3.  Wednesday 16h
 
-Conclusion There is one thing I can already say at the current stage of
-the course: If you ever get the opportunity to be a week with JP and
-you're passionate about .NET software development: DON'T MISS IT.
+Conclusion There is one thing I can already say at the current stage of the course: 
+If you ever get the opportunity to be a week with JP and you're passionate about .NET software development: *DON'T MISS IT*.
