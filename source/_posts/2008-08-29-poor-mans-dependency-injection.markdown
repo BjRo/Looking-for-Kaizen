@@ -38,8 +38,7 @@ What I mostly recommend in such a situation is
 3.  Make the whole class rely on the abstraction.
 4.  Use two constructors. I mostly reffered to them as the opened and the closed constructor.
 
-[sourcecode language="csharp"] 
-
+``` csharp The refactored BillingService
 public class BillingService 
 {
 	private IBillingSystem _BillingSystem; 
@@ -77,7 +76,7 @@ public class BillingSystem : IBillingSystem
 ```
 With that you can easily replace the untestable code with some kind of testdouble like a stub or a mock. 
 
-``` Replace the ugly dependencies in a test
+``` csharp The ugly dependencies in a test replaced
 public class BillingServiceTest 
 { 
 	[Fact] 

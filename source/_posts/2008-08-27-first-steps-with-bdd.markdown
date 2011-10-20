@@ -81,7 +81,7 @@ As one result of the observed problems I incorporated a standard naming scheme (
 to my tests which followed the following scheme: `MethodName_Scenario_Behavior`.
 Applied to the sample code it would look like this: 
 
-```charp Applying a name scheme
+```csharp Applying a name scheme
 [TestFixture]
 public class FactoryTest 
 { 
@@ -280,8 +280,7 @@ public class When_passing_null_for_product_name : ContextSpecification
 ``` 
 Here is the base class that provides the hooks for the unit test framework (in this case MbUnit). 
 
-[sourcecode language="csharp"] 
-
+``` csharp The ContextSpecification base class
 using MbUnit.Framework; 
 using Context = MbUnit.Framework.TestFixtureAttribute; 
 namespace NothinButDotNetPrep.SpecHelpers 

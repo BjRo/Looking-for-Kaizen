@@ -8,7 +8,7 @@ title: BDD with Xunit
 wordpress_id: '100'
 comments: true
 footer: true
-categories: [dotnet, Testing]
+categories: [dotnet, Testing, xUnitBDDExtensions]
 ---
 My current tool of interest is XUnit. For those of you who haven't heard
 of it it's a relatively new unit testing framework from Brad Wilson and
@@ -44,11 +44,13 @@ public class ConcernAttribute : TraitAttribute
 	
 	public Type Type { get { return _Type; } } 
 }
+```
 
 The `ConcernAttibute` extends the `TraitAttribute` which is described in the documentation as 
-{% blockquote %}
-... an Attribute used to decorate a test method with arbitrary name/value pairs ("traits"). 
-{% endblockquote %}
+
+{%blockquote From the xunit documentation %}
+an Attribute used to decorate a test method with arbitrary name/value pairs.
+{%endblockquote %}
 
 I changed the `AttributeTarget`from method to class in order to suit my needs. 
 
@@ -60,7 +62,7 @@ extend it a bit.
 
 The main extension point for how a test is executed is the `FactAttibute`used to mark a method as a test. 
 You can extend it and return a different `ITestCommand` which is then used to execute the test.
-``` charp The ObservationAttribute
+``` csharp The ObservationAttribute
 public class ObservationAttribute : FactAttribute 
 { 
 	protected override IEnumerable<ITestCommand> EnumerateTestCommands(MethodInfo method)

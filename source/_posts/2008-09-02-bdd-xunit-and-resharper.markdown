@@ -8,7 +8,7 @@ title: BDD, xUnit and Resharper
 wordpress_id: '111'
 comments: true
 footer: true
-categories: [dotnet, Testing]
+categories: [dotnet, Testing, xUnitBDDExtensions]
 ---
 
 Yesterday was an interesting evening. I tried to pinpoint the problem between the little BDD framework I used and the Resharper addin for

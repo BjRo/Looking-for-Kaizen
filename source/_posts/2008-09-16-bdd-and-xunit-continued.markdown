@@ -8,11 +8,11 @@ title: BDD and xUnit continued
 wordpress_id: '123'
 comments: true
 footer: true
-categories: [dotnet, Testing]
+categories: [dotnet, Testing, xUnitBDDExtensions]
 ---
 Because of several requests I uploaded the little BDD extension I recently wrote for xunit. It's basically a port of the framework JP
 Boodhoos currently uses in his famous Nothing but .Net bootcamps (he's using MbUnit). 
 
-So [here](http://www.bjoernrochel.de/wp-content/uploads/2008/09/xunitbddextensions.zip) it is. 
+So [here](http://www.github.com/bjro/xunitbddextensions) it is. 
 
 Any feedback is appreciated . . .
