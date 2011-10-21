@@ -8,7 +8,7 @@ title: xUnit.BDDExtensions now runs with xUnit 1.5 final
 wordpress_id: '551'
 comments: true
 footer: true
-categories: [dotnet, xUnitBDDExtensions]
+categories: [Testing, dotnet, xUnitBDDExtensions]
 ---
 
 I've just upgraded the trunk to the final 1.5 version of `xUnit` released last week. This update now allows BDDExtensions to be used with the

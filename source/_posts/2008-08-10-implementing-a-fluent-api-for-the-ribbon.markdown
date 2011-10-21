@@ -8,7 +8,7 @@ title: Implementing a fluent API for the ribbon
 wordpress_id: '21'
 comments: true
 footer: true
-categories: [dotnet, sw-design, DSL]
+categories: [dotnet, sw-design]
 ---
 
 For the last two weeks I've been engaged in implementing an internal Domain Specific Language (DSL) for dealing with the ribbon in a Windows

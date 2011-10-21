@@ -8,7 +8,7 @@ title: Using Extensionmethods in .NET 2.0 projects . . .
 wordpress_id: '18'
 comments: true
 footer: true
-categories: [dotnet, trickery]
+categories: [dotnet]
 ---
 
 While reading *C# in depth* by Jon Skeet I discovered a little gem. It is possible to use extension methods in .NET 2.0 projects when you're

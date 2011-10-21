@@ -8,7 +8,7 @@ title: xUnit.BDDExtensions update
 wordpress_id: '549'
 comments: true
 footer: true
-categores: [dotnet, xUnitBDDExtensions]
+categores: [Testing, dotnet, xUnitBDDExtensions]
 ---
 
 xUnit.BDDExtensions now uses `Rhino.Mocks 3.6` internally. I've just updated the trunk. As usual you can find it here:
