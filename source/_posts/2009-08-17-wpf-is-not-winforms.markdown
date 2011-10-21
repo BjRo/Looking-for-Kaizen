@@ -8,7 +8,7 @@ title: WPF is not WinForms
 wordpress_id: '485'
 comments: true
 footer: true
-categories: [dotnet, WPF]
+categories: [dotnet]
 ---
 
 I've been investing a lot of time in learning WPF lately. WPF has always been somehow interesting to me, however I never found actually

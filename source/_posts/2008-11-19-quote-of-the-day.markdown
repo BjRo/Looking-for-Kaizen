@@ -6,14 +6,11 @@ slug: quote-of-the-day
 status: publish
 title: Quote of the day
 wordpress_id: '187'
-? ''
-: - Conference
-  - Conference
-  - QCon
-  - QCon
+comments: true
+footer: true
+categories: [Conferences]
 ---
 
-Enjoy the following comment I've heard today in the Domain Specific
-Languages track:
+Enjoy the following comment I've heard today in the Domain Specific Languages track:
 
 > **. . . XML is data dressed up as a hooker . . .**
