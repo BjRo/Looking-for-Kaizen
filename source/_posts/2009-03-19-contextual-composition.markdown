@@ -8,7 +8,7 @@ title: Contextual composition
 wordpress_id: '297'
 comments: true
 footer: true
-categories: [dotnet]
+categories: [dotnet, sw-design]
 ---
 
 Today I would like to talk a little bit about something I've witnessed in software development over and over again. Actually, I've seen this
