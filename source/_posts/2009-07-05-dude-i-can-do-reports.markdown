@@ -49,7 +49,7 @@ In order to use it you have to run the generator with
 > ReportGenerator.exe /assembly:SomeSpecAssembly /generator:Text
 
 The other creating an HTML file which looks like
-[this]({{ root_url }/images/posts/xunitbddextensionsreportingspecs.html).
+[this]({{ root_url }}/images/posts/xunitbddextensionsreportingspecs.html).
 This is the default generator which is used when you omit the
 `/generator`  argument.
 

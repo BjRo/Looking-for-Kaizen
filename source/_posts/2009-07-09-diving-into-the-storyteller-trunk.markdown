@@ -11,8 +11,7 @@ footer: true
 categories: [dotnet, StoryTeller]
 ---
 
-I just finished watching Jeremy D. Millers ["Presentation
-Patterns"](http://media01.smartcom.no/Microsite/go.aspx?eventid=4463&urlback=null&bitrate=665548)
+I just finished watching Jeremy D. Millers ["Presentation Patterns"](http://media01.smartcom.no/Microsite/go.aspx?eventid=4463&urlback=null&bitrate=665548)
 talk from this years [NDC](http://www.ndc2009.no/en/).
 
 What he showed in the talk reminded me a lot of a prototype we build at
@@ -41,5 +40,5 @@ I must admit I'm pretty impressed judging from what I've seen so far in
 the talk. Pretty good stuff. Because of that I decided to spend some
 extra time with the StoryTeller sources over the next weeks and do some
 Ayende-like
-I-write-this-while-I'm-looking-at-it-and-trying-to-figure-out-how-it-works-posts
+*I-write-this-while-I'm-looking-at-it-and-trying-to-figure-out-how-it-works-posts*
 (Don't get me wrong , I love them).

@@ -43,7 +43,7 @@ public class Presenter
 		_view.Header.Description = "Some caption . . ." 
 	} 
 }
-````
+```
 
 A spec documenting the behavior of the presenter can now look
 like this if you're using xUnit.BDDExtensions. 
