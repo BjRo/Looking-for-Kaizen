@@ -6,11 +6,9 @@ slug: diving-into-the-storyteller-trunk
 status: publish
 title: Diving into the StoryTeller trunk
 wordpress_id: '390'
-? ''
-: - StoryTeller
-  - StoryTeller
-  - StoryTeller
-  - StoryTeller
+comments: true
+footer: true
+categories: [dotnet, StoryTeller]
 ---
 
 I just finished watching Jeremy D. Millers ["Presentation
@@ -33,10 +31,9 @@ integrate some other stuff we wanted to do in an easy usable way
 really internalized SOLID at that time. (To be honest, I'm still
 struggling with applying it correctly more often as I like).
 
-Jeremy's ["Build your own
-CAB"](http://codebetter.com/blogs/jeremy.miller/archive/2007/07/25/the-build-your-own-cab-series-table-of-contents.aspx)
+Jeremy's ["Build your own CAB"](http://codebetter.com/blogs/jeremy.miller/archive/2007/07/25/the-build-your-own-cab-series-table-of-contents.aspx)
 series was a real inspiration for our prototype. Some of the parts he
-described (especially the thing with the ScreenConductor) were a bit
+described (especially the thing with the `ScreenConductor`) were a bit
 unclear for us, though. It's good to finally have example code, which
 can be examined, executed and learned from.
 
