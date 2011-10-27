@@ -43,7 +43,7 @@ configuration, you'll notice a method on the configuration expression with the n
 `ConnectImplementationsToTypesClosing` which takes a single open generic type as the parameter (The `IScreenSubject<>` type in
 the following snippet). 
 
-[code language="csharp"] 
+``` csharp ConnectImplmentationsToTypesClosing
 public class UserInterfaceRegistry : Registry 
 { 
 	public UserInterfaceRegistry() 

@@ -38,7 +38,7 @@ public class ModuleLoaderService : IModuleLoaderService
 	public void Start() 
 	{ ... } 
 } 
-````
+```
 
 the convention will automatically resolve that implementation and call
 the `Start()` method on it. All of this is done by this little piece of
