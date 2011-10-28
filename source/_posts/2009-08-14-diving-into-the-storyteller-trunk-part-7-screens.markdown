@@ -6,13 +6,10 @@ slug: diving-into-the-storyteller-trunk-part-7-screens
 status: publish
 title: 'Diving into the StoryTeller trunk, Part 7: Screens'
 wordpress_id: '476'
-? ''
-: - StoryTeller
-  - StoryTeller
-  - StoryTeller
-  - StoryTeller
+comments: true
+footer: true
+categories: [dotnet, StoryTeller]
 ---
-
 In the previous post I gave a short overview over the players that are
 involved in the so called Screen Activation Lifecycle. Today I would
 like to take a closer look at, guess what, the Screen.
@@ -51,13 +48,21 @@ So what are the basic responsibilities of a Screen?
     possibly know when that's the case, so it's delegated.
 
 With those 3 points in mind, let's take a look at the Screen interface
-in StoryTeller. [sourcecode language="csharp"] public interface IScreen
-{ object View { get; } string Title { get; } void
-Activate(IScreeObjectRegistry screenObjects); bool CanClose(); }
-[/sourcecode] Pretty straight forward, isn't it?. Next question, who is
+in StoryTeller. 
+
+``` csharp The Screen interface
+public interface IScreen 
+{ 
+    object View { get; } 
+    string Title { get; } 
+    void Activate(IScreeObjectRegistry screenObjects); 
+    bool CanClose(); 
+}
+```
+Pretty straight forward, isn't it?. Next question, who is
 actually implementing the interface? And the answer is surprisingly: It
-depends! This interface can be implemented for instance by Passive View
-- or Supervising Controller - style Presenters. It can be implemented by
+depends! This interface can be implemented for instance by `Passive View`
+- or `Supervising Controller` - style Presenters. It can be implemented by
 ViewModels in Model-View-View-Model implementations. It can even be
 implemented by UserControls (though StoryTeller uses this only for very
 simplistic screens). It's a very pragmatic solution giving a lot of
@@ -69,27 +74,52 @@ about MVVM vs. MVP, or the whole No-Code-Behind-debate. Consistency is
 import but, sticking to a pattern not suited for a particular screen
 (for instance using Passive View for a screen with a lot of fields) can
 hurt much more than the (pattern) consistency would justify. Mh, that
-was a little bit off-topic, wasnâ€™t it?
+was a little bit off-topic, wasn't it?
 
 Most of the Screens in StoryTeller are classical Model View Presenter
 implementations getting their view injected in the constructor.
-[sourcecode language="csharp"] public class SuitePresenter : IListener,
-ISuitePresenter, IListener { private readonly Cache \_drivers; private
-readonly ITestExplorer \_explorer; private readonly ITestService
-\_service; private readonly Suite \_suite; private readonly ISuiteView
-\_view; public SuitePresenter(Suite suite, ISuiteView view,
-ITestExplorer explorer, ITestService service) { \_suite = suite; \_view
-= view; \_explorer = explorer; \_service = service; \_view.Presenter =
-this; \_drivers = new Cache(t =\> \_view.AddTest(t, queueTest)); }
-.......... } [/sourcecode] The structural aspect of the screens isn't
+
+``` csharp An screen straight from StoryTeller
+   public class SuitePresenter : IListener<TestIconChanged>, ISuitePresenter, IListener<TestAdded>
+   {
+       private readonly Cache _drivers;
+       private readonly ITestExplorer _explorer;
+       private readonly ITestService _service;
+       private readonly Suite _suite;
+       private readonly ISuiteView _view;
+
+       public SuitePresenter(Suite suite, ISuiteView view, ITestExplorer explorer, ITestService service)
+       {
+           _suite = suite;
+           _view = view;
+           _explorer = explorer;
+           _service = service;
+
+           _view.Presenter = this;
+           _drivers = new Cache<Test, ITestLineDriver>(t => _view.AddTest(t, queueTest));
+       }
+
+    ..........
+   }
+
+```
+The structural aspect of the screens isn't
 that interesting to me. Standard MVP stuff. The activation however (in
-particular the usage of IScreenObjectRegistry) looks really interesting.
-Take a look for yourself: [sourcecode language="csharp"] public void
-Activate(IScreenObjectRegistry screenObjects) { screenObjects
-.Action("Run") .Bind(ModifierKeys.Control, Key.D1)
-.To(\_presenter.RunCommand).Icon = Icon.Run; } [/sourcecode]
-IScreenObjectRegistry will be inspected in a future post. The next post
-though, will take a closer look at the ScreenCollection. So, if you're
+particular the usage of `IScreenObjectRegistry`) looks really interesting.
+Take a look for yourself: 
+
+``` csharp A dsl for controlling commands
+public void Activate(IScreenObjectRegistry screenObjects)
+{
+   screenObjects
+       .Action("Run")
+       .Bind(ModifierKeys.Control, Key.D1)
+       .To(_presenter.RunCommand).Icon = Icon.Run;
+}
+```
+
+`IScreenObjectRegistry` will be inspected in a future post. The next post
+though, will take a closer look at the `ScreenCollection`. So, if you're
 eager to learn more about the diamonds and jewels Jeremy has created in
 StoryTellers trunk (like I am) rejoin me for the next post when it's
 time to go diving again . . .
