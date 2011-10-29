@@ -8,7 +8,7 @@ title: Dude, I can do reports
 wordpress_id: '359'
 comments: true
 footer: true
-categories: [dotnet, Testing, xUnitBDDExtension]
+categories: [dotnet, Testing, xUnitBDDExtensions]
 ---
 
 Over the past days I finally managed to spend some time with
