@@ -1,0 +1,555 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Diving into the StoryTeller trunk, Part 8: The ScreenCollection - Dude, where's my Kaizen?</title>
+  <meta name="author" content="Björn Rochel">
+
+  
+  <meta name="description" content="Welcome back again to the &#8220;Diving into the StoryTeller trunk&#8221; series.Got your diving suit on? If so, good. If not: Suit-up! (Sorry, the &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.bjoernrochel.de/2009/08/21/diving-into-the-storyteller-trunk-part-8-the-screencollection/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Dude, where's my Kaizen?" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+</head>
+
+<body   >
+  <header role="banner"><div id="logo">
+	<img src="/images/kaizen.png" alt="Kaizen" title="Kaizen" />
+</div>
+<hgroup>
+  <h1><a href="/">Dude, where's my Kaizen?</a></h1>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.bjoernrochel.de" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Diving Into the StoryTeller Trunk, Part 8: The ScreenCollection</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-08-21T16:19:11+02:00" pubdate  data-updated="true" >Aug 21<span>st</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Welcome back again to the &#8220;Diving into the StoryTeller trunk&#8221; series.
+Got your diving suit on? If so, good. If not: Suit-up! (Sorry, the HIMYM
+fanboy in me was too strong ;-))</p>
+
+<p>Last time we spend some time with the concept of Screens. Screens more
+or less provide the content of an application. Content needs to be
+displayed somewhere and that&#8217;s where the ScreenCollection concept comes
+into play.</p>
+
+<p>In abstract a ScreenCollection is a container for multiple Screens. It&#8217;s
+used to display screens. The ScreenCollection concept is comparable to
+PRISMs Regions or CABs WorkSpaces. It doesn&#8217;t really contain a lot of
+intelligence. It only allows you to add a Screen, remove a Screen,
+getting all Screens in the container, make a Screen the active one. You
+know, all in all the typical stuff you would expect from a collection
+(maybe except the last one). The ScreenCollection contract is
+represented by the <code>IScreenCollection</code> interface which looks like this:</p>
+
+<figure class='code'><figcaption><span>The IScreenCollection interface</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IScreenCollection</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>      <span class="k">void</span> <span class="nf">ClearAll</span><span class="p">();</span>
+</span><span class='line'>      <span class="n">IScreen</span> <span class="n">Active</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>      <span class="k">void</span> <span class="nf">Show</span><span class="p">(</span><span class="n">IScreen</span> <span class="n">screen</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">void</span> <span class="nf">Add</span><span class="p">(</span><span class="n">IScreen</span> <span class="n">screen</span><span class="p">);</span>
+</span><span class='line'>      <span class="k">void</span> <span class="nf">Remove</span><span class="p">(</span><span class="n">IScreen</span> <span class="n">screen</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">IScreen</span><span class="p">&gt;</span> <span class="n">AllScreens</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>      <span class="k">void</span> <span class="nf">RenameTab</span><span class="p">(</span><span class="n">IScreen</span> <span class="n">screen</span><span class="p">,</span> <span class="kt">string</span> <span class="n">name</span><span class="p">);</span>
+</span><span class='line'> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If take a closer look at the interface you&#8217;ve probably recognized the last
+method which doesn&#8217;t really fit in there. Let&#8217;s spare that discussion
+for a moment. I&#8217;m going to comment on that in a moment.</p>
+
+<p>StoryTeller contains only one implementation for the <code>IScreenCollection</code>
+interface, which is called (what-a-surprise) <code>ScreenCollection</code>. This
+class simply wraps around a standard WPF <code>TabControl</code>. Let&#8217;s take a look
+at how this is implemented, starting with the constructor.</p>
+
+<figure class='code'><figcaption><span>StoryTellers ScreenCollection class</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">ScreenCollection</span> <span class="p">:</span> <span class="n">IScreenCollection</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>   <span class="k">private</span> <span class="k">readonly</span> <span class="n">Cache</span><span class="p">&lt;</span><span class="n">IScreen</span><span class="p">,</span> <span class="n">StoryTellerTabItem</span><span class="p">&gt;</span> <span class="n">_tabItems</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Cache</span><span class="p">&lt;</span><span class="n">IScreen</span><span class="p">,</span> <span class="n">StoryTellerTabItem</span><span class="p">&gt;();</span>
+</span><span class='line'>   <span class="k">private</span> <span class="k">readonly</span> <span class="n">TabControl</span> <span class="n">_tabs</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>   <span class="k">public</span> <span class="nf">ScreenCollection</span><span class="p">(</span><span class="n">TabControl</span> <span class="n">tabs</span><span class="p">,</span> <span class="n">IEventAggregator</span> <span class="n">events</span><span class="p">)</span>
+</span><span class='line'>   <span class="p">{</span>
+</span><span class='line'>       <span class="n">_tabs</span> <span class="p">=</span> <span class="n">tabs</span><span class="p">;</span>
+</span><span class='line'>       <span class="n">_tabItems</span><span class="p">.</span><span class="n">OnMissing</span> <span class="p">=</span> <span class="n">screen</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="n">StoryTellerTabItem</span><span class="p">(</span><span class="n">screen</span><span class="p">,</span> <span class="n">events</span><span class="p">);</span>
+</span><span class='line'>       <span class="n">_tabs</span><span class="p">.</span><span class="n">SelectionChanged</span> <span class="p">+=</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span> <span class="n">events</span><span class="p">.</span><span class="n">SendMessage</span><span class="p">&lt;</span><span class="n">UserScreenActivation</span><span class="p">&gt;();</span> <span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'>       <span class="c1">// Hack.  Sigh.</span>
+</span><span class='line'>       <span class="n">events</span><span class="p">.</span><span class="n">AddListener</span><span class="p">(</span><span class="k">new</span> <span class="n">RenameTestHandler</span><span class="p">(</span><span class="k">new</span> <span class="n">ScreenFinder</span><span class="p">(</span><span class="k">this</span><span class="p">),</span> <span class="k">this</span><span class="p">));</span>
+</span><span class='line'>   <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="p">...</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There&#8217;re are two interesting things to notice here. The <code>ScreenCollection</code> uses a cache concept in order to correlate
+Screens and the TabItems used to display them. The <code>Cache&lt;TKey,TValue&gt;</code>
+class is a smart wrapper around an <code>IDictionary&lt;TKey,TValue&gt;</code> which
+(besides some other functionality) allows you to plug-in a custom
+handler which is called when no value is found for the specified key.
+This handler acts as a kind of value factory. That&#8217;s exactly what we see
+when we take a look at the line with <code>_tabItems.OnMissing</code>. Each time a
+Screen is not found in the cache StoryTeller creates a new <code>StoryTellerTabItem</code>.</p>
+
+<p>The other interesting thing to notice is that the <code>ScreenCollection</code>
+doesn&#8217;t directly expose events but rather uses the <code>Eventbroker</code> for this.
+You can see this at the <code>UserScreenActivation</code> message.</p>
+
+<p>Yeah and then there is the &#8220;RenameTab&#8221; thing. It&#8217;s marked as a hack. It
+simply shouldn&#8217;t be there. The problem it currently solves it that when
+a test is renamed the related <code>TabHeader</code> must also be updated (We take a
+look at the <code>TabItem</code> in a moment). I wonder whether this isn&#8217;t something
+that could be done in a cleaner way using WPF databinding on <code>Screen.Title</code> instead.</p>
+
+<p>Lets take a look at how the cache magic is used. It&#8217;s really compact
+code. Most of the methods are one or two liners.</p>
+
+<figure class='code'><figcaption><span>Methods of the ScreenCollection class</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">void</span> <span class="nf">ClearAll</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">_tabs</span><span class="p">.</span><span class="n">Items</span><span class="p">.</span><span class="n">Clear</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">void</span> <span class="nf">Show</span><span class="p">(</span><span class="n">IScreen</span> <span class="n">screen</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">_tabs</span><span class="p">.</span><span class="n">SelectedItem</span> <span class="p">=</span> <span class="n">_tabItems</span><span class="p">[</span><span class="n">screen</span><span class="p">];</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">void</span> <span class="nf">Add</span><span class="p">(</span><span class="n">IScreen</span> <span class="n">screen</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">_tabs</span><span class="p">.</span><span class="n">Items</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">_tabItems</span><span class="p">[</span><span class="n">screen</span><span class="p">]);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">void</span> <span class="nf">Remove</span><span class="p">(</span><span class="n">IScreen</span> <span class="n">screen</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">TabItem</span> <span class="n">tabItem</span> <span class="p">=</span> <span class="n">_tabItems</span><span class="p">[</span><span class="n">screen</span><span class="p">];</span>
+</span><span class='line'>    <span class="n">_tabItems</span><span class="p">.</span><span class="n">Remove</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">_tabs</span><span class="p">.</span><span class="n">Items</span><span class="p">.</span><span class="n">Remove</span><span class="p">(</span><span class="n">tabItem</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">IScreen</span><span class="p">&gt;</span> <span class="n">AllScreens</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">IScreen</span><span class="p">&gt;(</span><span class="n">_tabItems</span><span class="p">.</span><span class="n">Keys</span><span class="p">());</span> <span class="p">}</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The cache class is used like you would use a good old
+Hashtable. All in all I think I don&#8217;t need to say more here. Here is the
+code for determining the active Screen.</p>
+
+<figure class='code'><figcaption><span>Determining the active Screen</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="n">IScreen</span> <span class="n">Active</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">get</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">_tabs</span><span class="p">.</span><span class="n">SelectedItem</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="k">return</span> <span class="n">toScreen</span><span class="p">(</span><span class="n">_tabs</span><span class="p">.</span><span class="n">SelectedItem</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="k">null</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">private</span> <span class="n">IScreen</span> <span class="nf">toScreen</span><span class="p">(</span><span class="kt">object</span> <span class="n">tab</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">tab</span><span class="p">.</span><span class="n">As</span><span class="p">&lt;</span><span class="n">TabItem</span><span class="p">&gt;().</span><span class="n">Tag</span><span class="p">.</span><span class="n">As</span><span class="p">&lt;</span><span class="n">IScreen</span><span class="p">&gt;();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Last but not least here&#8217;s the code for the <code>TabItem</code> which is build around a
+screen.</p>
+
+<figure class='code'><figcaption><span>The StoryTellerTabItem class</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">StoryTellerTabItem</span> <span class="p">:</span> <span class="n">TabItem</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">private</span> <span class="n">Label</span> <span class="n">_label</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">StoryTellerTabItem</span><span class="p">(</span><span class="n">IScreen</span> <span class="n">screen</span><span class="p">,</span> <span class="n">IEventAggregator</span> <span class="n">events</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">Func</span><span class="p">&lt;</span><span class="n">Action</span><span class="p">&lt;</span><span class="n">IScreenConductor</span><span class="p">&gt;,</span> <span class="n">Action</span><span class="p">&gt;</span> <span class="n">sendMessage</span> <span class="p">=</span> <span class="n">a</span> <span class="p">=&gt;</span> <span class="p">()</span> <span class="p">=&gt;</span> <span class="n">events</span><span class="p">.</span><span class="n">SendMessage</span><span class="p">(</span><span class="n">a</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">Header</span> <span class="p">=</span> <span class="k">new</span> <span class="n">StackPanel</span><span class="p">().</span><span class="n">Horizontal</span><span class="p">()</span>
+</span><span class='line'>            <span class="p">.</span><span class="n">AddText</span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="n">Title</span><span class="p">,</span> <span class="n">x</span> <span class="p">=&gt;</span> <span class="n">_label</span> <span class="p">=</span> <span class="n">x</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">.</span><span class="n">IconButton</span><span class="p">(</span><span class="n">Icon</span><span class="p">.</span><span class="n">Close</span><span class="p">,</span> <span class="n">sendMessage</span><span class="p">(</span><span class="n">s</span> <span class="p">=&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">Close</span><span class="p">(</span><span class="n">screen</span><span class="p">)),</span> <span class="n">b</span> <span class="p">=&gt;</span> <span class="n">b</span><span class="p">.</span><span class="n">SmallerImages</span><span class="p">());</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">Content</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DockPanel</span><span class="p">().</span><span class="n">With</span><span class="p">(</span><span class="n">screen</span><span class="p">.</span><span class="n">View</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">Tag</span> <span class="p">=</span> <span class="n">screen</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">ContextMenu</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ContextMenu</span><span class="p">().</span><span class="n">Configure</span><span class="p">(</span><span class="n">o</span> <span class="p">=&gt;</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">o</span><span class="p">.</span><span class="n">AddItem</span><span class="p">(</span><span class="s">&quot;Close&quot;</span><span class="p">,</span> <span class="n">sendMessage</span><span class="p">(</span><span class="n">s</span> <span class="p">=&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">Close</span><span class="p">(</span><span class="n">screen</span><span class="p">)));</span>
+</span><span class='line'>            <span class="n">o</span><span class="p">.</span><span class="n">AddItem</span><span class="p">(</span><span class="s">&quot;Close All But This&quot;</span><span class="p">,</span> <span class="n">sendMessage</span><span class="p">(</span><span class="n">s</span> <span class="p">=&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">CloseAllBut</span><span class="p">(</span><span class="n">screen</span><span class="p">)));</span>
+</span><span class='line'>            <span class="n">o</span><span class="p">.</span><span class="n">AddItem</span><span class="p">(</span><span class="s">&quot;Close All&quot;</span><span class="p">,</span> <span class="n">sendMessage</span><span class="p">(</span><span class="n">s</span> <span class="p">=&gt;</span> <span class="n">s</span><span class="p">.</span><span class="n">CloseAll</span><span class="p">()));</span>
+</span><span class='line'>        <span class="p">});</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">HeaderText</span> <span class="p">{</span> <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_label</span><span class="p">.</span><span class="n">Content</span> <span class="k">as</span> <span class="kt">string</span><span class="p">;</span> <span class="p">}</span> <span class="k">set</span> <span class="p">{</span> <span class="n">_label</span><span class="p">.</span><span class="n">Content</span> <span class="p">=</span> <span class="k">value</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I need to talk more about this part, don&#8217;t I? Again two
+intersting things here. First thing, it really makes heavy usage of
+C#3.0. You can see a lot of Extension Methods on WPF classes used in
+order to build and configure WPF elements in a very fluent and compact
+way.</p>
+
+<p>Besides that you see here again how the <code>EventBroker</code> can be nicely
+integrated into Screen handling. Take a look at the context menu of each
+<code>TabItem</code>. It provides handlers which call directly into the <code>EventBroker</code>
+for triggering the typical close operations you can also see in Visual
+Studio. The important thing here to take away is that the close
+operations are only triggered here but performed by the
+<code>IScreenConductor</code>.</p>
+
+<p>For those of you who didn&#8217;t follow my &#8220;StoryTeller&#8221; investigations from
+the start: The <code>ScreenConductor</code> is the great coordinator for the Screen
+Activation Lifecycle behind the scenes. It&#8217;s (as far as I can tell) the
+central facade to the Screen Activation Lifecyle from the perspective of
+typical application code. The <code>ScreenConductor</code> is a big topic which will
+be discussed in one of the next posts.</p>
+
+<h2>Closing thoughts</h2>
+
+<p>Lets not comment on the <code>RenameTab</code> thing, ok? I bet, Jeremy is going to
+fix that pretty soon. The <code>ScreenCollection</code> is (again) a good example of
+how much you can do with so few lines. However sometimes this can have
+downsides, too. I can only imagine .NET developers unfamiliar with this
+heavy usage of C#3.0 features staring at the code and thinking
+something like: WTF, what&#8217;s happening here? Personally, I like it,
+especially the cache aspect of it. I&#8217;ve done the .Tag thing far too
+often now.</p>
+
+<p>Sadly one thing I would have loved to see is missing in the code, the
+ability to block deactivation or activation. Typical example for this is
+a requirement forcing the user to save or discard changed data before
+leaving a Screen. I had this requirement in the last 5 applications I
+worked on. It would have been interesting to see how Jeremy tackles such
+a requirement. I&#8217;m just assuming that he would use the <code>EventBroker</code> for
+that &#8230;</p>
+
+<p>Enought Screen Mania for today. I hope you&#8217;ve enjoyed the ride so far
+and we&#8217;ll rejoin next time when it&#8217;s time to take a look at the big guy
+in the game, the <code>ScreenConductor</code>.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">BjRo</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-08-21T16:19:11+02:00" pubdate  data-updated="true" >Aug 21<span>st</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/storyteller/'>StoryTeller</a>, <a class='category' href='/blog/categories/dotnet/'>dotnet</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://www.bjoernrochel.de/2009/08/21/diving-into-the-storyteller-trunk-part-8-the-screencollection/" data-via="bjoernrochel" data-counturl="http://www.bjoernrochel.de/2009/08/21/diving-into-the-storyteller-trunk-part-8-the-screencollection/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+</div>
+
+    
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+	<h1>About me</h1>
+  <p><br/><img src="/images/bjro-eyes.jpg" alt="portrait" /></p>
+	<p>
+  My name is <strong>Björn Rochel</strong>.  I'm a 32 year old geek, who's crazy about software development, living in Cologne and
+  currently working for <a href="http://www.intercomponentware.com">ICW</a> as a .NET Developer / Architect.
+	</p>
+	<ul class="badges">
+		<li><a href="http://www.xing.com/profile/Bjoern_Rochel"><img src="/images/badges/xing2-small.png" alt="Xing" /></a></li>
+		<li><a href="http://www.github.com/BjRo"><img src="/images/badges/github-small.png" alt="Github" /></a></li>
+		<li><a href="http://www.twitter.com/bjoernrochel"><img src="/images/badges/twitter-square-small.png" alt="Twitter" /></a></li>
+		<li><a href="/atom.xml"><img src="/images/badges/rss-circle-small.png" alt="Rss" /></a></li>
+	</ul>
+</section>
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/Conferences/'>Conferences (8)</a></li>
+<li class='category'><a href='/blog/categories/FSharp/'>FSharp (3)</a></li>
+<li class='category'><a href='/blog/categories/Katas/'>Katas (2)</a></li>
+<li class='category'><a href='/blog/categories/StoryTeller/'>StoryTeller (14)</a></li>
+<li class='category'><a href='/blog/categories/StructureMap/'>StructureMap (9)</a></li>
+<li class='category'><a href='/blog/categories/Testing/'>Testing (20)</a></li>
+<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (7)</a></li>
+<li class='category'><a href='/blog/categories/dotnet/'>dotnet (65)</a></li>
+<li class='category'><a href='/blog/categories/ruby/'>ruby (3)</a></li>
+<li class='category'><a href='/blog/categories/sw-design/'>sw-design (13)</a></li>
+<li class='category'><a href='/blog/categories/xUnitBDDExtensions/'>xUnitBDDExtensions (15)</a></li>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("bjoernrochel", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/bjoernrochel" class="twitter-follow-button" data-width="208px" data-show-count="false">Follow @bjoernrochel</a>
+  
+</section>
+
+<section>
+<h1>Disclaimer</h1>
+<p>
+The opinions expressed herein are my own personal opinions and do not necessarily represent the opinion of any other organization or person, including (but not limited to) my fellow employees, my employer, its clients or their agents. 
+</p>
+<p>
+ Copyright &copy; 2011 - Björn Rochel
+</p>
+<section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Björn Rochel -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'bjro';
+      
+        
+
+				//TODO: comment disqus_developer out
+				var disqus_developer = 1;
+				var disqus_identifier = 'http://www.bjoernrochel.de/2009/08/21/diving-into-the-storyteller-trunk-part-8-the-screencollection/';
+				var disqus_url = 'http://www.bjoernrochel.de/2009/08/21/diving-into-the-storyteller-trunk-part-8-the-screencollection/';
+        var disqus_script = 'embed.js';
+      
+
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>

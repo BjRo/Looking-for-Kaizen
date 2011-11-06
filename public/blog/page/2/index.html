@@ -1,0 +1,2515 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Dude, where's my Kaizen?</title>
+  <meta name="author" content="Björn Rochel">
+
+  
+  <meta name="description" content="I recently read something like this on Twitter:It feels wrong to have registration and scanning in the Registry classI absolutely second that.One of &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.bjoernrochel.de/blog/page/2/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Dude, where's my Kaizen?" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+</head>
+
+<body   >
+  <header role="banner"><div id="logo">
+	<img src="/images/kaizen.png" alt="Kaizen" title="Kaizen" />
+</div>
+<hgroup>
+  <h1><a href="/">Dude, where's my Kaizen?</a></h1>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.bjoernrochel.de" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2010/01/06/structuremap-registry-usage/">StructureMap: Registry Usage</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-01-06T00:37:22+01:00" pubdate  data-updated="true" >Jan 6<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I recently read something like this on Twitter:</p>
+
+<blockquote><p>It feels wrong to have registration and scanning in the Registry class</p></blockquote>
+
+
+<p><strong>I absolutely second that</strong>.
+One of the decisions in my current project (a composite smart client) was to
+separate these two things, in order to give clear guidance on &#8220;which to use when&#8221;.
+Here is our setup:</p>
+
+<figure class='code'><figcaption><span>Bootstrapping our container</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">ObjectFactory</span><span class="p">.</span><span class="n">Initialize</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">x</span><span class="p">.</span><span class="n">AddRegistry</span><span class="p">(</span><span class="k">new</span> <span class="n">InfrastructureRegistry</span><span class="p">());</span>
+</span><span class='line'>  <span class="n">x</span><span class="p">.</span><span class="n">Scan</span><span class="p">(</span><span class="n">scanner</span> <span class="p">=&gt;</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>          <span class="n">scanner</span><span class="p">.</span><span class="n">AssembliesFromPath</span><span class="p">(</span><span class="s">&quot;Modules&quot;</span><span class="p">);</span>
+</span><span class='line'>          <span class="n">scanner</span><span class="p">.</span><span class="n">Convention</span><span class="p">&lt;</span><span class="n">ProjectConventions</span><span class="p">&gt;();</span>
+</span><span class='line'>          <span class="n">scanner</span><span class="p">.</span><span class="n">LookForRegistries</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>We packaged our conventions for the project into a single composite convention. This includes the easier mappings ala <code>IFoo</code> &#8211; <code>Foo</code>, as
+well as more complex conventions for services which are automatically instrumented on creation via <code>Castle.DynamicProxy</code>.</li>
+<li><code>Registry</code> classes are used for all the stuff we&#8217;re not able to configure via conventions.<br/>
+  This includes mappings from interfaces to types with completely different names, adding externally created stuff to the container or configuring complex constructions like a composite.</li>
+<li>There is exactly 1 <code>Registry</code> per module in our application (+ 1 for the infrastructure).</li>
+<li><code>Registry</code> classes are dynamically found during the scan process by looking into each assembly configured in the Scanner.</li>
+</ul>
+
+
+<p>Any opinions? If you&#8217;re using Registries, how do you use them?</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2010/01/05/changes-in-structuremap-254/">Changes in StructureMap 2.5.4</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-01-05T23:45:14+01:00" pubdate  data-updated="true" >Jan 5<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Interesting what some people do during the Christmas holidays. In the case of Jeremy D. Miller this was releasing a new version of
+StructureMap and working heavily on the Fubu MVC codebase. Today I had the pleasure to migrate my current projects codebase (which previously
+used Unity and Unity.Interception) to the newest StructureMap version 2.5.4 and Castle.DynamicProxy2.</p>
+
+<p>It was an interesting experience mostly because I tried to re-use some code pieces for setting up conventions
+from an earlier project based on StructureMap 2.5.3. Quite a few things have been changed in the API. Needless to say, all for good. I just
+wanted to give a quick overview of the things I noticed.</p>
+
+<h2>ITypeScanner was replaced by IRegistrationConvention</h2>
+
+<p>If you wanted to write custom conventions in StructureMap 2.5.3 you needed to implement the <code>ITypeScanner</code> interface
+(An example is described <a href="/2009/07/24/cutting-the-fluff-from-service-registration-or-how-to-do-funky-stuff-with-coc-castledynamicproxy-structuremap/">here</a>).</p>
+
+<figure class='code'><figcaption><span>ITypeScanner was replaced by IRegistrationConvention</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="c1">//StructureMap 2.5.3 </span>
+</span><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">ITypeScanner</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">void</span> <span class="nf">Process</span><span class="p">(</span><span class="n">Type</span> <span class="n">type</span><span class="p">,</span> <span class="n">PluginGraph</span> <span class="n">graph</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'><span class="c1">//StructureMap 2.5.4 </span>
+</span><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IRegistrationConvention</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">void</span> <span class="nf">Process</span><span class="p">(</span><span class="n">Type</span> <span class="n">type</span><span class="p">,</span> <span class="n">Registry</span> <span class="n">registry</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see, it&#8217;s not only a renaming. The signature of the <code>Process</code>-method has changed, too. It now uses the good old <code>Registry</code> class for doing the
+registration. Very consistent, good choice. Modifying the <code>PluginGraph</code> always left me with the feeling that I was digging too deep into the StuctureMap internals.</p>
+
+<h2>TypeRules base class has been replaced with Extension methods</h2>
+
+<p>In the past you could re-use some utility methods for reflection (like checking whether a type is concrete, etc.) by
+inheriting from the <code>TypeRules</code> class. This class has been completely removed, but the functionality is still available via Extension methods.</p>
+
+<h2>Lot&#8217;s and lot&#8217;s of renaming </h2>
+
+<p>A lot of renaming has been done. The most interesting stuff happened in the <code>Registry</code> class.</p>
+
+<figure class='code'><figcaption><span>Renamings in the fluent api</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="c1">//StructureMap 2.5.3</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">MyRegistry</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">MyRegistry</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">ForRequestedType</span><span class="p">&lt;</span><span class="n">IFoo</span><span class="p">&gt;().</span><span class="n">TheDefaultIsConcreteType</span><span class="p">&lt;</span><span class="n">Foo</span><span class="p">&gt;();</span>
+</span><span class='line'>        <span class="n">ForRequestedType</span><span class="p">&lt;</span><span class="n">IBar</span><span class="p">&gt;().</span><span class="n">TheDefaultIsConcreteType</span><span class="p">&lt;</span><span class="n">Bar</span><span class="p">&gt;().</span><span class="n">AsSingleton</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">ForRequestedType</span><span class="p">&lt;</span><span class="n">IFoo</span><span class="p">&gt;().</span><span class="n">TheDefault</span><span class="p">.</span><span class="n">IsThis</span><span class="p">(</span><span class="k">new</span> <span class="n">Foo</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">ForRequestedType</span><span class="p">&lt;</span><span class="n">IBar</span><span class="p">&gt;().</span><span class="n">TheDefault</span><span class="p">.</span><span class="n">Is</span><span class="p">.</span><span class="n">ConstructedBy</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="n">Bar</span><span class="p">());</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//StructureMap 2.5.4</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">MyRegistry</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">MyRegistry</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">For</span><span class="p">&lt;</span><span class="n">IFoo</span><span class="p">&gt;().</span><span class="n">Use</span><span class="p">&lt;</span><span class="n">Foo</span><span class="p">&gt;();</span>
+</span><span class='line'>        <span class="n">ForSingleton</span><span class="p">&lt;</span><span class="n">IBar</span><span class="p">&gt;().</span><span class="n">Use</span><span class="p">&lt;</span><span class="n">Bar</span><span class="p">&gt;();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">For</span><span class="p">&lt;</span><span class="n">IFoo</span><span class="p">&gt;().</span><span class="n">Use</span><span class="p">(</span><span class="k">new</span> <span class="n">Foo</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">For</span><span class="p">&lt;</span><span class="n">IBar</span><span class="p">&gt;().</span><span class="n">Use</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="n">Bar</span><span class="p">());</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The new version is a lot less wordier and a lot more consistent in naming. It also feels very familiar, although
+I&#8217;m unable to determine why.</p>
+
+<h2>Some new slick features I noticed</h2>
+
+<p>From playing around with the StructureMap trunk version during the &#8220;Diving into the StoryTeller Series&#8221; I already stumbled over this killer
+feature.</p>
+
+<figure class='code'><figcaption><span>Convention based registration</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">_container</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Container</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Scan</span><span class="p">(</span><span class="n">s</span> <span class="p">=&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>   <span class="n">s</span><span class="p">.</span><span class="n">AssemblyContainingType</span><span class="p">&lt;</span><span class="n">ISomeService</span><span class="p">&gt;();</span>
+</span><span class='line'>   <span class="n">s</span><span class="p">.</span><span class="n">ConnectImplementationsToTypesClosing</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IHandler</span><span class="p">&lt;&gt;));</span>
+</span><span class='line'><span class="p">}));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Jimmy Bogard has already written an <a href="http://www.lostechies.com/blogs/jimmy_bogard/archive/2009/12/17/advanced-structuremap-connecting-implementations-to-open-generic-types.aspx">excellent article</a>
+about that particular feature. So instead let us take a look at this new ability.</p>
+
+<figure class='code'><figcaption><span>Accessing the container model</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">ObjectFactory</span><span class="p">.</span><span class="n">Model</span><span class="p">.</span><span class="n">GetAllPossible</span><span class="p">&lt;</span><span class="n">IInitializable</span><span class="p">&gt;();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This resolves all instances from the configuration model which implement the <code>IInitializable</code> interface.</p>
+
+<h2>Stuff you don&#8217;t see</h2>
+
+<p>If you&#8217;ve followed Jeremy D. Miller closely on Twitter you may have heard that the biggest
+change in the new release has happened under the hood of StructureMap.  In previous versions StructureMap used Reflection.Emit to emit an
+assembly for the construction of the types at runtime. This has been completely rewritten using <code>ExpressionTrees</code>. I&#8217;m quite curious how he
+implemented that.</p>
+
+<p>Feels like yet another source to learn has emerged ;-)</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/12/23/diving-into-the-storyteller-trunk-part-111-commands/">Diving Into the StoryTeller Trunk, Part 11.1: Commands</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-12-23T20:16:13+01:00" pubdate  data-updated="true" >Dec 23<span>rd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Welcome back to the <strong>Diving into the StoryTeller trunk</strong> series. The main
+topic for the last couple of posts about StoryTeller is its Command handling or to be a bit more specific the reoccurring problem of how
+Screen related Commands are managed in the app infrastructure. Couple of posts? Yeah, right. Today&#8217;s post is going to be a bit shorter than the
+usual posts in the series. When I started to write this post I quickly realized that this topic contains more aspects to talk about than I had
+originally anticipated. Besides that Christmas is near, I&#8217;m running out of time for this year and just wanted to get at least some bits of the
+content out there before going on vacation. Today&#8217;s post is going to be more general one on the topic.</p>
+
+<h2>The Command Pattern </h2>
+
+<p>A lot of the content in this series dealt exclusively with how the StoryTeller UI layer manages Screens in its content area,
+but as you know most of the time an application consists of more parts than just the plain content area. A typical desktop application is probably going to have some sort
+of Mainmenu, a Statusbar and of course Contextmenus. Items displayed in those areas very often represent actions an application can perform.
+They act as a trigger of those actions. A typical way to implement this is using the <a href="http://en.wikipedia.org/wiki/Command_pattern">GoF-Command Pattern</a>, which separates
+the invoker of an action (for instance a button) from the receiver instance which executes the action by introducing the Command abstraction. A Command encapsulates the knowledge needed for an
+invokation of the receiver instance, so that it can be executed at a later time.</p>
+
+<h2>Commands are potentially contextual </h2>
+
+<p>An application can have lots and lots of Commands. While some of these Commands are available all of the time, some of them can only be executed in a particular context.
+A typical example for Commands of the first category might be the &#8220;Exit application&#8221; Command. A typical example for the latter category might be the &#8220;Undo&#8221; Command or &#8220;Redo&#8221; Command in all
+kinds of text editors, which can only be executed when the currently viewed document has some changes. It&#8217;s not uncommon to have lots of contextual Commands in an application that are only related to a very
+specific Screen or Screen state. When we think in terms of usability, the least a user should be able to take granted from an app is that the
+app appropriately shows which actions can be performed at a particular point of time. This can be achieved by enabling / disabling related
+items depending on the availability of the Command (be it manually or through databinding). Sometimes though,it might be a better approach to
+have an even more contextualized UI that only shows the commands related to the current context. So for instance if no code editor view is shown
+in Visual Studio than the &#8220;Undo&#8221; and &#8220;Redo&#8221; Commands should also not be visible (NOTE: VS doesn&#8217;t actually behave that way). I think this idea
+of contextualized UIs becomes more and more popular. Office 2007/2010 was build with this idea in mind.</p>
+
+<h2>Commands in a Composite UI</h2>
+
+<p>Composite UIs which follow the Open / Closed Principle add another problem to the mix. When new modules or new screens are loaded into a
+composite app, they shouldn&#8217;t need to modify the app infrastructure in order to add their related commands. The app infrastructure needs to
+provide a way to plug those commands in without modification. This also includes their visual representation (Text, Tooltip, Icon, etc.).</p>
+
+<h2>Questions we should take a closer look at</h2>
+
+<ul>
+<li>Do we need to differentiate between types of Commands?</li>
+<li>Who is responsible for adding / registering commands?</li>
+<li>How is the visual representation of commands configured?</li>
+<li>Who is responsible for deciding whether Commands are available?</li>
+<li>Is there build-in .NET Framework support for this?</li>
+<li><strong>Of course: How does StoryTeller implement all this?</strong></li>
+</ul>
+
+
+<p>I&#8217;m afraid that&#8217;s all for today. I wish you all merry Christmas and a
+happy new year. See you in 2010</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/12/10/im-doing-the-t-thing-now-too/">I&#8217;m Doing the T-thing Now, Too</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-12-10T19:33:32+01:00" pubdate  data-updated="true" >Dec 10<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Although I&#8217;m still not 100% sure that I &#8220;get&#8221; what the Twitter fuzz is all about, I decided to give it a try and use it for a while, in order
+to form my opinion about it. If you&#8217;re interested to stay in touch via Twitter, here&#8217;s my Url:</p>
+
+<p><a href="http://www.twitter.com/BjoernRochel">http://www.twitter.com/BjoernRochel</a></p>
+
+<p>Cheerz Björn</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/11/30/whats-next/">What&#8217;s Next?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-11-30T10:56:11+01:00" pubdate  data-updated="true" >Nov 30<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>With the &#8220;Diving into the StoryTeller trunk series&#8221; coming to an end in the near future, I&#8217;m currently looking into several ideas for future
+posts. Here&#8217;s what I&#8217;m currently thinking about:</p>
+
+<ol>
+<li><p><strong>xUnit.BDDExtensions feature walkthrough and documentation</strong> Let&#8217;s be honest it&#8217;s currently not documented at all. I failed big time at
+documenting its usage scenarios and behavior so far. However, since more and more projects at my current client are starting to use it I&#8217;m
+definitely going to fix this &#8230;</p></li>
+<li><p><strong>Look into various options to implement the Active Object Pattern</strong> I&#8217;ve been reading several papers
+about infrastructures for command execution lately. It&#8217;s an interesting topic for distributed scenarios (for instance used in a CQSR design),
+but also for local scenarios when you start to think about multi core / concurrent programming. As modern applications are becoming more and
+more connected on the one hand and need to use local resources more efficiently on the other (because processors won&#8217;t get a lot faster in
+the near future) I think there&#8217;s a huge need for having a simple consistent design for both. Things I&#8217;d like to look into are the
+Concurrency Coordination Runtime, the .NET 4.0 Task Parallel Library and Application Spaces, as well as more specific topics like integrating
+such an infrastructure with an MVVM design.</p></li>
+<li><p><strong>Dive into the Caliburn trunk</strong> Last but not least I would love to spend some time with Caliburn
+since WPF is more and more on my radar and Caliburn seems to fully embrace and extend a lot of the original WPF design ideas in a composite
+context. I think I would do something similar to the StoryTeller series.</p></li>
+</ol>
+
+
+<p>So, what do you think? Any preferences? Any priorities?</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/11/30/diving-into-the-storyteller-trunk-part-10-coordination-baby/">Diving Into the StoryTeller Trunk, Part 10: Coordination Baby!</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-11-30T10:13:22+01:00" pubdate  data-updated="true" >Nov 30<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>So far in this series I&#8217;ve talked extensively about what I consider the
+most of the important parts in the StoryTeller UI design. This includes
+<a href="/2009/08/14/diving-into-the-storyteller-trunk-part-7-screens/">Screens</a>,
+<a href="/2009/08/21/diving-into-the-storyteller-trunk-part-8-the-screencollection/">the ScreenCollection</a>,
+<a href="/2009/09/07/diving-into-the-storyteller-trunk-part-9-screensubject-screenfactory/">ScreenSubject</a>,
+<a href="/2009/09/07/diving-into-the-storyteller-trunk-part-9-screensubject-screenfactory/">ScreenFactory</a>,
+<a href="/2009/07/20/diving-into-the-storyteller-trunk-part-5-the-eventaggregator/">EventAggregation</a>
+and the application of <a href="/2009/07/13/diving-into-the-storyteller-trunk-part1-convention-based-registration/">Convention of Configuration</a>
+in general. You could say that we mostly talked about ingredients. Today
+I would like to take some additional time in order to show how this is
+all assembled into an actual API. Those of you who&#8217;ve already spend
+some time with the StoryTeller codebase too or have watched one of the
+many screencasts about the <a href="http://www.jeremydmiller.com/ppatterns/Default.aspx?Page=ScreenActivationLifecycle&amp;AspxAutoDetectCookieSupport=1">Screen Activation Lifecycle</a>
+probably know what I&#8217;m going to show today. Today is all about the
+<code>ScreenConductor</code>.</p>
+
+<h2>ScreenConductor vs. Application Controller</h2>
+
+<p>Before we dive into the actual code, let&#8217;s take a short break and talk a
+little bit about a more high level view on the <code>ScreenConductor</code> and the
+role the conductor is fulfilling in an application. Martin Fowler
+identified the pattern <code>ApplicationController</code> some years ago as</p>
+
+<blockquote><p>A centralized point for handling screen navigation and the flow of an<br/>application.</p><footer><strong>Martin Fowler</strong><cite><a href='http://martinfowler.com/eaaCatalog/applicationController.html'>martinfowler.com/eaaCatalog/&hellip;</a></cite></footer></blockquote>
+
+
+<p>It&#8217;s kind of a coordination structure which manages / coordinates the
+lifecylcle of child screens in an application as well as the lifecycle
+of the application shell itself (think about controlled shutdown for
+instance). You can think of the <code>ApplicationController</code> as a <em>Facade</em> client
+code can call in order to create/activate/deactivate screens in an
+application. This <em>Facade</em> defines a nice separation between application
+code on the one side and the UI infrastructure on the other side. It
+shields away implementation details of how the application is actually
+displaying screens (tab style, web style, etc) from the client and also
+provides a nice point for handling scenarios like dirty checks on
+screens. As an application grows over time, it&#8217;s a good idea to break
+down the <code>ApplicationController</code> into several collaborating classes and
+decouple its implementation details from another in order to make the
+system more manageable and maintainable. Adding a new screen to the
+application for instance should not require a change in one of the UI
+infrastructure classes. When breaking down the <code>ApplicationController</code>
+into several collaborating classes a good lead is to use the <em>Single
+Responsibility Principle</em> in order to identify responsibilities which can
+be extracted.</p>
+
+<p>That&#8217;s exactly what Jeremy D. Miller did in his <a href="http://www.jeremydmiller.com/ppatterns/Default.aspx?Page=ScreenActivationLifecycle&amp;AspxAutoDetectCookieSupport=1">Screen Activation Lifecycle</a>.
+He broke down the ApplicationController pattern into several smaller
+responsibilities, the most important beeing</p>
+
+<ul>
+<li>the <code>ScreenCollection</code> (which keeps track of all existing screens and the one beeing the active screen)</li>
+<li>the <code>ScreenSubject</code> (which is used to separate identification and creation of a screen from the screen itself)</li>
+<li><code>Screens</code> (which provide the content beeing displayed and hooks for instance for the dirty check when the application closes)</li>
+<li>and the <code>ScreenConductor</code>.</li>
+</ul>
+
+
+<p>Jeremy describes the <code>ScreenConductor</code> and its responsibilities as the
+following:</p>
+
+<p><em>&#8220;Controls the activation and deactivation lifecycle of the
+screens within the application. Depending on the application, the
+conductor may be synchronizing the menu state of the shell, attaching
+views in the main panel or otherwise, and calling hook methods on the
+Presenter&#8217;s to bootstrap the screen. It may also be just as important to
+deactivate a screen when it&#8217;s made the inactive tab to stop timers. My
+first exposure to a ScreenConductor was an insurance application that
+was built with web style navigation. Anytime the user moved away from a
+screen we needed to check for &#8220;dirty&#8221; screens to give the user a chance
+to deal with unsaved work. On the other hand, we also had to check the
+entry into a requested screen to see if we could really open the screen
+based on pessimistic locking or permission rules. We pulled our a Layer
+SuperType for our Presenters for methods like CanLeave() and CanEnter().
+The ScreenConductor would use these methods and others to manage screen
+navigation.&#8221;</em></p>
+
+<p>To me the ScreenConductor is more or less an OCP-fied
+subset of the original <code>ApplicationController</code> pattern, focussing on the
+coordination and facade ideas of the original pattern.</p>
+
+<h2>A short episode in the Screen Activation Lifecycle </h2>
+
+<p>Let&#8217;s give our discussion a bit more detail. So far it was rather abstract. Before looking into the
+actual code I would like to walk you through a typical usecase which
+depicts how those components actually work together. The example Jeremy
+mostly uses for this is &#8220;Opening a source code file in Visual Studio&#8221; .
+I&#8217;m lazy, so I&#8217;m going to reuse this one.</p>
+
+<p><em>&#8220;Consider you double-click a file in the Solution Explorer of VS. When you do this for the first
+time a new tab displaying the contents of the file will be opened. Doing
+the same thing a second time will not open a new tab, but rather focus
+the existing tab displaying the contents of the file.&#8221;</em></p>
+
+<p>It&#8217;s actually easy to translate this story into a more abstract version using the
+responsibilities described in this post so far.</p>
+
+<p><em>&#8220;Consider you want to open a <code>Screen</code> via a <code>ScreenSubject</code>. When the <code>ScreenSubject</code>
+detects that no related <code>Screen</code> is being displayed to the user, a new
+<code>Screen</code> will be created by the subject and then added to the
+<code>ScreenCollection</code>. Doing the same thing a second time will not open
+up a <code>Screen</code>, but rather activate the existing <code>SCREEN</code>, because
+the <code>ScreenSubject</code> detected that the <code>Screen</code> is already open.&#8221;</em></p>
+
+<p>The interesting sidenode in this design is that from a client code
+perspective there is no difference between opening up a screen and
+activating a screen. Really nice &#8230;</p>
+
+<h2>Usecase: Opening a Screen </h2>
+
+<p>Now that you&#8217;re familiar with the first scenario, time to show some code.  I&#8217;ve shown parts of this before in the previous post (Sorry for the
+duplication), but added some bits in order to illustrate this example.
+From the outside world a call to the <code>ScreenConductor</code> for this usecase
+might look like this.</p>
+
+<figure class='code'><figcaption><span>Opening a Screen</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">var</span> <span class="n">subject</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CSharpFileSubject</span><span class="p">(</span><span class="s">@&quot;C:\\end\\of\\the\\world.cs&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="n">screenConductor</span><span class="p">.</span><span class="n">OpenScreen</span><span class="p">(</span><span class="n">subject</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Notice that all data needed for creating the actual Screen will be passed in with the
+concrete <code>ScreenSubject</code> implementation.</p>
+
+<figure class='code'><figcaption><span>A ScreenSubject</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">CSharpFileSubject</span> <span class="p">:</span> <span class="n">IScreenSubject</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">_fileName</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="nf">CSharpFileSubject</span><span class="p">(</span><span class="kt">string</span> <span class="n">fileName</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">_fileName</span> <span class="p">=</span> <span class="n">fileName</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="kt">bool</span> <span class="nf">Matches</span><span class="p">(</span><span class="n">IScreen</span> <span class="n">screen</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">screen</span> <span class="k">is</span> <span class="n">SourceCodeScreen</span> <span class="p">&amp;&amp;</span>
+</span><span class='line'>      <span class="kt">string</span><span class="p">.</span><span class="n">Equals</span><span class="p">((</span><span class="n">SourceCodeScreen</span><span class="p">)</span><span class="n">screen</span><span class="p">.</span><span class="n">FileName</span><span class="p">,</span> <span class="n">_fileName</span><span class="p">));</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="n">IScreen</span> <span class="nf">CreateScreen</span><span class="p">(</span><span class="n">IScreenFactory</span> <span class="n">screenFactory</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">var</span> <span class="n">screen</span> <span class="p">=</span> <span class="n">screenFactory</span><span class="p">.</span><span class="n">Build</span><span class="p">&lt;</span><span class="n">SourceCodeScreen</span><span class="p">&gt;();</span>
+</span><span class='line'>    <span class="n">screen</span><span class="p">.</span><span class="n">File</span> <span class="p">=</span> <span class="n">_fileName</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">screen</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is not quite the code I would write for a real
+system, but I think you get the point. Two methods need to be
+implemented for the <code>IScreenSubject</code> interface. This is <code>bool
+Matches(IScreen)</code> which identifies a related screen and <code>IScreen
+CreateScreen(IScreenFactory)</code> which is used to create the screens. I
+really like this kind of API design since it gives you all sorts of
+extension points without the need to open up the actual infrastructure.
+Want to show a <code>WaitCursor</code> while you create the <code>Screen</code>? Go ahead. Want to
+do some loading before the screen is opened? Here&#8217;s the place to do it .
+. . Anyway, the <code>ScreenConductors</code> side of things looks like this.</p>
+
+<figure class='code'><figcaption><span>Opening a Screen</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">virtual</span> <span class="k">void</span> <span class="nf">OpenScreen</span><span class="p">(</span><span class="n">IScreenSubject</span> <span class="n">subject</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">subject</span><span class="p">.</span><span class="n">Matches</span><span class="p">(</span><span class="n">_screens</span><span class="p">.</span><span class="n">Active</span><span class="p">))</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">IScreen</span> <span class="n">screen</span> <span class="p">=</span> <span class="n">findScreenMatchingSubject</span><span class="p">(</span><span class="n">subject</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">screen</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">screen</span> <span class="p">=</span> <span class="n">createNewActiveScreen</span><span class="p">(</span><span class="n">subject</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">activate</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">_screens</span><span class="p">.</span><span class="n">Show</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pretty slick, isn&#8217;t it? The whole code is really dense. Most of the methods involved are not more
+than 5 lines long. Finding the related screen for instance is just a
+matter of a LINQ-Query on the ScreenCollection using the <code>Matches</code> method
+as its predicate.</p>
+
+<figure class='code'><figcaption><span>Finding a matching Screen</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">private</span> <span class="n">IScreen</span> <span class="nf">findScreenMatchingSubject</span><span class="p">(</span><span class="n">IScreenSubject</span> <span class="n">subject</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">_screens</span><span class="p">.</span><span class="n">AllScreens</span><span class="p">.</span><span class="n">FirstOrDefault</span><span class="p">(</span><span class="n">subject</span><span class="p">.</span><span class="n">Matches</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Creation of the target screen on the other hand is just a matter of
+handing the <code>ScreenFactory</code> (which is actually just a facade to the
+IoC-Container of choice) to the subject, activating the created Screen
+and adding it to the <code>ScreenCollection</code>.</p>
+
+<figure class='code'><figcaption><span>Creating a new Screen</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">private</span> <span class="n">IScreen</span> <span class="nf">createNewActiveScreen</span><span class="p">(</span><span class="n">IScreenSubject</span> <span class="n">subject</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">IScreen</span> <span class="n">screen</span> <span class="p">=</span> <span class="n">subject</span><span class="p">.</span><span class="n">CreateScreen</span><span class="p">(</span><span class="n">_factory</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">activate</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">_screens</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">screen</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The last missing piece here is the actual activation of the Screen.</p>
+
+<figure class='code'><figcaption><span>Activating a Screen</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">private</span> <span class="k">void</span> <span class="nf">activate</span><span class="p">(</span><span class="n">IScreen</span> <span class="n">screen</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">_shellService</span><span class="p">.</span><span class="n">ActivateScreen</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is delegated to the so called <code>IShellService</code>. You might ask yourself why this
+particular dependency exists (at least I did). The main purpose of this
+service is mostly the topic of registering Commands and filling up
+option panes related to the current Screen. This will be a post on its
+own, so don&#8217;t be mad at me, when I don&#8217;t cover it today. Instead I would
+like to take a look at another common use case:</p>
+
+<h2>Usecase: Closing a Screen </h2>
+
+<p>Now that we&#8217;ve seen how a Screen gets opened, let&#8217;s take a look
+at the other side of the coin, at how it&#8217;s closed.</p>
+
+<figure class='code'><figcaption><span>Closing a Screen</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">virtual</span> <span class="k">void</span> <span class="nf">Close</span><span class="p">(</span><span class="n">IScreen</span> <span class="n">screen</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">removeScreen</span><span class="p">(</span><span class="n">screen</span><span class="p">))</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">activateCurrentScreen</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Most of the handling is in the removeScreen-method (btw, where does this
+convention of having all private methods beeing camel-cased come from?
+Is this some Java-exposure leaking through? ;-))</p>
+
+<figure class='code'><figcaption><span>Removing a Screen</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">private</span> <span class="kt">bool</span> <span class="nf">removeScreen</span><span class="p">(</span><span class="n">IScreen</span> <span class="n">screen</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(!</span><span class="n">screen</span><span class="p">.</span><span class="n">CanClose</span><span class="p">())</span> <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">_events</span><span class="p">.</span><span class="n">RemoveListener</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">_screens</span><span class="p">.</span><span class="n">Remove</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">_shellService</span><span class="p">.</span><span class="n">ClearTransient</span><span class="p">();</span>
+</span><span class='line'>  <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It delegates the decision whether a screen can be closed
+to the screen and in case it can be closed, it removes the screen from
+the <code>EventAggregator</code> (<code>_events</code>), from the <code>ScreenCollection</code> (<code>_screens</code>) and
+clears its Command-registration (<code>_shellService.ClearTransient()</code>),
+before it activates the next screen becoming visible (in case there is one).</p>
+
+<figure class='code'><figcaption><span>Activating the current Screen</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">private</span> <span class="k">void</span> <span class="nf">activateCurrentScreen</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">IScreen</span> <span class="n">screen</span> <span class="p">=</span> <span class="n">_screens</span><span class="p">.</span><span class="n">Active</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">screen</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">activate</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Usecase: App shutdown coordination </h2>
+
+<p>There is another common usecase implemented by the
+<code>ScreenConductor</code> I would like to show you. This is how the whole app
+shutdown is coordinated. Prerequesites for this: Instances interested in
+beeing notified when the user tries to shut the application down, need
+to a) implement the <code>IClosable</code> interface and b) be registered at the
+<code>EventAggregator</code>. The latter is done automatically for screens by
+the <code>ScreenConductor</code>.</p>
+
+<figure class='code'><figcaption><span>The IClosable interface</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">ICloseable</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">void</span> <span class="nf">AddCanCloseMessages</span><span class="p">(</span><span class="n">CloseToken</span> <span class="n">token</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">void</span> <span class="nf">PerformShutdown</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>IClosable</code> interface just consists of two methods. <code>void AddCanCloseMessage(CloseToken)</code> is called in order
+to get feedback from listeners whether the application is allowed to be
+shutdown. You can think of <code>CloseToken</code> as a more or less extended version
+of <code>CancelEventArgs</code>.</p>
+
+<figure class='code'><figcaption><span>The CloseToken class</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">CloseToken</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">readonly</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">_messages</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="kt">string</span><span class="p">[]</span> <span class="n">Messages</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_messages</span><span class="p">.</span><span class="n">ToArray</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">AddMessage</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">_messages</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The following code piece is hooked into the Closing - event of
+StoryTellers main window (the shell). It heavily leverages the delegate
+based eventing of StoryTellers <code>EventBroker</code> in order to interact with all
+interested listeners.</p>
+
+<figure class='code'><figcaption><span>Shutdown as implemented in StoryTeller</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="kt">bool</span> <span class="nf">CanClose</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">var</span> <span class="n">token</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CloseToken</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">_events</span><span class="p">.</span><span class="n">SendMessage</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">AddCanCloseMessages</span><span class="p">(</span><span class="n">token</span><span class="p">));</span>
+</span><span class='line'>  <span class="kt">bool</span> <span class="n">returnValue</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">token</span><span class="p">.</span><span class="n">Messages</span><span class="p">.</span><span class="n">Length</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="kt">string</span> <span class="n">userMessage</span> <span class="p">=</span> <span class="kt">string</span><span class="p">.</span><span class="n">Join</span><span class="p">(</span><span class="s">&quot;\\n&quot;</span><span class="p">,</span> <span class="n">token</span><span class="p">.</span><span class="n">Messages</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">returnValue</span> <span class="p">=</span> <span class="n">_messageBox</span><span class="p">.</span><span class="n">AskUser</span><span class="p">(</span><span class="n">CAN_CLOSE_TITLE</span><span class="p">,</span> <span class="n">userMessage</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">returnValue</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">_events</span><span class="p">.</span><span class="n">SendMessage</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">PerformShutdown</span><span class="p">());</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="n">returnValue</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>One remark to the <code>CanClose()</code> code: <code>_messageBox</code> is just a small wrapper abstraction
+in order to make user interaction via message prompts testable. There&#8217;s
+nothing really fancy behind that. I really like the way the app shutdown
+is implemented. In fact we&#8217;ve added something very similar in my current
+project. However, I&#8217;m not so sure when it comes to the question whether
+this particular code piece should be part of the <code>ScreenConductor</code>. You
+could argue that this method has only very limited cohesion with the
+rest of the <code>ScreenConductors</code> methods. In fact most of the stuff the
+<code>ScreenConductor</code> interacts with (<code>ScreenCollection</code>, <code>Screens</code>,
+<code>ScreenFactory</code>, <code>ScreenSubject</code>) isn&#8217;t touched in this method. Besides
+that, it&#8217;s code that client application code normally IMHO doesn&#8217;t need
+to or even should call. In our current app we&#8217;ve extracted this
+responsibillity into a separate class called the
+<code>ApplicationShutdownCoordinator</code> because of that.</p>
+
+<h2>Some more impressions on StoryTellers ScreenConductor </h2>
+
+<p>The exposed API of the <code>ScreenConductor</code> is pretty small, actually only 6 &#8220;core&#8221; methods and some overloads.
+Most of the API really shines. However, besides the already mentioned
+<code>CanClose()</code> functionality, there is another functionality which in my
+opinion should not be in the ScreenConductor. Can you spot it?</p>
+
+<p><img src="/images/posts/screenconductorinterface1.jpg" alt="image" /></p>
+
+<p><code>LoadHierarchy(Func&lt;Hierarchy&gt;))</code> looks a bit misplaced to me because it
+seems to work on a different abstraction level than the rest of the
+methods. It looks very application specific, while the rest of the
+StoryTeller APIs look very general purpose (independent from the fact
+whether Jeremy actually wanted to achieve this or this being just the
+result of applying good design practices). Same applies to one of the
+messages / events the <code>ScreenConductor</code> is registered for at the
+<code>EventBroker</code>, namely <code>DeleteTestMessage</code>. I don&#8217;t think it should be
+directly handled in the <code>ScreenConductor</code>.</p>
+
+<p><img src="/images/posts/screenconductorhandlers.jpg" alt="image" /></p>
+
+<p>A static code analysis might indicate that the <code>ScreenConductor</code> has too
+many dependencies. In fact there&#8217;re 7 direct dependencies injected into
+the constructor,</p>
+
+<ul>
+<li><code>IEventAggregator</code></li>
+<li><code>IScreenCollection</code></li>
+<li><code>IScreenFactory</code></li>
+<li><code>IApplicationShell</code></li>
+<li><code>IShellService</code></li>
+<li><code>IScreenObjectLocator</code></li>
+<li><code>IMessageCreator</code></li>
+</ul>
+
+
+<p>6 transient dependencies (method parameters or local scope),</p>
+
+<ul>
+<li><code>IScreen</code></li>
+<li><code>IScreenSubject</code></li>
+<li><code>CloseToken</code></li>
+<li><code>UserScreenActivation</code></li>
+<li><code>OpenItemMessage</code></li>
+<li><code>DeleteTestMessage</code></li>
+</ul>
+
+
+<p>and 3 Message interests</p>
+
+<ul>
+<li><code>UserscreenActivation</code></li>
+<li><code>OpenItemMessage</code></li>
+<li><code>DeleteTestMessage</code></li>
+</ul>
+
+
+<p>in the <code>ScreenConductor</code> class. Sounds pretty heavy and like a refactoring
+candidate at first. However, as I mentioned earlier, the <code>ScreenConductor</code>
+is mostly a <em>Facade</em> with some additional coordination logic in it. When I
+say &#8220;some additional coordination logic&#8221; I mean this literally.
+<strong>ScreenConductor has just round about 250 LOC</strong>.</p>
+
+<p>I&#8217;m totally ok with this. It certainly has some potential for optimization of the
+dependencies (<code>IScreenObjectLocator</code> seems to be at least partially
+obsolete, <code>IApplicationShell</code> and <code>IShellService</code> could be merged I guess),
+but even without that I consider it a really good example of strong
+extensible design for composite desktop apps. For me personally the
+<code>ScreenConductor</code> fills a really important gap in the p&amp;p composite app
+guidance (be it CAB / SCSF or PRISM). I always had the feeling that I&#8217;m
+missing something there, but was unable to point out exactly what I&#8217;ve
+been missing. This feeling mostly came up when I added some screen
+activation or screen creation logic in places that didn&#8217;t felt right.
+Now I know why. Interestingly others <a href="http://neverindoubtnet.blogspot.com/2009/05/birth-and-death-of-m-v-vm-triads.html">observed the need for something similar as well</a>.
+Having a <code>ScreenConductor</code> in your application makes IMHO the whole UI
+infrastructure a lot more approchable and easier to understand.</p>
+
+<h2>Some final thoughts </h2>
+
+<p>I left the rest of the <code>ScreenConductors</code> code out of
+this post intentionally, because if there&#8217;s one thing I&#8217;d like you to
+take from this post or even the complete series is that StoryTeller is a
+really good learning resource. I really value, what I&#8217;ve learned from
+the Dovetail guys while inspecting the code. I wish I had done this
+earlier. Good design matters. If you&#8217;re looking for a place to learn
+more about it, the <a href="http://storyteller.tigris.org/source/browse/storyteller/">StoryTeller codebase</a>
+might just be the place for you. See you next time, when we take some
+time to dig into the command structure of StoryTeller &#8230;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/11/02/notifications-the-wpf-way-i-guess-part-iii/">Notifications the WPF Way (I Guess), Part III</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-11-02T19:59:00+01:00" pubdate  data-updated="true" >Nov 2<span>nd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today I would like to conclude my little series about the Notification
+Pattern with (I guess at least for some of you) the most interesting
+part:</p>
+
+<h2>Today is all about displaying Notifications in the UI</h2>
+
+<p>This post will guide you through all the steps I took in order to achieve the
+affect I demonstrated in the <a href="/2009/10/20/notifications-the-wpf-way-i-guess-part-i/">introduction post</a>.
+Last time I showed how I&#8217;m transfering <code>Notifications</code> from the <code>ViewModel</code>
+into the logical WPF tree. If you&#8217;ve not read the previous posts, please
+give them some minutes, because I&#8217;m not going to repeat a lot of them
+today. You can find them
+<a href="/2009/08/28/implementing-the-notification-pattern-using-dataannotation-validators/">here</a>,
+<a href="/2009/10/20/notifications-the-wpf-way-i-guess-part-i/">here</a>
+and
+<a href="/2009/10/27/notifications-the-wpf-way-i-guess-part-ii/">here</a>.
+As always, a quick reminder:</p>
+
+<blockquote><p>What I&#8217;m showing is in this series is <strong>how I&#8217;ve implemented the Notification Pattern</strong>. I&#8217;m not claiming that
+it&#8217;s the only or the best way to do so. However, it&#8217;s the one that works
+very good for me.</p></blockquote>
+
+<h3>How to get the red border effect</h3>
+
+<p>The red border has to be displayed when Notifications exists for a control. Technically
+this means that the attached property <code>Notifications</code> (which is defined
+on the <code>ValidationBehavior</code> class I showed in the last post) is set to a
+non empty <code>NotificationCollection</code>. We can react to this by defining a
+<code>DataTrigger</code> for this. In my own words I would describe a <code>DataTrigger</code> as</p>
+
+<blockquote><p>An in XAML defined event handler with a related criteria. When the
+criteria is matched the DataTrigger gets executed. When it isn&#8217;t matched
+any more, the DataTrigger reverts the state of the element on which it&#8217;s
+defined to the state before it was executed.</p></blockquote>
+
+<p>Sounds usable for our purpose. Think about it, we only want to show the red border, when the
+attached property is set to a non empty collection. If the property is
+reset the border needs to disappear. The only difficulty with
+<code>DataTriggers</code> we need to solve on our way is how to configure that
+exactly in XAML. <code>DataTriggers</code> can be easily set on primitives (such as
+string, bool, etc.) or null, but there isn&#8217;t an out of the box way for
+setting our criteria in XAML. However you can use a custom Converter for
+converting our value to a primitive &#8220;switch&#8221;.</p>
+
+<figure class='code'><figcaption><span>An IValueConverter for our DataTrigger</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[ValueConversion(typeof(NotificationCollection), typeof(bool))]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">ContainsNotificationConverter</span> <span class="p">:</span> <span class="n">IValueConverter</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="kt">object</span> <span class="nf">Convert</span><span class="p">(</span><span class="kt">object</span> <span class="k">value</span><span class="p">,</span> <span class="n">Type</span> <span class="n">targetType</span><span class="p">,</span> <span class="kt">object</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">CultureInfo</span> <span class="n">culture</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">(</span><span class="k">value</span> <span class="p">!=</span> <span class="k">null</span> <span class="p">&amp;&amp;</span> <span class="k">value</span> <span class="k">is</span> <span class="n">NotificationCollection</span> <span class="p">&amp;&amp;</span> <span class="p">((</span><span class="n">NotificationCollection</span><span class="p">)</span><span class="k">value</span><span class="p">).</span><span class="n">Any</span><span class="p">());</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="kt">object</span> <span class="nf">ConvertBack</span><span class="p">(</span><span class="kt">object</span> <span class="k">value</span><span class="p">,</span> <span class="n">Type</span> <span class="n">targetType</span><span class="p">,</span> <span class="kt">object</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">CultureInfo</span> <span class="n">culture</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="k">throw</span> <span class="k">new</span> <span class="nf">NotSupportedException</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Using this converter we can define our DataTrigger in the Style for Controls like this:</p>
+
+<figure class='code'><figcaption><span>Wiring it up via XAML DataTriggers</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;Fx:ContainsNotificationConverter</span> <span class="na">x:Key=</span><span class="s">&quot;notificationConverter&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;Style</span> <span class="na">TargetType=</span><span class="s">&quot;Control&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Fx:ValidationBehavior.IsEnabled&quot;</span> <span class="na">Value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;Style.Triggers&gt;</span>
+</span><span class='line'>         <span class="nt">&lt;DataTrigger</span>
+</span><span class='line'>             <span class="na">Binding=</span><span class="s">&quot;{Binding Path=(Fx:ValidationBehavior.Notifications),</span>
+</span><span class='line'><span class="s">             Converter={StaticResource notificationConverter},</span>
+</span><span class='line'><span class="s">             RelativeSource={x:Static RelativeSource.Self}}&quot;</span> <span class="na">Value=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>             <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;BorderBrush&quot;</span> <span class="na">Value=</span><span class="s">&quot;Red&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>             <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;BorderThickness&quot;</span> <span class="na">Value=</span><span class="s">&quot;2&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>         <span class="nt">&lt;/DataTrigger&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;/Style.Triggers&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/Style&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>How to display Notifications in a Tooltip</h2>
+
+<p>Solving the Tooltip requirement was a bit more tricky (at least for me).
+It took me quite some time to figure out how to do this in WPF. The
+solution I&#8217;m going to show uses only XAML based code.</p>
+
+<h3>1. Integrating the Tooltip into the DataTrigger</h3>
+
+<p>We simply use our <code>DataTrigger</code> to automatically set the tooltip of a
+<code>Control</code> in case <code>Notifications</code> exist.</p>
+
+<figure class='code'><figcaption><span>Adding the tooltip </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;ToolTip</span> <span class="na">x:Key=</span><span class="s">&quot;ValidationErrorTooltip&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;Style</span> <span class="na">TargetType=</span><span class="s">&quot;Control&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Fx:ValidationBehavior.IsEnabled&quot;</span> <span class="na">Value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;Style.Triggers&gt;</span>
+</span><span class='line'>         <span class="nt">&lt;DataTrigger</span>
+</span><span class='line'>             <span class="na">Binding=</span><span class="s">&quot;{Binding Path=(Fx:ValidationBehavior.Notifications),</span>
+</span><span class='line'><span class="s">             Converter={StaticResource notificationConverter},</span>
+</span><span class='line'><span class="s">             RelativeSource={x:Static RelativeSource.Self}}&quot;</span> <span class="na">Value=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>             <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;BorderBrush&quot;</span> <span class="na">Value=</span><span class="s">&quot;Red&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>             <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;BorderThickness&quot;</span> <span class="na">Value=</span><span class="s">&quot;2&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>             <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;ToolTip&quot;</span> <span class="na">Value=</span><span class="s">&quot;{StaticResource ValidationErrorTooltip}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>         <span class="nt">&lt;/DataTrigger&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;/Style.Triggers&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/Style&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now the UI looks really crappy. The tooltip is not recognizable as one.</p>
+
+<p><img src="/images/posts/signup_emptytooltip1.jpg" alt="Horrible Tooltip" /></p>
+
+<h3>2. Using a ControlTemplate to style the Tooltip</h3>
+
+<p>In order to shape the appearance of the tooltip we can use XAML Styles again.
+You can change the whole visual appearance of a Control using Styles and
+<code>ControlTemplates</code>. The template I defined consists mostly of a <code>DockPanel</code>
+containing a <code>Label</code> (which provides the tooltips caption) and a <code>TextBlock</code>
+(which will later contain the Notification messages).</p>
+
+<figure class='code'><figcaption><span>Adding ControlTemplates to the mix  </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;Style</span> <span class="na">x:Key=</span><span class="s">&quot;ErrorTooltipSyle&quot;</span> <span class="na">TargetType=</span><span class="s">&quot;ToolTip&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Template&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;Setter.Value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;ControlTemplate</span> <span class="na">TargetType=</span><span class="s">&quot;ToolTip&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;Border</span> <span class="na">BorderBrush=</span><span class="s">&quot;Black&quot;</span> <span class="na">BorderThickness=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;DockPanel&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;Label</span> <span class="na">DockPanel.Dock=</span><span class="s">&quot;Top&quot;</span>
+</span><span class='line'>                          <span class="na">FontWeight=</span><span class="s">&quot;Bold&quot;</span>
+</span><span class='line'>                          <span class="na">Background=</span><span class="s">&quot;Red&quot;</span>
+</span><span class='line'>                          <span class="na">Foreground=</span><span class="s">&quot;White&quot;</span>
+</span><span class='line'>                          <span class="na">Content=</span><span class="s">&quot;Validation Error&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;TextBlock</span>
+</span><span class='line'>                          <span class="na">Padding=</span><span class="s">&quot;10&quot;</span>
+</span><span class='line'>                          <span class="na">Background=</span><span class="s">&quot;White&quot;</span>
+</span><span class='line'>                          <span class="na">Foreground=</span><span class="s">&quot;Black&quot;</span>
+</span><span class='line'>                          <span class="na">TextWrapping=</span><span class="s">&quot;WrapWithOverflow&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/DockPanel&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/Border&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/ControlTemplate&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/Setter.Value&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Setter&gt;</span>
+</span><span class='line'><span class="nt">&lt;/Style&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">&lt;!-- Notice the defined Style --&gt;</span>
+</span><span class='line'><span class="nt">&lt;ToolTip</span> <span class="na">x:Key=</span><span class="s">&quot;ValidationErrorTooltip&quot;</span> <span class="na">Style=</span><span class="s">&quot;{StaticResource ErrorTooltipSyle}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;Style</span> <span class="na">TargetType=</span><span class="s">&quot;Control&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Fx:ValidationBehavior.IsEnabled&quot;</span> <span class="na">Value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Style.Triggers&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;DataTrigger</span>
+</span><span class='line'>            <span class="na">Binding=</span><span class="s">&quot;{Binding Path=(Fx:ValidationBehavior.Notifications),</span>
+</span><span class='line'><span class="s">            Converter={StaticResource notificationConverter},</span>
+</span><span class='line'><span class="s">            RelativeSource={x:Static RelativeSource.Self}}&quot;</span> <span class="na">Value=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;BorderBrush&quot;</span> <span class="na">Value=</span><span class="s">&quot;Red&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;BorderThickness&quot;</span> <span class="na">Value=</span><span class="s">&quot;2&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;ToolTip&quot;</span> <span class="na">Value=</span><span class="s">&quot;{StaticResource ValidationErrorTooltip}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/DataTrigger&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Style.Triggers&gt;</span>
+</span><span class='line'><span class="nt">&lt;/Style&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Our UI now looks like this.</p>
+
+<p><img src="/images/posts/signup_tooltipwithcontroltemplate1.jpg" alt="Tooltip with ItemSource" /></p>
+
+<p>Not as crappy as before but we&#8217;re not finished yet, because we&#8217;re not
+displaying <code>Notifications</code> yet.</p>
+
+<h3>3. Define Databinding on the Tooltip</h3>
+
+<p>Defining the Databinding was probably the hardest step I had to take.
+The problem is that you need to get the <code>NotificationCollection</code> from the
+<code>Control</code> the tooltip is displayed on. Being not a WPF pro figuring out
+how to do this took quite some time. Anyway, in order to get the
+<code>Notification</code> there isn&#8217;t much you need to do. The trick is to bind
+against the property <code>PlacementTarget</code> on the <code>ToolTip</code> class itself. This
+property holds the reference to the <code>Control</code> on which the <code>Tooltip</code> instance is
+displayed. All we need to do is to add a <code>Binding</code> to the <code>Style</code> definition
+that sets the <code>DataContext</code> of the <code>ToolTip</code> to the related control.</p>
+
+<figure class='code'><figcaption><span>Binding the PlacementTarget to display the tooltip</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;Style</span> <span class="na">x:Key=</span><span class="s">&quot;ErrorTooltipSyle&quot;</span> <span class="na">TargetType=</span><span class="s">&quot;ToolTip&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    ...
+</span><span class='line'>    <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;DataContext&quot;</span> <span class="na">Value=</span><span class="s">&quot;{Binding Path=PlacementTarget, RelativeSource={x:Static RelativeSource.Self}}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    ...
+</span><span class='line'><span class="nt">&lt;/Style&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The next step we need to take is setting up the Binding
+for our attached property <code>Notifications</code>. Because a
+<code>NotificationCollection</code> can contain more than one <code>Notification</code> I used the
+<code>ItemsControl</code> for displaying them in the content area of the tooltip.</p>
+
+<figure class='code'><figcaption><span>Displaying the Notifications </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;Style</span> <span class="na">x:Key=</span><span class="s">&quot;ErrorTooltipSyle&quot;</span> <span class="na">TargetType=</span><span class="s">&quot;ToolTip&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;DataContext&quot;</span> <span class="na">Value=</span><span class="s">&quot;{Binding Path=PlacementTarget, RelativeSource={x:Static RelativeSource.Self}}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Template&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;Setter.Value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;ControlTemplate</span> <span class="na">TargetType=</span><span class="s">&quot;ToolTip&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;Border</span> <span class="na">BorderBrush=</span><span class="s">&quot;Black&quot;</span> <span class="na">BorderThickness=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;DockPanel&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;Label</span> <span class="na">DockPanel.Dock=</span><span class="s">&quot;Top&quot;</span>
+</span><span class='line'>                          <span class="na">FontWeight=</span><span class="s">&quot;Bold&quot;</span>
+</span><span class='line'>                          <span class="na">Background=</span><span class="s">&quot;Red&quot;</span>
+</span><span class='line'>                          <span class="na">Foreground=</span><span class="s">&quot;White&quot;</span>
+</span><span class='line'>                          <span class="na">Content=</span><span class="s">&quot;Validation Error&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;TextBlock</span>
+</span><span class='line'>                          <span class="na">Padding=</span><span class="s">&quot;10&quot;</span>
+</span><span class='line'>                          <span class="na">Background=</span><span class="s">&quot;White&quot;</span>
+</span><span class='line'>                          <span class="na">Foreground=</span><span class="s">&quot;Black&quot;</span>
+</span><span class='line'>                          <span class="na">TextWrapping=</span><span class="s">&quot;WrapWithOverflow&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>                            <span class="c">&lt;!-- This control displays our Notifications --&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;ItemsControl</span> <span class="na">x:Name=</span><span class="s">&quot;notifications&quot;</span>
+</span><span class='line'>                                <span class="na">HorizontalAlignment=</span><span class="s">&quot;Stretch&quot;</span>
+</span><span class='line'>                                <span class="na">Margin=</span><span class="s">&quot;10&quot;</span>
+</span><span class='line'>                                <span class="na">VerticalAlignment=</span><span class="s">&quot;Center&quot;</span>
+</span><span class='line'>                                <span class="na">ItemsSource=</span><span class="s">&quot;{Binding Path=(Fx:ValidationBehavior.Notifications), Mode=OneWay}&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'>                         <span class="nt">&lt;/TextBlock&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/DockPanel&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/Border&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/ControlTemplate&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/Setter.Value&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Setter&gt;</span>
+</span><span class='line'><span class="nt">&lt;/Style&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Voila, our <code>Notifications</code> are finally displayed in the UI.</p>
+
+<p><img src="/images/posts/signup_tooltipwithcontroltemplate2.jpg" alt="Tooltip with ControlTemplate" /></p>
+
+<h3>4. Styling the Notifications</h3>
+
+<p>In my initial post I showed a hyphen in front of each Notification. This
+is fairly easy to add, too. All you have to do is to define a
+<code>DataTemplate</code> for the <code>Notification</code> class and set it as the <code>ItemTemplate</code>
+of the <code>ItemsControl</code> we&#8217;re using.</p>
+
+<figure class='code'><figcaption><span>Styling the notifications</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="c">&lt;!-- Very simple data template --&gt;</span>
+</span><span class='line'><span class="nt">&lt;DataTemplate</span> <span class="na">x:Key=</span><span class="s">&quot;NotificationTemplate&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;StackPanel</span> <span class="na">Orientation=</span><span class="s">&quot;Horizontal&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;TextBlock&gt;</span>-<span class="nt">&lt;/TextBlock&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;TextBlock</span> <span class="na">x:Name=</span><span class="s">&quot;notification&quot;</span> <span class="na">Text=</span><span class="s">&quot;{Binding}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/StackPanel&gt;</span>
+</span><span class='line'><span class="nt">&lt;/DataTemplate&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;Style</span> <span class="na">x:Key=</span><span class="s">&quot;ErrorTooltipSyle&quot;</span> <span class="na">TargetType=</span><span class="s">&quot;ToolTip&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;DataContext&quot;</span> <span class="na">Value=</span><span class="s">&quot;{Binding Path=PlacementTarget, RelativeSource={x:Static RelativeSource.Self}}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Template&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;Setter.Value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;ControlTemplate</span> <span class="na">TargetType=</span><span class="s">&quot;ToolTip&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;Border</span> <span class="na">BorderBrush=</span><span class="s">&quot;Black&quot;</span> <span class="na">BorderThickness=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;DockPanel&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;Label</span> <span class="na">DockPanel.Dock=</span><span class="s">&quot;Top&quot;</span>
+</span><span class='line'>                          <span class="na">FontWeight=</span><span class="s">&quot;Bold&quot;</span>
+</span><span class='line'>                          <span class="na">Background=</span><span class="s">&quot;Red&quot;</span>
+</span><span class='line'>                          <span class="na">Foreground=</span><span class="s">&quot;White&quot;</span>
+</span><span class='line'>                          <span class="na">Content=</span><span class="s">&quot;Validation Error&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;TextBlock</span>
+</span><span class='line'>                          <span class="na">Padding=</span><span class="s">&quot;10&quot;</span>
+</span><span class='line'>                          <span class="na">Background=</span><span class="s">&quot;White&quot;</span>
+</span><span class='line'>                          <span class="na">Foreground=</span><span class="s">&quot;Black&quot;</span>
+</span><span class='line'>                          <span class="na">TextWrapping=</span><span class="s">&quot;WrapWithOverflow&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                          <span class="nt">&lt;ItemsControl</span> <span class="na">x:Name=</span><span class="s">&quot;notifications&quot;</span>
+</span><span class='line'>                                <span class="na">HorizontalAlignment=</span><span class="s">&quot;Stretch&quot;</span>
+</span><span class='line'>                                <span class="na">Margin=</span><span class="s">&quot;10&quot;</span>
+</span><span class='line'>                                <span class="na">VerticalAlignment=</span><span class="s">&quot;Center&quot;</span>
+</span><span class='line'>                                <span class="na">ItemsSource=</span><span class="s">&quot;{Binding Path=(Fx:ValidationBehavior.Notifications), Mode=OneWay}&quot;</span>
+</span><span class='line'>
+</span><span class='line'>                                <span class="err">&lt;!--</span> <span class="err">This</span> <span class="err">uses</span> <span class="err">configures</span> <span class="err">our</span> <span class="err">template</span> <span class="err">for</span> <span class="err">Notifications</span> <span class="err">--</span><span class="nt">&gt;</span>
+</span><span class='line'>                                ItemTemplate=&quot;{StaticResource NotificationTemplate}&quot; /&gt;
+</span><span class='line'>
+</span><span class='line'>              <span class="nt">&lt;/TextBlock&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/DockPanel&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/Border&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/ControlTemplate&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/Setter.Value&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Setter&gt;</span>
+</span><span class='line'><span class="nt">&lt;/Style&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>DataTemplates</code> are also the weapon of choice if you want to
+display errors in a different fashion than warnings (for instance by
+displaying a different icon). This is where we arrived:</p>
+
+<p><img src="/images/posts/signup_tooltipfinishedjpg.jpg" alt="Tooltip finished" /></p>
+
+<h2>Closing thoughts</h2>
+
+<p>What I like about the current solution is that it demonstrates in a nice
+way how different the programming model of WPF actually is compared to
+WinForms. The only imperative code we have is the code that transfers
+<code>Notifications</code> from our <code>ViewModel</code> into the logical tree. That&#8217;s it. The
+rest, the complete visual appeal of the Notifications, is a separated
+concern. Those two things can be changed independently from each other,
+even by different roles in a development team (Designer/Developer).
+Besides that I like the way the composition based WPF model helps my
+application code to stay focused and clean with only minimum
+implementation constraints on the ViewModel itself (the
+INotificationSource interface). There&#8217;re certainly things to improve
+both in XAML and in the glue code but I consider it a good start to
+build on &#8230;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/10/27/notifications-the-wpf-way-i-guess-part-ii/">Notifications the WPF Way (I Guess), Part II</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-10-27T21:29:16+01:00" pubdate  data-updated="true" >Oct 27<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Back again to my take on the Notification pattern with WPF. Last time I
+talked briefly about my motivation for this little series. This time we
+dive more into the nuts and bolts of my example implementation.</p>
+
+<h2>How the ViewModel notifies the UI</h2>
+
+<p>I defined an interface called <code>INotificationSource</code> for this. This
+interface defines only I member which exposes a <code>NotificationCollection</code>.
+<code>NotificationCollection</code> is just a standard <code>ObservableCollection&lt;Notification&gt;</code> with some additional bits in it
+(such as retrieving a collection of <code>Notifications</code> for a given source).
+By deriving from <code>ObservableCollection</code> you get the <code>CollectionChangedEvent</code>
+on the collection for free.</p>
+
+<figure class='code'><figcaption><span>The interface that needs to be implemented by a ViewModel</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">INotificationSource</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">NotificationCollection</span> <span class="n">Notifications</span> <span class="p">{</span><span class="k">get</span><span class="p">;}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In my current app I&#8217;ve got a <code>Layer Supertype</code> for
+ViewModels which implements this interface.</p>
+
+<h2>Glue code for transferring Notifications from the ViewModel into the logical tree</h2>
+
+<p>As I mentioned in the last post I&#8217;m using the <code>Attached Behavior Pattern</code>
+for transferring Notifications from the ViewModel to the related
+elements in the logical tree (When I say related I&#8217;m referring to the
+<code>FrameworkElements</code> bound to my ViewModel via DataBinding). The class
+responsible for the transfer is a <code>DependencyObject</code> derived class, called
+<code>ValidationBehavior</code>. This class defines two attached
+<code>DependencyProperties</code>, <code>IsEnabled</code> and <code>Notifications</code>.</p>
+
+<figure class='code'><figcaption><span>Our attached validation behavior</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'> <span class="k">public</span> <span class="k">class</span> <span class="nc">ValidationBehavior</span> <span class="p">:</span> <span class="n">DependencyObject</span>
+</span><span class='line'> <span class="p">{</span>
+</span><span class='line'>     <span class="k">public</span> <span class="k">static</span> <span class="k">readonly</span> <span class="n">DependencyProperty</span> <span class="n">IsEnabledProperty</span><span class="p">;</span>
+</span><span class='line'>     <span class="k">public</span> <span class="k">static</span> <span class="k">readonly</span> <span class="n">DependencyProperty</span> <span class="n">NotificationsProperty</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>     <span class="k">static</span> <span class="nf">ValidationBehavior</span><span class="p">()</span>
+</span><span class='line'>     <span class="p">{</span>
+</span><span class='line'>         <span class="n">IsEnabledProperty</span> <span class="p">=</span>  <span class="n">DependencyProperty</span><span class="p">.</span><span class="n">RegisterAttached</span><span class="p">(</span>
+</span><span class='line'>                                 <span class="s">&quot;IsEnabled&quot;</span><span class="p">,</span>
+</span><span class='line'>                                 <span class="k">typeof</span><span class="p">(</span><span class="kt">bool</span><span class="p">),</span>
+</span><span class='line'>                                 <span class="k">typeof</span><span class="p">(</span><span class="n">ValidationBehavior</span><span class="p">),</span>
+</span><span class='line'>                                 <span class="k">new</span> <span class="nf">FrameworkPropertyMetadata</span><span class="p">(</span><span class="n">OnValidationBehaviorEnabled</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>         <span class="n">NotificationsProperty</span> <span class="p">=</span> <span class="n">DependencyProperty</span><span class="p">.</span><span class="n">RegisterAttached</span><span class="p">(</span>
+</span><span class='line'>                                 <span class="s">&quot;Notifications&quot;</span><span class="p">,</span>
+</span><span class='line'>                                 <span class="k">typeof</span><span class="p">(</span><span class="n">NotificationCollection</span><span class="p">),</span>
+</span><span class='line'>                                 <span class="k">typeof</span><span class="p">(</span><span class="n">ValidationBehavior</span><span class="p">),</span>
+</span><span class='line'>                                 <span class="k">new</span> <span class="nf">PropertyMetadata</span><span class="p">(</span><span class="k">null</span><span class="p">));</span>
+</span><span class='line'>     <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>     <span class="k">public</span> <span class="k">static</span> <span class="kt">bool</span> <span class="nf">GetIsEnabled</span><span class="p">(</span><span class="n">DependencyObject</span> <span class="n">host</span><span class="p">)</span>
+</span><span class='line'>     <span class="p">{</span>
+</span><span class='line'>         <span class="k">return</span> <span class="p">(</span><span class="kt">bool</span><span class="p">)</span> <span class="n">host</span><span class="p">.</span><span class="n">GetValue</span><span class="p">(</span><span class="n">IsEnabledProperty</span><span class="p">);</span>
+</span><span class='line'>     <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>     <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">SetIsEnabled</span><span class="p">(</span><span class="n">DependencyObject</span> <span class="n">host</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">isEnabled</span><span class="p">)</span>
+</span><span class='line'>     <span class="p">{</span>
+</span><span class='line'>         <span class="n">host</span><span class="p">.</span><span class="n">SetValue</span><span class="p">(</span><span class="n">IsEnabledProperty</span><span class="p">,</span> <span class="n">isEnabled</span><span class="p">);</span>
+</span><span class='line'>     <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>     <span class="k">public</span> <span class="k">static</span> <span class="n">NotificationCollection</span> <span class="nf">GetNotifications</span><span class="p">(</span><span class="n">DependencyObject</span> <span class="n">host</span><span class="p">)</span>
+</span><span class='line'>     <span class="p">{</span>
+</span><span class='line'>         <span class="k">return</span> <span class="p">(</span><span class="n">NotificationCollection</span><span class="p">)</span><span class="n">host</span><span class="p">.</span><span class="n">GetValue</span><span class="p">(</span><span class="n">NotificationsProperty</span><span class="p">);</span>
+</span><span class='line'>     <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>     <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">SetNotifications</span><span class="p">(</span><span class="n">DependencyObject</span> <span class="n">host</span><span class="p">,</span> <span class="n">NotificationCollection</span> <span class="n">notification</span><span class="p">)</span>
+</span><span class='line'>     <span class="p">{</span>
+</span><span class='line'>         <span class="n">host</span><span class="p">.</span><span class="n">SetValue</span><span class="p">(</span><span class="n">NotificationsProperty</span><span class="p">,</span> <span class="n">notification</span><span class="p">);</span>
+</span><span class='line'>     <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The attached DependencyProperty <code>IsEnabled</code> is used to attach our
+behavior to the target element marked with the property. Notice the
+<code>OnValidationBehaviorEnabled</code> handler which is called when the value of
+the registered attached DependencyProperty has changed. The attached
+DependencyProperty <code>Notifications</code> will later hold the collection of
+Notifications extracted from the ViewModel by our attached behavior. By
+having the <code>NotificationCollection</code> as an attached property you&#8217;re able to
+bind against it from XAML (as we&#8217;ll see in the following post). If you
+recall the last post about this topic, maybe you remember that I didn&#8217;t
+actually set the attached property <code>IsEnabled</code> in the ViewModels XAML
+file. You could configure the behavior in the related XAML file but I
+didn&#8217;t want to do this for all my ViewModels. Because of this I decided
+to use Styles for this.</p>
+
+<figure class='code'><figcaption><span>XAML styles to wire it up</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="c">&lt;!-- The global application class --&gt;</span>
+</span><span class='line'><span class="nt">&lt;Application</span> <span class="na">x:Class=</span><span class="s">&quot;Notifications.App&quot;</span>
+</span><span class='line'>    <span class="na">xmlns=</span><span class="s">&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot;</span>
+</span><span class='line'>    <span class="na">xmlns:x=</span><span class="s">&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Application.Resources&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;ResourceDictionary</span> <span class="na">Source=</span><span class="s">&quot;Resources/Theme.xaml&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Application.Resources&gt;</span>
+</span><span class='line'><span class="nt">&lt;/Application&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">&lt;!-- My XAML file containing the resources --&gt;</span>
+</span><span class='line'><span class="nt">&lt;ResourceDictionary</span>
+</span><span class='line'>    <span class="na">xmlns=</span><span class="s">&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot;</span>
+</span><span class='line'>    <span class="na">xmlns:x=</span><span class="s">&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot;</span>
+</span><span class='line'>    <span class="na">xmlns:Fx=</span><span class="s">&quot;clr-namespace:Notifications.Fx&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;Style</span> <span class="na">TargetType=</span><span class="s">&quot;Control&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Fx:ValidationBehavior.IsEnabled&quot;</span> <span class="na">Value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Style&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;Style</span> <span class="na">TargetType=</span><span class="s">&quot;TextBox&quot;</span> <span class="na">BasedOn=</span><span class="s">&quot;{StaticResource {x:Type Control}}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;/ResourceDictionary&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When the Style is applied the <code>IsEnabled</code> attached property
+will be automatically set on all elements based on that style and this
+brings us into the position to hook into the elements events and access
+the elements data. The <code>OnValidationBehaviorEnabled</code> handler is actually
+straight forward.</p>
+
+<figure class='code'><figcaption><span>Attach to the target FrameworkElement</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">private</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">OnValidationBehaviorEnabled</span><span class="p">(</span>
+</span><span class='line'>    <span class="n">DependencyObject</span> <span class="n">dependencyObject</span><span class="p">,</span>
+</span><span class='line'>    <span class="n">DependencyPropertyChangedEventArgs</span> <span class="n">args</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">var</span> <span class="n">frameworkElement</span> <span class="p">=</span> <span class="p">(</span><span class="n">FrameworkElement</span><span class="p">)</span><span class="n">dependencyObject</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Get the DataContext from the element. Mostly this DataContext is not directly</span>
+</span><span class='line'>    <span class="c1">// set on the element but rather derived from the parents DataContext</span>
+</span><span class='line'>    <span class="n">var</span> <span class="n">notificationSource</span> <span class="p">=</span> <span class="n">frameworkElement</span><span class="p">.</span><span class="n">DataContext</span> <span class="k">as</span> <span class="n">INotificationSource</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">notificationSource</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Clear related Notifications of an element when the element</span>
+</span><span class='line'>    <span class="c1">// got the focus.</span>
+</span><span class='line'>    <span class="n">frameworkElement</span><span class="p">.</span><span class="n">GotFocus</span> <span class="p">+=</span> <span class="n">ClearNotificationOnFocus</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// Hook into the CollectionChanged event of the NotificationCollection.</span>
+</span><span class='line'>    <span class="c1">// I&#39;m using a closure here in order to capture the FrameworkElement.</span>
+</span><span class='line'>    <span class="n">notificationSource</span><span class="p">.</span><span class="n">Notifications</span><span class="p">.</span><span class="n">CollectionChanged</span> <span class="p">+=</span> <span class="p">(</span><span class="n">sender</span><span class="p">,</span> <span class="n">collectionChangedArgs</span><span class="p">)</span> <span class="p">=&gt;</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">var</span> <span class="n">notifications</span> <span class="p">=</span> <span class="n">GetNotifications</span><span class="p">(</span><span class="n">notificationSource</span><span class="p">,</span> <span class="n">frameworkElement</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">SetNotification</span><span class="p">(</span>
+</span><span class='line'>            <span class="n">frameworkElement</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">notifications</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">};</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The anonymous event handler registered for the <code>CollectionChangedEvent</code> tries to get the
+collection of Notifications for the <code>FrameworkElement</code>.</p>
+
+<figure class='code'><figcaption><span>Extracting the notifications for a particular element</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">private</span> <span class="k">static</span> <span class="n">NotificationCollection</span> <span class="nf">GetNotifications</span><span class="p">(</span><span class="n">INotificationSource</span> <span class="n">notificationSource</span><span class="p">,</span> <span class="n">FrameworkElement</span> <span class="n">frameworkElement</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">notificationSource</span><span class="p">.</span><span class="n">Notifications</span><span class="p">.</span><span class="n">AllNotificationsFor</span><span class="p">(</span><span class="n">frameworkElement</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see this particular piece of code has a
+little quirk right now. It relies on the convention / assumption that
+the property on the <code>ViewModel</code> and the bound <code>FrameworkElement</code> share the
+same name. It was the easiest thing to do. It would also be easy to
+introduce another attached property for this in order to specify the
+name of the related ViewModel property. However this wouldn&#8217;t be 100%
+DRY because you&#8217;re most likely going to specify the property via the
+Binding <code>MarkupExtension</code>, too. I&#8217;m open to suggestions of how this
+correlation can be done better. The last missing code piece is the
+handler which clears the Notification when it gets focus. It simply sets
+the attached Notification property to null.</p>
+
+<figure class='code'><figcaption><span>Resetting a notification on focus</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">private</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">ClearNotificationOnFocus</span><span class="p">(</span><span class="kt">object</span> <span class="n">sender</span><span class="p">,</span> <span class="n">RoutedEventArgs</span> <span class="n">e</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="n">var</span> <span class="n">elementWithNotification</span> <span class="p">=</span> <span class="p">(</span><span class="n">FrameworkElement</span><span class="p">)</span><span class="n">e</span><span class="p">.</span><span class="n">OriginalSource</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">elementWithNotification</span><span class="p">.</span><span class="n">SetValue</span><span class="p">(</span><span class="n">NotificationProperty</span><span class="p">,</span> <span class="k">null</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Closing thoughts</h2>
+
+<p>I hope you&#8217;re getting a feeling for what I wanted to show with this
+little post series. Today I talked mostly about how <code>Notifications</code> can be
+transfered from the <code>ViewModel</code> into the <code>WPF tree</code>. While the code
+currently has some pieces in it that imho should be refactored
+(correlation of the <code>Notifications</code>, <code>CollectionChangedEvent</code> currently
+reloads all Notifications), I hope you saw in this post that it&#8217;s
+relatively easy to add such an ability to your app infrastructure
+without a) having a base class constraint b) a lot of imperative code
+and c) doing a lot of configuration. The next post will conclude this
+little series mostly with <code>XAML</code> stuff. We&#8217;re going to cover how to
+combine the different tools (<code>DataTrigger</code>, <code>DataTemplates</code>,
+<code>ControlTemplates</code>, <code>Converter</code>) that WPF offers in order to fire up a
+Tooltip containing all Notifications for an element.</p>
+
+<p>CU next time &#8230;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/10/20/notifications-the-wpf-way-i-guess-part-i/">Notifications the WPF Way (I Guess), Part I</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-10-20T21:38:09+02:00" pubdate  data-updated="true" >Oct 20<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><strong>Update 2.11.2009: I removed the DependencyObject and
+DependencyProperty references from the ViewModel. The solution works
+fine without them.</strong></p>
+
+<p>This is the start of a small mini series about how I would currently
+approach the <code>Notification Pattern</code> in a WPF application, using the
+default WPF practices and patterns. Think about it as a step by step
+guide for using <code>DataBinding</code>, <code>Control-Templates</code>, <code>Styles</code>,
+<code>Resource-Inheritance</code>, <code>Converters</code> and the <code>Attached-Behavior-Pattern</code> for
+displaying Notifications in the WPF-UI. (I guess most of this is also
+doable in Silverlight too, but I&#8217;ve never done anything with SL so I
+can&#8217;t say for sure). I&#8217;ve also prepared a little bit of sample code for
+this topic which will be downloadable soon.</p>
+
+<h2>First, some cautious warnings </h2>
+
+<p>I&#8217;m by no means a WPF-expert. I&#8217;m still in the learning
+phase. So, if there are more obvious or intuitive solutions to the
+problem, or I&#8217;m plain wrong about this, feel free to comment. I&#8217;m sure
+there is A LOT room for improvement.</p>
+
+<h2>What I&#8217;ve left out intentionally </h2>
+
+<p>I tried to strip everything unnecessary for the scope of
+the post from the code. This includes for instance <code>IoC</code>, <code>Convention over
+Configuration</code>, <code>Code-Contracts</code>, <code>Expression-based Databinding setup</code> and
+some base class or extension refactorings. Don&#8217;t get me wrong, I
+absolutely value those elements, but I wanted the example to be as easy
+as possible while being somewhat useful for a &#8216;real world&#8217; application.
+The code might look a bit raw at at some edges because of this. So
+please keep that in mind before throwing with stones ;-)</p>
+
+<h2>Some other prerequesites </h2>
+
+<p>A while back I wrote a post about <a href="/2009/08/28/implementing-the-notification-pattern-using-dataannotation-validators/">implementing the Notification-pattern using
+System.Componentmodel.DataAnnotations</a>.
+It demonstrates the implementation of a generic validator based on the <code>DataAnnotation</code> attributes. Besides that,
+<a href="/2009/08/19/the-attached-behavior-pattern/">this</a>
+post about the <code>Attached-Behavior-Pattern</code> will also be useful for this
+mini-series. Please give them a short visit if you haven&#8217;t read them
+yet.</p>
+
+<h2>The example scenario </h2>
+
+<p>The scenario I&#8217;m going to use for the
+example is a very simple sign up form. It contains two input fields for
+username / email and a &#8216;sign-up&#8217; button. It looks like this.</p>
+
+<p><img src="/images/posts/signup.bmp" alt="image" /></p>
+
+<p>Rules associated with the fields are:</p>
+
+<ol>
+<li>Username is required and must at least be 5 characters long.</li>
+<li>Email is required and must contain a valid email address.</li>
+</ol>
+
+
+<p>If any of the rules is broken, the related element should be visually highlighted &#8230;</p>
+
+<p><img src="/images/posts/signupadorner.bmp" alt="image" /></p>
+
+<p>&#8230; and when you hover over the element you&#8217;ll get a detailed description of the error from a tooltip.</p>
+
+<p><img src="/images/posts/signuptooltip.bmp" alt="image" /></p>
+
+<p>I&#8217;m using the <code>PresentationModel / MVVM</code> pattern for the UI since it seems to be the default UI pattern in WPF.</p>
+
+<figure class='code'><figcaption><span>This is how I would like my SignUpView to be </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;Window</span> <span class="na">x:Class=</span><span class="s">&quot;Notifications.SignUpView&quot;</span>
+</span><span class='line'>    <span class="na">xmlns=</span><span class="s">&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot;</span>
+</span><span class='line'>    <span class="na">xmlns:x=</span><span class="s">&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Grid&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;Grid.RowDefinitions&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;RowDefinition</span> <span class="na">Height=</span><span class="s">&quot;*&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/Grid.RowDefinitions&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;Grid.ColumnDefinitions&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;ColumnDefinition</span> <span class="na">Width=</span><span class="s">&quot;*&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/Grid.ColumnDefinitions&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;GroupBox</span>
+</span><span class='line'>            <span class="na">Grid.Column=</span><span class="s">&quot;1&quot;</span>
+</span><span class='line'>            <span class="na">Grid.Row=</span><span class="s">&quot;1&quot;</span>
+</span><span class='line'>            <span class="na">Header=</span><span class="s">&quot;Sign up&quot;</span>
+</span><span class='line'>            <span class="na">BorderThickness=</span><span class="s">&quot;2&quot;</span>
+</span><span class='line'>            <span class="na">VerticalAlignment=</span><span class="s">&quot;Center&quot;</span>
+</span><span class='line'>            <span class="na">HorizontalAlignment=</span><span class="s">&quot;Center&quot;</span>
+</span><span class='line'>            <span class="na">MaxWidth=</span><span class="s">&quot;300&quot;</span>
+</span><span class='line'>            <span class="na">MaxHeight=</span><span class="s">&quot;600&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;Grid&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;Grid.RowDefinitions&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;RowDefinition</span> <span class="nt">/&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;RowDefinition</span> <span class="nt">/&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/Grid.RowDefinitions&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;Grid.ColumnDefinitions&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;ColumnDefinition</span> <span class="na">Width=</span><span class="s">&quot;Auto&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;ColumnDefinition</span> <span class="na">Width=</span><span class="s">&quot;Auto&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;ColumnDefinition</span> <span class="na">Width=</span><span class="s">&quot;*&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/Grid.ColumnDefinitions&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;Label</span>
+</span><span class='line'>                    <span class="na">Content=</span><span class="s">&quot;Username:&quot;</span>
+</span><span class='line'>                    <span class="na">VerticalAlignment=</span><span class="s">&quot;Bottom&quot;</span>
+</span><span class='line'>                    <span class="na">Margin=</span><span class="s">&quot;10,0,10,0&quot;</span>
+</span><span class='line'>                    <span class="na">Grid.Row=</span><span class="s">&quot;0&quot;</span>
+</span><span class='line'>                    <span class="na">Grid.Column=</span><span class="s">&quot;0&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;Label</span>
+</span><span class='line'>                    <span class="na">Content=</span><span class="s">&quot;Email:&quot;</span>
+</span><span class='line'>                    <span class="na">VerticalAlignment=</span><span class="s">&quot;Bottom&quot;</span>
+</span><span class='line'>                    <span class="na">Margin=</span><span class="s">&quot;0,0,10,0&quot;</span>
+</span><span class='line'>                    <span class="na">Grid.Row=</span><span class="s">&quot;0&quot;</span>
+</span><span class='line'>                    <span class="na">Grid.Column=</span><span class="s">&quot;1&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;TextBox</span>
+</span><span class='line'>                    <span class="na">Name=</span><span class="s">&quot;Username&quot;</span>
+</span><span class='line'>                    <span class="na">MinWidth=</span><span class="s">&quot;100&quot;</span>
+</span><span class='line'>                    <span class="na">MaxHeight=</span><span class="s">&quot;30&quot;</span>
+</span><span class='line'>                    <span class="na">Margin=</span><span class="s">&quot;10,0,10,10&quot;</span>
+</span><span class='line'>                    <span class="na">Grid.Row=</span><span class="s">&quot;1&quot;</span>
+</span><span class='line'>                    <span class="na">Grid.Column=</span><span class="s">&quot;0&quot;</span>
+</span><span class='line'>                    <span class="na">TabIndex=</span><span class="s">&quot;0&quot;</span>
+</span><span class='line'>                    <span class="na">Text=</span><span class="s">&quot;{Binding Path=Username, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;TextBox</span>
+</span><span class='line'>                    <span class="na">Name=</span><span class="s">&quot;Email&quot;</span>
+</span><span class='line'>                    <span class="na">MinWidth=</span><span class="s">&quot;100&quot;</span>
+</span><span class='line'>                    <span class="na">MaxHeight=</span><span class="s">&quot;30&quot;</span>
+</span><span class='line'>                    <span class="na">Margin=</span><span class="s">&quot;0,0,10,10&quot;</span>
+</span><span class='line'>                    <span class="na">Grid.Row=</span><span class="s">&quot;1&quot;</span>
+</span><span class='line'>                    <span class="na">Grid.Column=</span><span class="s">&quot;1&quot;</span>
+</span><span class='line'>                    <span class="na">Text=</span><span class="s">&quot;{Binding Path=Email, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}&quot;</span>
+</span><span class='line'>                    <span class="na">TabIndex=</span><span class="s">&quot;1&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;Button</span>
+</span><span class='line'>                    <span class="na">MaxHeight=</span><span class="s">&quot;30&quot;</span>
+</span><span class='line'>                    <span class="na">Grid.Row=</span><span class="s">&quot;1&quot;</span>
+</span><span class='line'>                    <span class="na">Margin=</span><span class="s">&quot;0,0,10,10&quot;</span>
+</span><span class='line'>                    <span class="na">Grid.Column=</span><span class="s">&quot;2&quot;</span>
+</span><span class='line'>                    <span class="na">Content=</span><span class="s">&quot;Sign up!&quot;</span>
+</span><span class='line'>                    <span class="na">TabIndex=</span><span class="s">&quot;3&quot;</span>
+</span><span class='line'>                    <span class="na">Command=</span><span class="s">&quot;{Binding Path=SignUpCommand, Mode=OneWay}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/Grid&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/GroupBox&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Grid&gt;</span>
+</span><span class='line'><span class="nt">&lt;/Window&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>This is how I would like my SignUpViewModel to be </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">SignUpViewModel</span> <span class="p">:</span> <span class="n">INotificationSource</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">private</span> <span class="k">readonly</span> <span class="n">NotificationCollection</span> <span class="n">_notifications</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">private</span> <span class="k">readonly</span> <span class="n">DelegateCommand</span> <span class="n">_signUpCommand</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">private</span> <span class="k">readonly</span> <span class="n">ISignUpService</span> <span class="n">_signUpService</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">private</span> <span class="k">readonly</span> <span class="n">IValidator</span><span class="p">&lt;</span><span class="n">SignUpViewModel</span><span class="p">&gt;</span> <span class="n">_validator</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cp">#region Constructors</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">SignUpViewModel</span><span class="p">(</span><span class="n">IValidator</span><span class="p">&lt;</span><span class="n">SignUpViewModel</span><span class="p">&gt;</span> <span class="n">validator</span><span class="p">,</span> <span class="n">ISignUpService</span> <span class="n">signUpService</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">_validator</span> <span class="p">=</span> <span class="n">validator</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">_signUpService</span> <span class="p">=</span> <span class="n">signUpService</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">_notifications</span> <span class="p">=</span> <span class="k">new</span> <span class="n">NotificationCollection</span><span class="p">();</span>
+</span><span class='line'>        <span class="n">_signUpCommand</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DelegateCommand</span><span class="p">(</span><span class="n">TrySignUp</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cp">#endregion</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cp">#region Properties</span>
+</span><span class='line'>
+</span><span class='line'><span class="na">    [Required(ErrorMessage = &quot;Field &#39;Username&#39; is missing&quot;)]</span>
+</span><span class='line'><span class="na">    [MinimumStringLength(5)]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Username</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">get</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">set</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na">    [Required(ErrorMessage = &quot;Field &#39;Email&#39; is missing&quot;)]</span>
+</span><span class='line'><span class="na">    [MinimumStringLength(5)]</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">string</span> <span class="n">Email</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">get</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">set</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="n">ICommand</span> <span class="n">SignUpCommand</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_signUpCommand</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="n">NotificationCollection</span> <span class="n">Notifications</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_notifications</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cp">#endregion</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cp">#region Private methods</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">private</span> <span class="k">void</span> <span class="nf">TrySignUp</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(!</span><span class="n">IsValid</span><span class="p">())</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">_signUpService</span><span class="p">.</span><span class="n">TrySignUp</span><span class="p">(</span><span class="n">Username</span><span class="p">,</span> <span class="n">Email</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">private</span> <span class="kt">bool</span> <span class="nf">IsValid</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">Notifications</span><span class="p">.</span><span class="n">Clear</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">_validator</span><span class="p">.</span><span class="n">Validate</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="n">Notifications</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="n">Notifications</span><span class="p">.</span><span class="n">ContainsErrors</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cp">#endregion</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Did you notice it? </h2>
+
+<p>There is NO CODE in the View (Xaml and code behind) or the
+ViewModel which displays the Notifications.There&#8217;s also no base class
+for View or ViewModel where the code might be. What&#8217;s there on the other
+hand is only a collection of Notifications hanging of the ViewModel
+which is filled by the Validator. You might yourself now ask: Where is
+the damn glue code? Yeah I know dumb question because I answered it
+mostly in the introduction of the post. The interesting thing is that it
+isn&#8217;t a single location. As you will see the responsibilities for
+achieving the effect are separated between several components.</p>
+
+<h2>In the next posts we&#8217;re going to take a look at</h2>
+
+<ul>
+<li>how to use the <code>Attached-Behavior-Pattern</code> together with <code>Styles</code> and
+<code>resource based inheritance</code> in order to match the Notification (s)
+from the <code>ViewModel</code> to the related <code>FrameworkElements</code> in the logical
+WPF tree.</li>
+<li>how to use a <code>DataTrigger</code> on an <code>Attached Property</code> in order to setup
+the Tooltip and showing the red border.</li>
+<li>how to bind the Tooltip correctly to the related <code>Notification(s)</code>.</li>
+</ul>
+
+
+<p>I hope I made you at least a bit curious &#8230;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/09/09/xunitbddextensions-now-runs-with-xunit-15-final/">xUnit.BDDExtensions Now Runs With xUnit 1.5 Final</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-09-09T23:25:33+02:00" pubdate  data-updated="true" >Sep 9<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&#8217;ve just upgraded the trunk to the final 1.5 version of <code>xUnit</code> released last week. This update now allows BDDExtensions to be used with the
+latest version independant resharper runner for xUnit from xunitcontrib.</p>
+
+<p>Current Version is 1.0.1.16. You can download it <a href="http://xunitbddextensions.googlecode.com/files/xunit.bddextensions.1.0.1.16.zip">here</a>
+or get the latest sources from the <a href="http://xunitbddextensions.googlecode.com/svn/trunk/">trunk</a>.</p>
+
+<p>Happy specifying &#8230;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <nav class="pagination">
+    <div>
+      
+        <a class="prev" href="/blog/page/3/">&larr; Older</a>
+      
+      <a href="/blog/archives">Blog Archives</a>
+      
+      <a class="next" href="/">Newer &rarr;</a>
+      
+    </div>
+  </nav>
+</div>
+<aside class="sidebar">
+  
+    <section>
+	<h1>About me</h1>
+  <p><br/><img src="/images/bjro-eyes.jpg" alt="portrait" /></p>
+	<p>
+  My name is <strong>Björn Rochel</strong>.  I&#8217;m a 32 year old geek, who&#8217;s crazy about software development, living in Cologne and
+  currently working for <a href="http://www.intercomponentware.com">ICW</a> as a .NET Developer / Architect.
+	</p>
+	<ul class="badges">
+		<li><a href="http://www.xing.com/profile/Bjoern_Rochel"><img src="/images/badges/xing2-small.png" alt="Xing" /></a></li>
+		<li><a href="http://www.github.com/BjRo"><img src="/images/badges/github-small.png" alt="Github" /></a></li>
+		<li><a href="http://www.twitter.com/bjoernrochel"><img src="/images/badges/twitter-square-small.png" alt="Twitter" /></a></li>
+		<li><a href="/atom.xml"><img src="/images/badges/rss-circle-small.png" alt="Rss" /></a></li>
+	</ul>
+</section>
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/Conferences/'>Conferences (8)</a></li>
+<li class='category'><a href='/blog/categories/FSharp/'>FSharp (3)</a></li>
+<li class='category'><a href='/blog/categories/Katas/'>Katas (2)</a></li>
+<li class='category'><a href='/blog/categories/StoryTeller/'>StoryTeller (14)</a></li>
+<li class='category'><a href='/blog/categories/StructureMap/'>StructureMap (9)</a></li>
+<li class='category'><a href='/blog/categories/Testing/'>Testing (20)</a></li>
+<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (7)</a></li>
+<li class='category'><a href='/blog/categories/dotnet/'>dotnet (65)</a></li>
+<li class='category'><a href='/blog/categories/ruby/'>ruby (3)</a></li>
+<li class='category'><a href='/blog/categories/sw-design/'>sw-design (13)</a></li>
+<li class='category'><a href='/blog/categories/xUnitBDDExtensions/'>xUnitBDDExtensions (15)</a></li>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("bjoernrochel", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/bjoernrochel" class="twitter-follow-button" data-width="208px" data-show-count="false">Follow @bjoernrochel</a>
+  
+</section>
+
+<section>
+<h1>Disclaimer</h1>
+<p>
+The opinions expressed herein are my own personal opinions and do not necessarily represent the opinion of any other organization or person, including (but not limited to) my fellow employees, my employer, its clients or their agents. 
+</p>
+<p>
+ Copyright &copy; 2011 - Björn Rochel
+</p>
+<section>
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Björn Rochel -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'bjro';
+      
+        
+        var disqus_script = 'count.js';
+      
+
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>

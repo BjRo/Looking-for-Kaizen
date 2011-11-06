@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: ruby | Dude, where's my Kaizen?]]></title>
+  <link href="http://www.bjoernrochel.de/blog/categories/ruby/atom.xml" rel="self"/>
+  <link href="http://www.bjoernrochel.de/"/>
+  <updated>2011-11-06T22:05:04+01:00</updated>
+  <id>http://www.bjoernrochel.de/</id>
+  <author>
+    <name><![CDATA[Björn Rochel]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[ILMerge and Rake go xunit.BDDExtensions]]></title>
+    <link href="http://www.bjoernrochel.de/2009/01/27/ilmerge-and-rake-go-xunitbddextensions/"/>
+    <updated>2009-01-27T14:48:54+01:00</updated>
+    <id>http://www.bjoernrochel.de/2009/01/27/ilmerge-and-rake-go-xunitbddextensions</id>
+    <content type="html"><![CDATA[<p>Today I added this little piece of code to the trunk of xUnit.BDDExtensions. It's a rake task for merging assemblies via the ILMerge tool.</p>
+
+<p>``` ruby Merging assemblies with ILMerge
+desc "Merges the assemblies"
+task :merge do</p>
+
+<pre><code>mkdir DEPLOY_DIR unless File.exists?(DEPLOY_DIR) 
+cp "xunit.dll".expand_to(:build_dir), "xunit.dll".expand_to(:deploy_dir) 
+cp "Rhino.Mocks.dll".expand_to(:build_dir), "Rhino.Mocks.dll".expand_to(:deploy_dir) 
+assemblies_to_merge = ["xUnit.BDDExtensions.dll", "StructureMap.dll", "StructureMap.AutoMocking.dll"] 
+ilmerge "xunit.bddextensions.dll", assemblies_to_merge 
+</code></pre>
+
+<p>end
+```</p>
+
+<p>Ruby is a fantastic language. The more I learn about it the more I actually like it. Let's have a look at how this task is implemented.
+First of all I opened up Ruby's string class and added new methods to it (this is called MonkeyPatching, and worth a blog post on its own :-))</p>
+
+<p>``` ruby Extending the String class
+class String
+  def escape</p>
+
+<pre><code>  ""#{self.to_s}"" 
+</code></pre>
+
+<p>  end
+  def expand_to dir_symbol</p>
+
+<pre><code>case dir_symbol
+  when :build_dir path = BUILD_DIR 
+  when :source_dir path = SOURCE_DIR
+  when :externals_dir path = EXTERNALS_DIR 
+  when :deploy_dir path = DEPLOY_DIR 
+end 
+  File.join(path, self.to_s) 
+</code></pre>
+
+<p>  end
+end
+```</p>
+
+<p>And here is the actual <code>ilmerge</code> - method. It simply gets the complete path to the ILMerge.exe (not shown here), expands the name to all
+assemblies that have to be merged and escapes them, before the actual call to ILMerge is issued over the console ...</p>
+
+<p>``` ruby The ilmerge method
+def ilmerge(output_name, assemblies)</p>
+
+<pre><code>ilmerge = get_tool :ILMerge expanded_assemblies = assemblies.map do |x| 
+x.expand_to(:build_dir).escape 
+end
+sh "#{ilmerge.escape} /out:#{output_name.expand_to(:deploy_dir).escape} #{expanded_assemblies.join(" ")}" 
+</code></pre>
+
+<p>end
+```</p>
+
+<p>Currently 3 assemblies pop out of the Rake build. These are <code>xunit.dll</code>, <code>xunit.bddextensions.dll</code> and <code>Rhino.Mocks.dll</code>. While it's technically no
+problem to merge them into a single assembly (and of course I would love to have it that way) there are two problems currently not solved. The
+R# runner dynamically loads the <code>xunit.dll</code> to run the tests and <code>StructureMap.AutoMocking.dll</code> dynamically loads <code>Rhino.Mocks.dll</code>. That's
+the reason why I'm currently not able to merge it.</p>
+
+<p>Any suggestions how to solve that?</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Tales from hashes, null and boolean evaluation]]></title>
+    <link href="http://www.bjoernrochel.de/2009/01/21/tales-from-hashes-null-and-boolean-evaluation/"/>
+    <updated>2009-01-21T17:39:15+01:00</updated>
+    <id>http://www.bjoernrochel.de/2009/01/21/tales-from-hashes-null-and-boolean-evaluation</id>
+    <content type="html"><![CDATA[<p>A common programming situation when dealing with dictionary or hashtable
+classes is trying to get a value from the hashtable and returning a
+default value in case nothing was found. In C# you could probably do it
+like this:</p>
+
+<p>``` csharp A StringMapper
+public class StringMapper : IMapper
+{</p>
+
+<pre><code>private IDictionary&lt;string, string&gt; mapping; 
+
+public Mapper(IDictionary&lt;string,string&gt; mapping) 
+{ 
+    this.mapping = mapping; 
+} 
+
+public string Map(string input) 
+{ 
+    string output; 
+
+    if(!this.mapping.TryGetValue(input, out output)) 
+    {
+        return "defaultValue"; 
+    }
+
+    return output; 
+} 
+</code></pre>
+
+<p>}
+```</p>
+
+<p>You could write similar code in Ruby.</p>
+
+<p>``` ruby My first naive implementation in Ruby</p>
+
+<p>class StringMapper</p>
+
+<pre><code>def initialize(hash_map) 
+    @hash_map = hash_map 
+end 
+
+def map(input)
+    output = @hash_map[input] 
+    return (output.nil?) ? "defaultValue" : output 
+end 
+</code></pre>
+
+<p>end
+```
+However the way the map method is written is not the way Ruby is intended to be used and how Ruby sources are
+mostly written. You could rework this into this short fragment.</p>
+
+<p>``` ruby A more ideomatic solution
+def map(input)</p>
+
+<pre><code>@hash_map[input] or "defaultValue" 
+</code></pre>
+
+<p>end
+```
+You might yourself now ask (as I did) why this code works? It works because</p>
+
+<ol>
+<li>Ruby automatically treats the last evaluated expression inside a method as the return value. Because of that you're able to omit the return statements.</li>
+<li><code>Nil</code> (the Ruby equivalent of C#s <code>null</code> ) is actually an instance, an instance of the <code>NilClass</code>). Yeah right, you have the Null-Object-Pattern in the language here :-)</li>
+<li>Every object instance can be evaluated to a boolean. Every instance other than an instance of the <code>NilClass</code> evaluates to an instance of
+the <code>TrueClass</code>. The only exception to this is of course <code>false</code>.</li>
+</ol>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Using Rake to automate .NET builds]]></title>
+    <link href="http://www.bjoernrochel.de/2009/01/19/using-rake-to-automate-net-builds/"/>
+    <updated>2009-01-19T19:12:05+01:00</updated>
+    <id>http://www.bjoernrochel.de/2009/01/19/using-rake-to-automate-net-builds</id>
+    <content type="html"><![CDATA[<p>Today I started writing my first build scripts in Ruby for a .NET project using Rake.
+This is what I came up with.
+``` ruby My fist rake script
+require 'rake/clean'</p>
+
+<p>EXTERNALS_DIR = File.expand_path('../Externals')
+BUILD_DIR = File.expand_path('../Bin')
+SOURCE_DIR = File.expand_path('../Source')
+CLEAN.include(FileList[File.join(BUILD_DIR, '*')])</p>
+
+<p>desc "Compiles the gemini sources"
+task :build do</p>
+
+<pre><code>gemini_solution = File.join(SOURCE_DIR, 'Gemini.sln') 
+sh "msbuild /property:WarningLevel=4;OutDir=#{BUILD_DIR}/ #{gemini_solution}"
+</code></pre>
+
+<p>end</p>
+
+<p>desc "Runs all the tests on the gemini code"
+task :test do</p>
+
+<pre><code>assemblies = all_spec_assemblies() 
+xunit_console = File.join(EXTERNALS_DIR, "xUnit/xunit.console.exe") 
+assemblies.each do |assembly| 
+    sh "#{xunit_console} #{assembly} /html #{assembly +'.UnitTests.html'}" 
+end 
+</code></pre>
+
+<p>end</p>
+
+<p>task :default => [:clean, :build, :test]</p>
+
+<p>def all_spec_assemblies()</p>
+
+<pre><code>file_mask = File.join(BUILD_DIR, '*Specs.dll') 
+FileList[file_mask] 
+</code></pre>
+
+<p>end
+```
+I think this code demonstrates the qualities of Ruby as a scripting language and Rake as a build tool really well.
+It's very descriptive and even more important it doesn't have all the xml-slash-what-the-hell-is-going-on-here-noise
+around it. I know it's a very simple solution, but I consider it a good start. Let's look a bit more detailed at the parts of the script.</p>
+
+<p><code>ruby Defining paths
+EXTERNALS_DIR = File.expand_path('../Externals')
+BUILD_DIR = File.expand_path('../Bin')
+SOURCE_DIR = File.expand_path('../Source')
+</code>
+This part defines some directory constants that are used in the script. The rakefile is currently run from the directory 'Build'
+which is on the same level as 'Externals', 'Bin' and 'Source'. Relative paths are expanded to absolute paths here.</p>
+
+<p><code>ruby Using the built-in clean task
+CLEAN.include(FileList[File.join(BUILD_DIR, '*')])
+</code></p>
+
+<p>This tiny little code piece modifies the built-in :clean task and adds all files under the BUILD_DIR to it. Running 'rake clean' on the console
+will now delete all files from our build directory.</p>
+
+<p>``` ruby Invoking the sources
+desc "Compiles the gemini sources"
+task :build do</p>
+
+<pre><code>gemini_solution = File.join(SOURCE_DIR, 'Gemini.sln') 
+sh "msbuild /property:WarningLevel=4;OutDir=#{BUILD_DIR}/ #{gemini_solution}"
+</code></pre>
+
+<p>end
+```</p>
+
+<p>This is the first task I've actually written on my own. It's only a very small wrapper around msbuild that builds the
+solution file.</p>
+
+<p>``` ruby running tests
+desc "Runs all the tests on the gemini code"
+task :test do</p>
+
+<pre><code>assemblies = all_spec_assemblies()
+xunit_console = File.join(EXTERNALS_DIR, "xUnit/xunit.console.exe")
+assemblies.each do |assembly| 
+    sh "#{xunit_console} #{assembly} /html #{assembly +'.UnitTests.html'}" 
+end 
+</code></pre>
+
+<p>end</p>
+
+<p>def all_spec_assemblies()</p>
+
+<pre><code>file_mask = File.join(BUILD_DIR, '*Specs.dll') FileList[file_mask]
+</code></pre>
+
+<p>end</p>
+
+<p>```
+That little code is a small wrapper around xUnit.net which invokes the xunit.console.exe for each file it finds in the build
+directory that ends with 'Spec.dll'. These are the assemblies which contain the BDD-style tests in our project.</p>
+
+<p><code>ruby Defining the default task
+task :default =&gt; [:clean, :build, :test]
+</code>
+This last piece defines the :default build task. That's the task which is run when you don't specify a task directly when running rake from console.
+This will run all tasks in the order specified from left to right.</p>
+
+<h2>Conclusion</h2>
+
+<p>The Rake build engine rocks !!! Its really simple and descriptive API is fun and Rake doesn't create a lot of ceremony around build scripts (Only
+around 30 lines of code in my current script). However, you should be aware of one thing: Coming from a language with a lot of IDE support
+(like C# in my case) to Ruby might not be as easy as it sounds. It took me quite a while to make the transition from Intellisense and Resharper
+to using IRB and reading RDoc in order to explore new APIs . . .</p>
+]]></content>
+  </entry>
+  
+</feed>

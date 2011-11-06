@@ -1,0 +1,940 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Dude, where's my Kaizen?</title>
+  <meta name="author" content="Björn Rochel">
+
+  
+  <meta name="description" content="While reading C# in depth by Jon Skeet I discovered a little gem. It is possible to use extension methods in .NET 2.0 projects when you&#8217;reusing &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.bjoernrochel.de/blog/page/9/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Dude, where's my Kaizen?" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+</head>
+
+<body   >
+  <header role="banner"><div id="logo">
+	<img src="/images/kaizen.png" alt="Kaizen" title="Kaizen" />
+</div>
+<hgroup>
+  <h1><a href="/">Dude, where's my Kaizen?</a></h1>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.bjoernrochel.de" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2008/07/28/using-extensionmethods-in-net-20-projects/">Using Extensionmethods in .NET 2.0 Projects &#8230;</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-07-28T10:18:33+02:00" pubdate  data-updated="true" >Jul 28<span>th</span>, 2008</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>While reading <em>C# in depth</em> by Jon Skeet I discovered a little gem. It is possible to use extension methods in .NET 2.0 projects when you&#8217;re
+using VS2008 and its multitargeting abillities. Extension methods are essentially only static methods in utillity classes with some
+constraints around them (the utility class has to be static too for instance.) The compiler and intellisense enable you to treat the method
+as if it were an instance method, but when you look inside the compiled IL you&#8217;ll see that that&#8217;s just a nice shortcut which is transformed to
+an actual call into the static method on the utility class.</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/2008/07/28/using-extensionmethods-in-net-20-projects/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2008/07/19/wow-this-is-interesting/">Wow, This Is Interesting &#8230;</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-07-19T19:07:00+02:00" pubdate  data-updated="true" >Jul 19<span>th</span>, 2008</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Microsoft seems to move Dependency Injection as part of the general topic &#8220;application extensibillity&#8221; into the .NET Framework core.
+Have a look at the post of <a href="http://blogs.msdn.com/kcwalina/archive/2008/04/25/MEF.aspx">Krzysztof Cwalina about the Managed Extensibillity Framework (MEF)</a>.
+Although the project has just started and is clearly at an early stage, a first <a href="http://code.msdn.microsoft.com/mef">CTP</a> has already been
+published. I&#8217;m going to dig into the CTP soon, mostly because of curiosity. One of Microsofts technical evangelists (namely Jason Olson)
+has also published an arcticle showing <a href="http://http://www.managed-world.com/2008/07/04/BuildingAFluentInterfaceForMEF.aspx">how to build a small internal DSL on top of MEF</a>.</p>
+
+<p>It will be interesting to see where Microsofts efforts in that area are leading to (especially when you consider that the core team is working on it) &#8230;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2008/07/07/yet-another-way-to-do-publish-subscribe-part-iii/">Yet Another Way to Do Publish & Subscribe Part III &#8230;</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-07-07T16:42:34+02:00" pubdate  data-updated="true" >Jul 7<span>th</span>, 2008</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today, I discuss the design of what I actually implemented. Please be
+aware that I do not claim that it&#8217;s the perfect solution to the concept
+at hand. It&#8217;s what I&#8217;ve come up with to implement it, which at least for
+my context works very well. With that being said, let&#8217;s dive into the
+design.</p>
+
+<p>The core of the design is formed by a class called <code>Subscription</code>.</p>
+
+<p><img src="/images/posts/pubsub-subscription.jpg" alt="The Subscription class" /></p>
+
+<p>The name is quite self describing, but let me say some words about its
+intended purpose in my publish &amp; subscribe implementation. The
+subscription is used as an endpoint for sending messages to a
+subscriber, hiding away the thread context (<code>SynchronizationContext</code>)
+of the related subscriber instance and the weak reference handling to
+the related subscriber instance from the caller. It&#8217;s a kind of mediator
+instance so to say.</p>
+
+<p>Besides that it provides some information about which message type the subscription is for.
+Subscriptions are created by an implementation of the <code>ISubscriptionAssembler</code> interface. As the
+name implies the main responsibility of this interface is to create
+subscriptions either in an explicit (create a single subscription for a given <code>ISubscriber&lt;TMessage&gt;</code> instance)
+or implicit (infer all subscriptions of a given instance / type) manner &#8230;</p>
+
+<p><img src="/images/posts/pubsub-isubscriptionassembler.jpg" title="ISubscriptionAssembler" alt="The ISubscriptionAssembler interface" /></p>
+
+<p>The current implementation (<code>SubscriptionAssembler</code>) uses a small wrapper around <code>SynchronizationContext</code> called <code>SyncFactory</code> to
+capture the thread context while building the subscription. All this factory does is that it registers a new <code>SynchronizationContext</code> via
+<code>SyncronizationContext.Current</code> when no context exists. This is especially useful when doing unit testing (which by default has no
+<code>SynchronizationContext</code> set).</p>
+
+<p>Besides that the <code>SubscriptionAssembler</code> provides functionality to infer all
+subscriptions of a particular type and / or instance via reflection. This is done on top of the classes <code>SubscriptionInspector</code> and
+<code>MessageInterestCache</code>.</p>
+
+<p>The <code>SubscriptionInspector</code> realizes the relflection part, while the <code>MessageInterestCache</code> serves as a small
+cache for optimizing the performance of the assembler (message interests are only reflected once).
+Also included is a bit of functionality which can be used to pre-infer the message interests of a particular type,
+which might get handy when integrating with an InversionOfControl-container (most IoC-container split registration and
+type construction).</p>
+
+<p>Once subscriptions have been created, they are managed by an implementation of the <code>ISubscriptionManager</code> interface.
+This means:</p>
+
+<ol>
+<li>Tracking all subscriptions for a particular message type (with
+operations for adding / releasing and retrieving subscriptions for a
+particular message type).</li>
+<li>Detecting and removing dead references (garbage collected
+instances).</li>
+</ol>
+
+
+<p><img src="/images/posts/pubsub-isubscriptionmanager.jpg" title="ISubscriptionManager" alt="The ISubscriptionManager interface" /></p>
+
+<p>The actual <code>IMessageBus</code> implementation called <code>MessageBus</code> is
+implemented only as a small wrapper around the <code>ISubscriptionAssembler</code> (for creating subscriptions) and the
+<code>ISubscriptionManager</code> (for adding and removing subscriptions explicitly). Here you can impression what it actually does:</p>
+
+<figure class='code'><figcaption><span>The MessageBus class</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">MessageBus</span> <span class="p">:</span> <span class="n">IMessageBus</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">readonly</span> <span class="n">ISubscriptionManager</span> <span class="n">_SubscriptionManager</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">readonly</span> <span class="n">ISubscriptionAssembler</span> <span class="n">_SubscriptionAssembler</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="nf">MessageBus</span><span class="p">(</span><span class="n">ISubscriptionManager</span> <span class="n">subscriptionManager</span><span class="p">,</span> <span class="n">ISubscriptionAssembler</span> <span class="n">subscriptionAssembler</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">Ensure</span><span class="p">.</span><span class="n">ArgumentIsNotNull</span><span class="p">(</span><span class="n">subscriptionManager</span><span class="p">,</span> <span class="s">&quot;subscriptionManager&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">Ensure</span><span class="p">.</span><span class="n">ArgumentIsNotNull</span><span class="p">(</span><span class="n">subscriptionAssembler</span><span class="p">,</span> <span class="s">&quot;subscriptionAssembler&quot;</span><span class="p">);</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">_SubscriptionManager</span> <span class="p">=</span> <span class="n">subscriptionManager</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">_SubscriptionAssembler</span> <span class="p">=</span> <span class="n">subscriptionAssembler</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="n">AddSubscriber</span><span class="p">&lt;</span><span class="n">TMessage</span><span class="p">&gt;(</span><span class="n">ISubscriber</span> <span class="n">subscriber</span><span class="p">)</span> <span class="n">where</span> <span class="n">TMessage</span> <span class="p">:</span> <span class="k">class</span>
+</span><span class='line'>  <span class="err">{</span>
+</span><span class='line'>      <span class="n">Ensure</span><span class="p">.</span><span class="n">ArgumentIsNotNull</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="s">&quot;subscriber&quot;</span><span class="p">);</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">Subscription</span> <span class="n">subscription</span> <span class="p">=</span> <span class="n">_SubscriptionAssembler</span><span class="p">.</span><span class="n">CreateSingle</span><span class="p">(</span><span class="n">subscriber</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">_SubscriptionManager</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">subscription</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="n">ReleaseSubscriber</span><span class="p">&lt;</span><span class="n">TMessage</span><span class="p">&gt;(</span><span class="n">ISubscriber</span> <span class="n">subscriber</span><span class="p">)</span> <span class="n">where</span> <span class="n">TMessage</span> <span class="p">:</span> <span class="k">class</span>
+</span><span class='line'>  <span class="err">{</span>
+</span><span class='line'>      <span class="n">Ensure</span><span class="p">.</span><span class="n">ArgumentIsNotNull</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="s">&quot;subscriber&quot;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">_SubscriptionManager</span><span class="p">.</span><span class="n">ReleaseSubscription</span><span class="p">(</span><span class="n">subscriber</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="n">SendMessage</span><span class="p">&lt;</span><span class="n">TMessage</span><span class="p">&gt;(</span><span class="n">TMessage</span> <span class="n">message</span><span class="p">)</span> <span class="n">where</span> <span class="n">TMessage</span> <span class="p">:</span> <span class="k">class</span>
+</span><span class='line'>  <span class="err">{</span>
+</span><span class='line'>      <span class="n">Ensure</span><span class="p">.</span><span class="n">ArgumentIsNotNull</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="s">&quot;message&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">var</span> <span class="n">subscriptions</span> <span class="p">=</span> <span class="n">_SubscriptionManager</span><span class="p">.</span><span class="n">GetSubscriptions</span><span class="p">(</span><span class="n">message</span><span class="p">.</span><span class="n">GetType</span><span class="p">());</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">foreach</span> <span class="p">(</span><span class="n">Subscription</span> <span class="n">subscription</span> <span class="k">in</span> <span class="n">subscriptions</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>          <span class="n">subscription</span><span class="p">.</span><span class="n">SendMessage</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The interface to an InversionOfControl-container is the <code>IocBridge</code>. This class is just
+a small mediator that can be used in combination with the extension method the container provides.
+It provides simple access points which call an <code>ISubscriptionAssembler</code> implementation, when an instance has
+been configured, try to infer all subscriptions when a new instance has been created and that release all subscriptions related to a particular
+instance when the instance has been removed from the container.</p>
+
+<p><img src="/images/posts/pubsub-iocbridge.jpg" title="THe bridge to the IoC container" alt="The bridge to the IoC container" /></p>
+
+<p>Regarding the design of the publish &amp; subscribe system that&#8217;s all there is to tell :-) . Here is a little overview over all classes.</p>
+
+<p><img src="/images/posts/pubsub-overview.jpg" title="Overview" alt="Overview" /></p>
+
+<p>In the last post I mentioned that my favourite IoC-container is Castle Windsor.
+In order to use the library there still is a little piece missing. I&#8217;ve integrated it with the WindsorContainer by
+implementing an <code>IFacility</code>.</p>
+
+<figure class='code'><figcaption><span>Integration into Castle.Windsor</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">PubSubFacility</span> <span class="p">:</span> <span class="n">AbstractFacility</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">IIocBridge</span> <span class="n">_IocBridge</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Init</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_IocBridge</span> <span class="p">=</span> <span class="n">Kernel</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">IIocBridge</span><span class="p">&gt;();</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">Kernel</span><span class="p">.</span><span class="n">ComponentModelCreated</span> <span class="p">+=</span> <span class="n">OnComponentModelCreated</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">Kernel</span><span class="p">.</span><span class="n">ComponentCreated</span> <span class="p">+=</span> <span class="n">OnComponentCreated</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">Kernel</span><span class="p">.</span><span class="n">ComponentDestroyed</span> <span class="p">+=</span> <span class="n">OnComponentDestroyed</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">void</span> <span class="nf">OnComponentDestroyed</span><span class="p">(</span><span class="n">ComponentModel</span> <span class="n">model</span><span class="p">,</span> <span class="kt">object</span> <span class="n">instance</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_IocBridge</span><span class="p">.</span><span class="n">UninstallInstance</span><span class="p">(</span><span class="n">instance</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">void</span> <span class="nf">OnComponentCreated</span><span class="p">(</span><span class="n">ComponentModel</span> <span class="n">model</span><span class="p">,</span> <span class="kt">object</span> <span class="n">instance</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_IocBridge</span><span class="p">.</span><span class="n">TryInstallInstance</span><span class="p">(</span><span class="n">instance</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">private</span> <span class="k">void</span> <span class="nf">OnComponentModelCreated</span><span class="p">(</span><span class="n">ComponentModel</span> <span class="n">model</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_IocBridge</span><span class="p">.</span><span class="n">TryTypeInstallation</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">Implementation</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Together with some xml the whole stuff can easily be wired together.</p>
+
+<figure class='code'><figcaption><span>Wiring via xml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;castle&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;components&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;facilities&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;facility</span>
+</span><span class='line'>              <span class="na">id=</span><span class="s">&quot;PubSubFacility&quot;</span>
+</span><span class='line'>              <span class="na">type=</span><span class="s">&quot;BjRo.CastleContrib.PubSub.PubSubFacility,</span>
+</span><span class='line'><span class="s">              BjRo.CastleContrib.PubSub&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/facilities&gt;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nt">&lt;component</span> <span class="na">id=</span><span class="s">&quot;PubSubFacade&quot;</span>
+</span><span class='line'>          <span class="na">type=</span><span class="s">&quot;BjRo.PubSub.IocBridge, BjRo.PubSub&quot;</span>
+</span><span class='line'>          <span class="na">service=</span><span class="s">&quot;BjRo.PubSub.IIocBridge, BjRo.PubSub&quot;</span>
+</span><span class='line'>          <span class="na">lifestyle=</span><span class="s">&quot;Singleton&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nt">&lt;component</span> <span class="na">id=</span><span class="s">&quot;MessageBus&quot;</span>
+</span><span class='line'>          <span class="na">type=</span><span class="s">&quot;BjRo.PubSub.MessageBus, BjRo.PubSub&quot;</span>
+</span><span class='line'>          <span class="na">service=</span><span class="s">&quot;BjRo.PubSub.IMessageBus, BjRo.PubSub&quot;</span>
+</span><span class='line'>          <span class="na">lifestyle=</span><span class="s">&quot;Singleton&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nt">&lt;component</span> <span class="na">id=</span><span class="s">&quot;SubscriptionAssembler&quot;</span>
+</span><span class='line'>          <span class="na">type=</span><span class="s">&quot;BjRo.PubSub.SubscriptionAssembler, BjRo.PubSub&quot;</span>
+</span><span class='line'>          <span class="na">service=</span><span class="s">&quot;BjRo.PubSub.ISubscriptionAssembler, BjRo.PubSub&quot;</span>
+</span><span class='line'>          <span class="na">lifestyle=</span><span class="s">&quot;Singleton&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="nt">&lt;component</span> <span class="na">id=</span><span class="s">&quot;SubscriptionManager&quot;</span>
+</span><span class='line'>          <span class="na">type=</span><span class="s">&quot;BjRo.PubSub.SubscriptionManager, BjRo.PubSub&quot;</span>
+</span><span class='line'>          <span class="na">service=</span><span class="s">&quot;BjRo.PubSub.ISubscriptionManager, BjRo.PubSub&quot;</span>
+</span><span class='line'>          <span class="na">lifestyle=</span><span class="s">&quot;Singleton&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/components&gt;</span>
+</span><span class='line'><span class="nt">&lt;/castle&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>That&#8217;s it with my take on (local) publish &amp; subscribe. It may not be perfect but it suits my needs at the moment.
+I&#8217;m planning to integrate the standard .NET APM in the <code>IMessageBus</code> interface in order allow asynchronous message sending and the common rendezvous techniques.
+I&#8217;m looking forward to any feedback for my solution and would like to share the code under some OS license, if someone is interested in&#8230;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2008/07/02/yet-another-way-to-do-publish-subscribe-part-ii/">Yet Another Way to Do Publish & Subscribe Part II &#8230;</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-07-02T18:21:03+02:00" pubdate  data-updated="true" >Jul 2<span>nd</span>, 2008</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>As promised on the last post, this time I talk more about what I
+actually implemented. Let&#8217;s start with the basic API. The whole API is
+very simple and message centered. In order to be able to recieve
+messages you have to implement the <code>ISubscriber&lt;TMessage&gt;</code> interface.</p>
+
+<figure class='code'><figcaption><span>The ISubscriber<TMessage> interface </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">ISubscriber</span><span class="p">&lt;</span><span class="n">TMessage</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">void</span> <span class="nf">Handle</span><span class="p">(</span><span class="n">TMessage</span> <span class="n">message</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>
+The generic parameter <code>TMessage</code> specifies the type of message the subscriber is interested
+in. The message should simply be implemented by a POCO. Examples could
+be:</p>
+
+<ul>
+<li><code>ISubscriber&lt;ActivePatientChanged&gt;</code></li>
+<li><code>ISubscriber&lt;ApplicationTitleChanged&gt;</code></li>
+<li><code>ISubscriber&lt;CsvExportFinished&gt;</code></li>
+</ul>
+
+
+<p>A consumer class wants to publish messages or to register itsself for a
+particular message needs to have a reference to an <code>IMessageBus</code> implementation.
+This interface serves as a consumer side facade to the pubsub system.</p>
+
+<figure class='code'><figcaption><span>The IMessageBus interface</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IMessageBus</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">void</span> <span class="nf">AddSubscriber</span><span class="p">(</span><span class="n">ISubscriber</span> <span class="n">subscriber</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">void</span> <span class="nf">ReleaseSubscriber</span><span class="p">(</span><span class="n">ISubscriber</span> <span class="n">subscriber</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">void</span> <span class="nf">SendMessage</span><span class="p">(</span><span class="n">TMessage</span> <span class="n">message</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From a consumer perspective that&#8217;s all your need to known when dealing with publish &amp; subscribe.
+Together with type inference it&#8217;s event nicer to use :-).</p>
+
+<figure class='code'><figcaption><span>Putting it together</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DemoMessage</span> <span class="p">{</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">MyListener</span> <span class="p">:</span> <span class="n">ISubscriber</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">Subscribe</span><span class="p">(</span><span class="n">IMessageBus</span> <span class="n">bus</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">bus</span><span class="p">.</span><span class="n">AddSubscriber</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">Handle</span><span class="p">(</span><span class="n">DemoMessage</span> <span class="n">message</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">MyPublisher</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">IMessageBus</span> <span class="n">_Bus</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="nf">MyPublisher</span><span class="p">(</span><span class="n">IMessageBus</span> <span class="n">bus</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_Bus</span> <span class="p">=</span> <span class="n">bus</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">Demo</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_Bus</span><span class="p">.</span><span class="n">SendMessage</span><span class="p">(</span><span class="k">new</span> <span class="n">DemoMessage</span><span class="p">());</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Some other characteristics also worth mentioning:</p>
+
+<ul>
+<li>The current implementation captures the thread context when a
+subscriber is registered. All callbacks will be handled on the same
+thread on which they were registered.</li>
+<li>Only a weak reference is held to the subscriber. This guarantees
+that a subscriber can be garbage collected although not properly
+unregistered from the publish &amp; subscribe system. The implementation
+detects dead references and removes them automatically.</li>
+</ul>
+
+
+<p>With that beeing said I would like too conclude the series about publish
+&amp; subscribe with a post about the actual implementation which will
+follow up &#8230;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2008/06/30/yet-another-way-to-do-publish-subscribe/">Yet Another Way to Do Publish & Subscribe &#8230;</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-06-30T22:01:15+02:00" pubdate  data-updated="true" >Jun 30<span>th</span>, 2008</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>About 2,5 years ago I first came across the idea of combining dependency
+injection with loosly coupled publish &amp; subscribe. This was when I
+inspected the source code of the <a href="http://msdn.microsoft.com/en-us/library/aa480450.aspx">Composite Application Block (CAB)</a> with its
+underlying InversionOfControl-container ObjectBuilder from Microsoft.
+What I liked about publish &amp; subscribe in CAB:</p>
+
+<ul>
+<li>The automatic thread marshalling. (Basically you&#8217;re able to specify
+whether the subscription-callback will be handled on the UI-thread
+or the same thread as the publisher)</li>
+<li>The wiring was done during the build process in the ObjectBuilder.
+Publishers and Subscribers are completely decoupled. Wow, this was
+pretty amazing for me when I discovered that late 2005 :-).</li>
+</ul>
+
+
+<p>What I didn&#8217;t like about it:</p>
+
+<ul>
+<li>It is very tightly coupled to a CAB internal data structure called
+WorkItem. (Not reusable outside the scope of CAB)</li>
+<li>It uses standard .NET events / delegates. (The publisher needed to
+define an event and the subscriber needed to have a public method
+with a matching &#8220;object-sender-eventargs-e&#8221; - signature.)</li>
+<li>It uses attributes and especially a string based topic identifier to
+correlate publishers for a topic and corresponding subscribers.
+(Maybe I&#8217;m narrow-minded on this, but I think the simplest way to
+specify a subscription is the best, which imho is expressing a
+subscription by implementing an interface.)</li>
+</ul>
+
+
+<p>Many frameworks or libraries I looked into over time mostly followed a
+comparable approach using either events or some other delegate-based
+solution (the EventBroker in CAB, the EventBrokerFacility in Castle
+Windsor, the EventAggregator in PRISM, &#8230;.) (Please correct me if I
+overlooked or misunderstood something :-)).</p>
+
+<p>The only framework I came across with something similar to what I had in mind is
+<a href="http://devlicio.us/blogs/rob_eisenberg/archive/2008/01/07/introducing-caliburn-an-mvc-mvp-wpf-framework.aspx">Caliburn</a>.
+Unfortunately Caliburn is a WPF/ .NET 3.0 based framework, but most of
+the products of my current employer are limited to .NET 2.0 due to a
+minimum system requirement of Windows 2k.</p>
+
+<p>Because of that I decided to implement something similar for our purposes which can be easily
+integrated into the InversionOfControl - container of our choice (which
+is Castle Windsor at the moment, by the way :-) ). I&#8217;ll be describing
+the implementation and publish the source code for anyone who is
+interested in one or more follow-up posts &#8230; .</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2008/06/25/about-visual-designers/">About Visual Designers &#8230;</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-06-25T12:51:33+02:00" pubdate  data-updated="true" >Jun 25<span>th</span>, 2008</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today I came across a very interesting post from Jeremy Miller regarding
+<a href="http://codebetter.com/blogs/jeremy.miller/archive/2008/06/24/does-our-addiction-on-visual-tooling-harm-the-rate-of-innovation-in-the-net-world.aspx">his view on visual
+designers</a>.
+Everyone who works or worked with me so far knows I don&#8217;t like visual
+designers at all, which is quite funny since I was involved in building
+a designer app for winforms and web-based forms for my company for the
+bigger part of the last two years. To link my experience to the article:
+Imho it&#8217;s very expensive and difficult to create a designer app with a
+very good user experience. Enjoy it!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2008/06/24/revamping-wwwbjrode/">Revamping www.bjro.de</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-06-24T22:04:07+02:00" pubdate  data-updated="true" >Jun 24<span>th</span>, 2008</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>My original website launched summer 2002 and accompanied myself until I
+finished my studies back in 2005. My first real job as a <strong>software
+developer</strong> consumed most of the time I was previously spending on my
+website. In fact, it has been left untouched since I left the
+university. The idea of revamping my website has been on my mind for
+quite a while now, but I didn&#8217;t have time and patience until now to
+actually do it. I would like to use this website in order to write about
+things I really care about in software development and things I&#8217;m trying
+to convey to my colleagues every day. Besides that I would like to share
+and to discuss my experience with certain patterns, methodologies,
+architectures, etc. with interested folks out there. This includes (but
+is not limited to):</p>
+
+<ul>
+<li>Creating composite GUI-applications with a high amount of testable
+code,</li>
+<li>Experiences in applying variations of the Model View Presenter
+pattern,</li>
+<li>Dependency breaking techniques in legacy code in order to get it
+under test,</li>
+<li>Distributed domain driven design,</li>
+<li>and general stuff around TDD, agile methodologies and
+object-oriented design.</li>
+</ul>
+
+
+<p>Cheers, Björn Rochel</p>
+
+<p>P.S.: While you are reading this you maybe ask yourself:
+&#8220;Why does this german guy write his blog in English?&#8221;. On the
+one hand it&#8217;s a thing I need to practice, because my English has become
+quite a bit rusty since I left school. Besides that it enables me to
+talk to a much greater audience.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <nav class="pagination">
+    <div>
+      
+      <a href="/blog/archives">Blog Archives</a>
+      
+      <a class="next" href="/blog/page/8/">Newer &rarr;</a>
+      
+    </div>
+  </nav>
+</div>
+<aside class="sidebar">
+  
+    <section>
+	<h1>About me</h1>
+  <p><br/><img src="/images/bjro-eyes.jpg" alt="portrait" /></p>
+	<p>
+  My name is <strong>Björn Rochel</strong>.  I&#8217;m a 32 year old geek, who&#8217;s crazy about software development, living in Cologne and
+  currently working for <a href="http://www.intercomponentware.com">ICW</a> as a .NET Developer / Architect.
+	</p>
+	<ul class="badges">
+		<li><a href="http://www.xing.com/profile/Bjoern_Rochel"><img src="/images/badges/xing2-small.png" alt="Xing" /></a></li>
+		<li><a href="http://www.github.com/BjRo"><img src="/images/badges/github-small.png" alt="Github" /></a></li>
+		<li><a href="http://www.twitter.com/bjoernrochel"><img src="/images/badges/twitter-square-small.png" alt="Twitter" /></a></li>
+		<li><a href="/atom.xml"><img src="/images/badges/rss-circle-small.png" alt="Rss" /></a></li>
+	</ul>
+</section>
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/Conferences/'>Conferences (8)</a></li>
+<li class='category'><a href='/blog/categories/FSharp/'>FSharp (3)</a></li>
+<li class='category'><a href='/blog/categories/Katas/'>Katas (2)</a></li>
+<li class='category'><a href='/blog/categories/StoryTeller/'>StoryTeller (14)</a></li>
+<li class='category'><a href='/blog/categories/StructureMap/'>StructureMap (9)</a></li>
+<li class='category'><a href='/blog/categories/Testing/'>Testing (20)</a></li>
+<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (7)</a></li>
+<li class='category'><a href='/blog/categories/dotnet/'>dotnet (65)</a></li>
+<li class='category'><a href='/blog/categories/ruby/'>ruby (3)</a></li>
+<li class='category'><a href='/blog/categories/sw-design/'>sw-design (13)</a></li>
+<li class='category'><a href='/blog/categories/xUnitBDDExtensions/'>xUnitBDDExtensions (15)</a></li>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("bjoernrochel", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/bjoernrochel" class="twitter-follow-button" data-width="208px" data-show-count="false">Follow @bjoernrochel</a>
+  
+</section>
+
+<section>
+<h1>Disclaimer</h1>
+<p>
+The opinions expressed herein are my own personal opinions and do not necessarily represent the opinion of any other organization or person, including (but not limited to) my fellow employees, my employer, its clients or their agents. 
+</p>
+<p>
+ Copyright &copy; 2011 - Björn Rochel
+</p>
+<section>
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Björn Rochel -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'bjro';
+      
+        
+        var disqus_script = 'count.js';
+      
+
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>

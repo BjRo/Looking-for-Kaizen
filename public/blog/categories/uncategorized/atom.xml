@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Uncategorized | Dude, where's my Kaizen?]]></title>
+  <link href="http://www.bjoernrochel.de/blog/categories/uncategorized/atom.xml" rel="self"/>
+  <link href="http://www.bjoernrochel.de/"/>
+  <updated>2011-11-06T22:05:04+01:00</updated>
+  <id>http://www.bjoernrochel.de/</id>
+  <author>
+    <name><![CDATA[Björn Rochel]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[I'm doing the T-thing now, too]]></title>
+    <link href="http://www.bjoernrochel.de/2009/12/10/im-doing-the-t-thing-now-too/"/>
+    <updated>2009-12-10T19:33:32+01:00</updated>
+    <id>http://www.bjoernrochel.de/2009/12/10/im-doing-the-t-thing-now-too</id>
+    <content type="html"><![CDATA[<p>Although I'm still not 100% sure that I "get" what the Twitter fuzz is all about, I decided to give it a try and use it for a while, in order
+to form my opinion about it. If you're interested to stay in touch via Twitter, here's my Url:</p>
+
+<p><a href="http://www.twitter.com/BjoernRochel">http://www.twitter.com/BjoernRochel</a></p>
+
+<p>Cheerz Björn</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[What's next?]]></title>
+    <link href="http://www.bjoernrochel.de/2009/11/30/whats-next/"/>
+    <updated>2009-11-30T10:56:11+01:00</updated>
+    <id>http://www.bjoernrochel.de/2009/11/30/whats-next</id>
+    <content type="html"><![CDATA[<p>With the "Diving into the StoryTeller trunk series" coming to an end in the near future, I'm currently looking into several ideas for future
+posts. Here's what I'm currently thinking about:</p>
+
+<ol>
+<li><p><strong>xUnit.BDDExtensions feature walkthrough and documentation</strong> Let's be honest it's currently not documented at all. I failed big time at
+documenting its usage scenarios and behavior so far. However, since more and more projects at my current client are starting to use it I'm
+definitely going to fix this . . .</p></li>
+<li><p><strong>Look into various options to implement the Active Object Pattern</strong> I've been reading several papers
+about infrastructures for command execution lately. It's an interesting topic for distributed scenarios (for instance used in a CQSR design),
+but also for local scenarios when you start to think about multi core / concurrent programming. As modern applications are becoming more and
+more connected on the one hand and need to use local resources more efficiently on the other (because processors won't get a lot faster in
+the near future) I think there's a huge need for having a simple consistent design for both. Things I'd like to look into are the
+Concurrency Coordination Runtime, the .NET 4.0 Task Parallel Library and Application Spaces, as well as more specific topics like integrating
+such an infrastructure with an MVVM design.</p></li>
+<li><p><strong>Dive into the Caliburn trunk</strong> Last but not least I would love to spend some time with Caliburn
+since WPF is more and more on my radar and Caliburn seems to fully embrace and extend a lot of the original WPF design ideas in a composite
+context. I think I would do something similar to the StoryTeller series.</p></li>
+</ol>
+
+
+<p>So, what do you think? Any preferences? Any priorities?</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Yes, I'm still alive . . .]]></title>
+    <link href="http://www.bjoernrochel.de/2009/01/19/yes-im-still-alive/"/>
+    <updated>2009-01-19T13:06:30+01:00</updated>
+    <id>http://www.bjoernrochel.de/2009/01/19/yes-im-still-alive</id>
+    <content type="html"><![CDATA[<p>First of all: Happy new year to everyone. I know, I know, I'm really late with that :-)</p>
+
+<p>It's been really quite on this blog for the last two month and I'm sorry for that. I've been busy changing a lot of things that caused me
+frustration and friction in my life as a software engineer in 2008 ...</p>
+
+<p>Anyway, 2009, a new year. What's to expect from this blog this year?</p>
+
+<ol>
+<li><strong>Ruby</strong> Following the pragmatic programmers advice I started to learn a new
+language, namely Ruby. Expect to see a lot of posts around the Ruby language, the Rake buildsystem, Gems, RSpec, Ruby on Rails and
+IronRuby in the future.</li>
+<li><strong>Software architecture in .NET and the Ruby realm</strong>
+A good, simple software design has always been one of the key aspects to successful software projects for me. This includes
+testability, automation, convention-based development, reversibility, extensibility, maintainability and a lot of other
+stuff. Many areas to be covered. Lots of posts to be written :-)</li>
+</ol>
+
+
+<p>Stay tuned for more . . .</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Sharing book experiences]]></title>
+    <link href="http://www.bjoernrochel.de/2008/10/28/sharing-book-experiences/"/>
+    <updated>2008-10-28T17:54:12+01:00</updated>
+    <id>http://www.bjoernrochel.de/2008/10/28/sharing-book-experiences</id>
+    <content type="html"><![CDATA[<h2>Update 21.10.2011</h2>
+
+<p>I've moved my shelf to <a href="http://www.goodreads.com">Goodreads</a>. You can find my new shelf <a href="http://www.goodreads.com/bjoernrochel">here</a>.</p>
+
+<p>I've read about this at Michel Grootjans Blog. Actually a very nice idea. You can find my bookshelf under:
+<a href="http://www.shelfari.com/o1518053563">http://www.shelfari.com/o1518053563</a></p>
+
+<p>Keep reading, guys :-)</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Resharper 4.1]]></title>
+    <link href="http://www.bjoernrochel.de/2008/09/04/resharper-41/"/>
+    <updated>2008-09-04T21:31:14+02:00</updated>
+    <id>http://www.bjoernrochel.de/2008/09/04/resharper-41</id>
+    <content type="html"><![CDATA[<p>Cool, Jetbrains just released a new version of it's famous productivity enhancer. I'm going to update my development machine tomorrow. It's just an awesome tool . . .</p>
+
+<p>See <a href="http://blogs.jetbrains.com/dotnet/2008/09/resharper-41-is-released/">http://blogs.jetbrains.com/dotnet/2008/09/resharper-41-is-released/</a> for more information.</p>
+]]></content>
+  </entry>
+  
+</feed>

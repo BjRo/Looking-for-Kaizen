@@ -1,0 +1,311 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Diving into the StoryTeller trunk, Part 11.1: Commands - Dude, where's my Kaizen?</title>
+  <meta name="author" content="Björn Rochel">
+
+  
+  <meta name="description" content="Welcome back to the Diving into the StoryTeller trunk series. The maintopic for the last couple of posts about StoryTeller is its Command handling or &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.bjoernrochel.de/2009/12/23/diving-into-the-storyteller-trunk-part-111-commands/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Dude, where's my Kaizen?" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+</head>
+
+<body   >
+  <header role="banner"><div id="logo">
+	<img src="/images/kaizen.png" alt="Kaizen" title="Kaizen" />
+</div>
+<hgroup>
+  <h1><a href="/">Dude, where's my Kaizen?</a></h1>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.bjoernrochel.de" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Diving Into the StoryTeller Trunk, Part 11.1: Commands</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-12-23T20:16:13+01:00" pubdate  data-updated="true" >Dec 23<span>rd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Welcome back to the <strong>Diving into the StoryTeller trunk</strong> series. The main
+topic for the last couple of posts about StoryTeller is its Command handling or to be a bit more specific the reoccurring problem of how
+Screen related Commands are managed in the app infrastructure. Couple of posts? Yeah, right. Today&#8217;s post is going to be a bit shorter than the
+usual posts in the series. When I started to write this post I quickly realized that this topic contains more aspects to talk about than I had
+originally anticipated. Besides that Christmas is near, I&#8217;m running out of time for this year and just wanted to get at least some bits of the
+content out there before going on vacation. Today&#8217;s post is going to be more general one on the topic.</p>
+
+<h2>The Command Pattern </h2>
+
+<p>A lot of the content in this series dealt exclusively with how the StoryTeller UI layer manages Screens in its content area,
+but as you know most of the time an application consists of more parts than just the plain content area. A typical desktop application is probably going to have some sort
+of Mainmenu, a Statusbar and of course Contextmenus. Items displayed in those areas very often represent actions an application can perform.
+They act as a trigger of those actions. A typical way to implement this is using the <a href="http://en.wikipedia.org/wiki/Command_pattern">GoF-Command Pattern</a>, which separates
+the invoker of an action (for instance a button) from the receiver instance which executes the action by introducing the Command abstraction. A Command encapsulates the knowledge needed for an
+invokation of the receiver instance, so that it can be executed at a later time.</p>
+
+<h2>Commands are potentially contextual </h2>
+
+<p>An application can have lots and lots of Commands. While some of these Commands are available all of the time, some of them can only be executed in a particular context.
+A typical example for Commands of the first category might be the &#8220;Exit application&#8221; Command. A typical example for the latter category might be the &#8220;Undo&#8221; Command or &#8220;Redo&#8221; Command in all
+kinds of text editors, which can only be executed when the currently viewed document has some changes. It&#8217;s not uncommon to have lots of contextual Commands in an application that are only related to a very
+specific Screen or Screen state. When we think in terms of usability, the least a user should be able to take granted from an app is that the
+app appropriately shows which actions can be performed at a particular point of time. This can be achieved by enabling / disabling related
+items depending on the availability of the Command (be it manually or through databinding). Sometimes though,it might be a better approach to
+have an even more contextualized UI that only shows the commands related to the current context. So for instance if no code editor view is shown
+in Visual Studio than the &#8220;Undo&#8221; and &#8220;Redo&#8221; Commands should also not be visible (NOTE: VS doesn&#8217;t actually behave that way). I think this idea
+of contextualized UIs becomes more and more popular. Office 2007/2010 was build with this idea in mind.</p>
+
+<h2>Commands in a Composite UI</h2>
+
+<p>Composite UIs which follow the Open / Closed Principle add another problem to the mix. When new modules or new screens are loaded into a
+composite app, they shouldn&#8217;t need to modify the app infrastructure in order to add their related commands. The app infrastructure needs to
+provide a way to plug those commands in without modification. This also includes their visual representation (Text, Tooltip, Icon, etc.).</p>
+
+<h2>Questions we should take a closer look at</h2>
+
+<ul>
+<li>Do we need to differentiate between types of Commands?</li>
+<li>Who is responsible for adding / registering commands?</li>
+<li>How is the visual representation of commands configured?</li>
+<li>Who is responsible for deciding whether Commands are available?</li>
+<li>Is there build-in .NET Framework support for this?</li>
+<li><strong>Of course: How does StoryTeller implement all this?</strong></li>
+</ul>
+
+
+<p>I&#8217;m afraid that&#8217;s all for today. I wish you all merry Christmas and a
+happy new year. See you in 2010</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">BjRo</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-12-23T20:16:13+01:00" pubdate  data-updated="true" >Dec 23<span>rd</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/storyteller/'>StoryTeller</a>, <a class='category' href='/blog/categories/dotnet/'>dotnet</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://www.bjoernrochel.de/2009/12/23/diving-into-the-storyteller-trunk-part-111-commands/" data-via="bjoernrochel" data-counturl="http://www.bjoernrochel.de/2009/12/23/diving-into-the-storyteller-trunk-part-111-commands/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+</div>
+
+    
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+	<h1>About me</h1>
+  <p><br/><img src="/images/bjro-eyes.jpg" alt="portrait" /></p>
+	<p>
+  My name is <strong>Björn Rochel</strong>.  I'm a 32 year old geek, who's crazy about software development, living in Cologne and
+  currently working for <a href="http://www.intercomponentware.com">ICW</a> as a .NET Developer / Architect.
+	</p>
+	<ul class="badges">
+		<li><a href="http://www.xing.com/profile/Bjoern_Rochel"><img src="/images/badges/xing2-small.png" alt="Xing" /></a></li>
+		<li><a href="http://www.github.com/BjRo"><img src="/images/badges/github-small.png" alt="Github" /></a></li>
+		<li><a href="http://www.twitter.com/bjoernrochel"><img src="/images/badges/twitter-square-small.png" alt="Twitter" /></a></li>
+		<li><a href="/atom.xml"><img src="/images/badges/rss-circle-small.png" alt="Rss" /></a></li>
+	</ul>
+</section>
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/Conferences/'>Conferences (8)</a></li>
+<li class='category'><a href='/blog/categories/FSharp/'>FSharp (3)</a></li>
+<li class='category'><a href='/blog/categories/Katas/'>Katas (2)</a></li>
+<li class='category'><a href='/blog/categories/StoryTeller/'>StoryTeller (14)</a></li>
+<li class='category'><a href='/blog/categories/StructureMap/'>StructureMap (9)</a></li>
+<li class='category'><a href='/blog/categories/Testing/'>Testing (20)</a></li>
+<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (7)</a></li>
+<li class='category'><a href='/blog/categories/dotnet/'>dotnet (65)</a></li>
+<li class='category'><a href='/blog/categories/ruby/'>ruby (3)</a></li>
+<li class='category'><a href='/blog/categories/sw-design/'>sw-design (13)</a></li>
+<li class='category'><a href='/blog/categories/xUnitBDDExtensions/'>xUnitBDDExtensions (15)</a></li>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("bjoernrochel", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/bjoernrochel" class="twitter-follow-button" data-width="208px" data-show-count="false">Follow @bjoernrochel</a>
+  
+</section>
+
+<section>
+<h1>Disclaimer</h1>
+<p>
+The opinions expressed herein are my own personal opinions and do not necessarily represent the opinion of any other organization or person, including (but not limited to) my fellow employees, my employer, its clients or their agents. 
+</p>
+<p>
+ Copyright &copy; 2011 - Björn Rochel
+</p>
+<section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Björn Rochel -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'bjro';
+      
+        
+
+				//TODO: comment disqus_developer out
+				var disqus_developer = 1;
+				var disqus_identifier = 'http://www.bjoernrochel.de/2009/12/23/diving-into-the-storyteller-trunk-part-111-commands/';
+				var disqus_url = 'http://www.bjoernrochel.de/2009/12/23/diving-into-the-storyteller-trunk-part-111-commands/';
+        var disqus_script = 'embed.js';
+      
+
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>

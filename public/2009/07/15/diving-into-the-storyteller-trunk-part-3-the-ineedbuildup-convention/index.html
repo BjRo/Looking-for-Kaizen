@@ -1,0 +1,315 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Diving into the StoryTeller trunk, Part 3: The INeedBuildUp convention - Dude, where's my Kaizen?</title>
+  <meta name="author" content="Björn Rochel">
+
+  
+  <meta name="description" content="Another day in the trunk, another convention found. After all startableinstances have been started in the bootstrapping process, there is verysimilar &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.bjoernrochel.de/2009/07/15/diving-into-the-storyteller-trunk-part-3-the-ineedbuildup-convention/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Dude, where's my Kaizen?" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+</head>
+
+<body   >
+  <header role="banner"><div id="logo">
+	<img src="/images/kaizen.png" alt="Kaizen" title="Kaizen" />
+</div>
+<hgroup>
+  <h1><a href="/">Dude, where's my Kaizen?</a></h1>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.bjoernrochel.de" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Diving Into the StoryTeller Trunk, Part 3: The INeedBuildUp Convention</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-07-15T23:11:18+02:00" pubdate  data-updated="true" >Jul 15<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Another day in the trunk, another convention found. After all startable
+instances have been started in the bootstrapping process, there is very
+similar looking convention which acts upon the <code>INeedBuildUp</code> interface, a
+marker interface. The code for it looks like this:</p>
+
+<figure class='code'><figcaption><span>The INeedBuildUp convention </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">ObjectFactory</span><span class="p">.</span><span class="n">Model</span><span class="p">.</span><span class="n">PluginTypes</span>
+</span><span class='line'>  <span class="p">.</span><span class="n">Where</span><span class="p">(</span><span class="n">p</span> <span class="p">=&gt;</span> <span class="n">p</span><span class="p">.</span><span class="n">Implements</span><span class="p">&lt;</span><span class="n">INeedBuildUp</span><span class="p">&gt;())</span>
+</span><span class='line'>  <span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">To</span><span class="p">&lt;</span><span class="n">INeedBuildUp</span><span class="p">&gt;())</span>
+</span><span class='line'>  <span class="p">.</span><span class="n">Each</span><span class="p">(</span><span class="n">ObjectFactory</span><span class="p">.</span><span class="n">BuildUp</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For each contract type which is assignable to the <code>INeedBuildUp</code> type, it
+first resolves the contract type (via <code>ObjectFactory.GetInstance(Type)</code>)
+and then performs a build up (via <code>ObjectFactory.BuildUp(object)</code>) on the
+created instance.</p>
+
+<p>When I initially saw this my first reaction was like &#8220;Hm, aren&#8217;t those
+two methods doing more or less the same thing?&#8221; (new vs. existing
+instances) Why should you chain them?</p>
+
+<p>As it turns out there&#8217;s something wrong with my initial assessment. When
+you take a look at the instances marked with the <code>INeedBuildUp</code> interface
+you recognize some similarities between them:</p>
+
+<ol>
+<li>The marked classes are mostly WPF controls.</li>
+<li>They&#8217;re explicitly registered with their contract type at the
+container after they have been created.</li>
+<li>They&#8217;ve got at least a single writable property marked with the
+SetterPropertyAttribute. (Property injection is not implicitly
+performed in StructureMap, it needs to be explicitly configured)</li>
+</ol>
+
+
+<p>What I&#8217;ve missed in the first run is that you can of course register
+existing instances for a contract type in the container. When calling
+<code>ObjectFactory.GetInstance</code> for the particular contract type, then you
+simply obtain a reference to the configured, already existing instance.
+So chaining <code>ObjectFactory.GetInstance</code> and <code>ObjectFactory.BuildUp</code> makes
+sense for inserting dependencies into an instance which was not created
+by the IoC in the first place. Is this the case here?</p>
+
+<p>WPF Controls need to have a parameterless constructor in order to work
+properly with the XAML engine and the WPF-designer. Mh, is
+WPF-Design-Time-support the origin of this convention? Seems to be, but
+I&#8217;m not 100% sure. Besides that, is this something a convention should
+be defined for? To be honest, I&#8217;m undetermined &#8230;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">BjRo</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-07-15T23:11:18+02:00" pubdate  data-updated="true" >Jul 15<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/storyteller/'>StoryTeller</a>, <a class='category' href='/blog/categories/structuremap/'>StructureMap</a>, <a class='category' href='/blog/categories/dotnet/'>dotnet</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://www.bjoernrochel.de/2009/07/15/diving-into-the-storyteller-trunk-part-3-the-ineedbuildup-convention/" data-via="bjoernrochel" data-counturl="http://www.bjoernrochel.de/2009/07/15/diving-into-the-storyteller-trunk-part-3-the-ineedbuildup-convention/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+</div>
+
+    
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+	<h1>About me</h1>
+  <p><br/><img src="/images/bjro-eyes.jpg" alt="portrait" /></p>
+	<p>
+  My name is <strong>Björn Rochel</strong>.  I'm a 32 year old geek, who's crazy about software development, living in Cologne and
+  currently working for <a href="http://www.intercomponentware.com">ICW</a> as a .NET Developer / Architect.
+	</p>
+	<ul class="badges">
+		<li><a href="http://www.xing.com/profile/Bjoern_Rochel"><img src="/images/badges/xing2-small.png" alt="Xing" /></a></li>
+		<li><a href="http://www.github.com/BjRo"><img src="/images/badges/github-small.png" alt="Github" /></a></li>
+		<li><a href="http://www.twitter.com/bjoernrochel"><img src="/images/badges/twitter-square-small.png" alt="Twitter" /></a></li>
+		<li><a href="/atom.xml"><img src="/images/badges/rss-circle-small.png" alt="Rss" /></a></li>
+	</ul>
+</section>
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/Conferences/'>Conferences (8)</a></li>
+<li class='category'><a href='/blog/categories/FSharp/'>FSharp (3)</a></li>
+<li class='category'><a href='/blog/categories/Katas/'>Katas (2)</a></li>
+<li class='category'><a href='/blog/categories/StoryTeller/'>StoryTeller (14)</a></li>
+<li class='category'><a href='/blog/categories/StructureMap/'>StructureMap (9)</a></li>
+<li class='category'><a href='/blog/categories/Testing/'>Testing (20)</a></li>
+<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (7)</a></li>
+<li class='category'><a href='/blog/categories/dotnet/'>dotnet (65)</a></li>
+<li class='category'><a href='/blog/categories/ruby/'>ruby (3)</a></li>
+<li class='category'><a href='/blog/categories/sw-design/'>sw-design (13)</a></li>
+<li class='category'><a href='/blog/categories/xUnitBDDExtensions/'>xUnitBDDExtensions (15)</a></li>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("bjoernrochel", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/bjoernrochel" class="twitter-follow-button" data-width="208px" data-show-count="false">Follow @bjoernrochel</a>
+  
+</section>
+
+<section>
+<h1>Disclaimer</h1>
+<p>
+The opinions expressed herein are my own personal opinions and do not necessarily represent the opinion of any other organization or person, including (but not limited to) my fellow employees, my employer, its clients or their agents. 
+</p>
+<p>
+ Copyright &copy; 2011 - Björn Rochel
+</p>
+<section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Björn Rochel -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'bjro';
+      
+        
+
+				//TODO: comment disqus_developer out
+				var disqus_developer = 1;
+				var disqus_identifier = 'http://www.bjoernrochel.de/2009/07/15/diving-into-the-storyteller-trunk-part-3-the-ineedbuildup-convention/';
+				var disqus_url = 'http://www.bjoernrochel.de/2009/07/15/diving-into-the-storyteller-trunk-part-3-the-ineedbuildup-convention/';
+        var disqus_script = 'embed.js';
+      
+
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>

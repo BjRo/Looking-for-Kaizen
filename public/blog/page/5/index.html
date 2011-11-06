@@ -1,0 +1,2009 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Dude, where's my Kaizen?</title>
+  <meta name="author" content="Björn Rochel">
+
+  
+  <meta name="description" content="If you ever need to locate the directory of the CLR version which runsyour .NET application, this little helper might be exactly what youneed. At &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.bjoernrochel.de/blog/page/5/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Dude, where's my Kaizen?" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+</head>
+
+<body   >
+  <header role="banner"><div id="logo">
+	<img src="/images/kaizen.png" alt="Kaizen" title="Kaizen" />
+</div>
+<hgroup>
+  <h1><a href="/">Dude, where's my Kaizen?</a></h1>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.bjoernrochel.de" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/07/06/determining-the-clr-directory/">Determining the CLR Directory</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-07-06T20:38:36+02:00" pubdate  data-updated="true" >Jul 6<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>If you ever need to locate the directory of the CLR version which runs
+your .NET application, this little helper might be exactly what you
+need. At least it was exactly what I needed today ;-)</p>
+
+<figure class='code'><figcaption><span>Determining the runtime environment</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">System</span><span class="p">.</span><span class="n">Runtime</span><span class="p">.</span><span class="n">InteropServices</span><span class="p">.</span><span class="n">RuntimeEnvironment</span><span class="p">.</span><span class="n">GetRuntimeDirectory</span><span class="p">();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/07/05/dude-i-can-do-reports/">Dude, I Can Do Reports</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-07-05T13:54:49+02:00" pubdate  data-updated="true" >Jul 5<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Over the past days I finally managed to spend some time with
+xUnit.BDDExtensions. I can&#8217;t possibly describe how good coming back to
+xUnit.net feels after working with MSTest in my last project. The
+speed, the extensibility model. It&#8217;s simply not comparable. MSTest is
+certainly a great tool in case you haven&#8217;t worked with a unit test
+framework before and it&#8217;s integration into Visual Studio is definitely a
+plus, too. However once you&#8217;ve got Resharper or Gallio installed the
+integration aspect isn&#8217;t really the big deal any more. Anyway, you can
+find several changes in the current trunk (<a href="http://github.com/bjro/xunitbddextensions/">(http://github.com/bjro/xunitbddextensions/)</a>.</p>
+
+<h2>The biggest addition is the new ReportGenerator</h2>
+
+<p>I&#8217;ve wanted this for quite a while now but never really found the time
+to implement it. After running the <code>RunBuild.cmd</code> in the &#8220;Build&#8221; folder
+of the trunk you&#8217;ll find the .exe in the <code>Deploy</code> folder. It&#8217;s still a
+bit raw but exactly what I need for my current client (yes, you heard
+right. xUnit.BDDExtensions is currently being picked up at my current
+client ;-))</p>
+
+<p>Here are the current console arguments:</p>
+
+<p><code>/assembly</code> configures the spec assembly to extract a report from one or
+more assemblies.</p>
+
+<blockquote><p>ReportGenerator.exe /assembly:SomeSpecAssembly.dll
+ReportGenerator.exe /assembly:C:\Test\SomeSpecAssembly.dll \
+ReportGenerator.exe /assembly:&#8217;C:\Path with spaces\SomeSpecAssembly.dll&#8217;
+ReportGenerator.exe /assembly:SomeSpecAssembly.dll /assembly:SomeOtherSpecAssembly.dll</p></blockquote>
+
+<p><code>/generator</code> configures the generator to use. There are currently two
+generators implemented. One building an <code>ASCII</code> .txt file which looks like
+<a href="/images/posts/xunitbddextensionsreportingspecs.txt">this</a>.
+In order to use it you have to run the generator with</p>
+
+<blockquote><p>ReportGenerator.exe /assembly:SomeSpecAssembly /generator:Text</p></blockquote>
+
+<p>The other creating an HTML file which looks like
+<a href="/images/posts/xunitbddextensionsreportingspecs.html">this</a>.
+This is the default generator which is used when you omit the
+<code>/generator</code>  argument.</p>
+
+<p>The files created by the generator are created on a per assembly basis
+and named like the assembly with the suffix <code>.html</code> or <code>.txt</code>. By default
+they are created in the same directory the generator is run from.</p>
+
+<p>You can change this by configuring a different folder via <code>/path</code>.</p>
+
+<blockquote><p>ReportGenerator.exe /assembly:C:\Test\SomeSpecAssembly.dll /path:C:\temp</p></blockquote>
+
+<h2>The deployment has changed slightly</h2>
+
+<p>The build script now merges xUnit.BDDExtensions to a single assembly
+(the external Rhino.Mocks assembly is not needed any more). Same applies
+to the ReportGenerator which uses StructureMap and NVelocity
+internally.</p>
+
+<h2>Some small changes to the API</h2>
+
+<ul>
+<li><code>Dependency&lt;TDependency&gt;()</code> has been marked as obsolete in
+<code>InstanceContextSpecification&lt;T&gt;</code> and <code>StaticContextSpecification</code>.</li>
+<li><code>AutoDependency&lt;TDependency&gt;()</code> has been marked as obsolete in
+<code>InstanceContextSpecification&lt;T&gt;</code>.</li>
+<li><code>An&lt;TDependency&gt;()</code> and <code>Some&lt;TDependency&gt;()</code> have been added to
+both <code>InstanceCOntextSpecification&lt;T&gt;</code> and <code>StaticContextSpecification</code>.</li>
+<li><code>The&lt;TDependency&gt;()</code> has been added to <code>InstanceCOntextSpecification&lt;T&gt;</code>,</li>
+</ul>
+
+
+<p>Its mostly naming which has been changed. Some discussions at my current
+client made me realize that it&#8217;s easier to describe the behavior of xUnit.BDDExtensions to
+developers who haven&#8217;t used the tool before with <code>An&lt;ICar&gt;()</code> in favor
+of <code>Dependency&lt;ICar&gt;()</code> and <code>The&lt;ICar&gt;()</code> in favor of
+<code>AutoDependency&lt;ICar&gt;()</code>.</p>
+
+<p><code>An&lt;TDependency&gt;()</code> returns a new dynamic stub object every time it&#8217;s
+called. <code>The&lt;TDependency&gt;()</code> behaves differently. BDDExtensions has
+AutoMocking support built-in. Once you let the framework create your
+test object you&#8217;re able to access the automatically injected dynamic
+stubs with this method. Last but not least <code>Some&lt;TDependency&gt;()</code>
+provides the same behavior as <code>An&lt;T&gt;()</code>. It only returns a collection
+of newly created stub objects.</p>
+
+<p>I&#8217;m going to write a more detailed documentation of the current version
+soon. So in case you&#8217;re interested in the BDDExtensions, stay tuned . .
+.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/05/18/how-to-visual-studio-test-runner-side-by-side-test-code/">How to: Visual Studio Test Runner & Side by Side Test Code</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-05-18T22:34:49+02:00" pubdate  data-updated="true" >May 18<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>After spending a lot of time with xUnit.net I recently had to go back to MSTest for my testing again (because it&#8217;s the de facto standard at my
+current client which is not negotiable ;-().</p>
+
+<p>Former colleagues of mine will probably laugh about this, because I&#8217;ve had a love-and-hate-relationship with MSTest and especially the
+VisualStudio runner in the past.  However since I currently have no other option I use what is there.  Better writing tests such an environment, than writing no test at all.
+At least if you ask me.</p>
+
+<p>This brings me back to the topic of the post. Some prerequisites: I like developing software in a TDD manner and am using Resharper with its
+&#8216;Generate&#8217; and &#8216;Move To&#8217; features a lot. I like the idea of having test-code side by side with the actual tested code. With this a lot of
+you&#8217;re daily TDD life becomes at least a bit easier and painless. I see at least two advantages in such an approach:</p>
+
+<ol>
+<li>You don&#8217;t have to copy generated classes from the test-assembly to
+the regular assembly.</li>
+<li>You don&#8217;t have to maintain two different folder hierarchies (The one
+in the code-assembly and the one in the regular assembly) and
+therefore know exactly where to look for test-code.</li>
+</ol>
+
+
+<p>This is one of the things I learned from JP Boodhoo in his NBDN bootcamp, credit for the general idea goes to him for this. So how can
+we achieve this in VisualStudio with MSTest?</p>
+
+<p>DISCLAIMER: The stuff I describe in the rest of the post has to do with modifying the `.csproj&#8217; msbuild file of a project. If this is a &#8216;no go&#8217;
+for you, you can probably stop reading here ;-). For the rest here is the list of steps I took in order to make it work:</p>
+
+<h2>Step 1: Add the ProjectType Guids to your project.</h2>
+
+<p>VisualStudio&#8217;s test explorer scans only projects which are of a certain project type (aka the test project) for tests. VS identifies such a
+project based on the value of a particular node in the <code>.csproj</code> file, the <code>ProjectTypeGuid</code> node. Simply copy this one
+from an actual test project to the <code>.csproj</code> of your regular assembly. Another option of course would be to start with a test project from scratch.</p>
+
+<figure class='code'><figcaption><span>Adding the ProjectType Guids</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;Project</span> <span class="na">ToolsVersion=</span><span class="s">&quot;3.5&quot;</span> <span class="na">DefaultTargets=</span><span class="s">&quot;Build&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;PropertyGroup&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Configuration</span> <span class="na">Condition=</span><span class="s">&quot; &#39;$(Configuration)&#39; == &#39;&#39; &quot;</span><span class="nt">&gt;</span>Debug<span class="nt">&lt;/Configuration&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Platform</span> <span class="na">Condition=</span><span class="s">&quot; &#39;$(Platform)&#39; == &#39;&#39; &quot;</span><span class="nt">&gt;</span>AnyCPU<span class="nt">&lt;/Platform&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;ProductVersion&gt;</span>9.0.30729<span class="nt">&lt;/ProductVersion&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;SchemaVersion&gt;</span>2.0<span class="nt">&lt;/SchemaVersion&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c">&lt;!-- The line below has to be added to regular projects --&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;ProjectTypeGuids&gt;</span>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}<span class="nt">&lt;/ProjectTypeGuids&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;ProjectGuid&gt;</span>{890DA3CA-999A-474E-BA87-05A834CAB7B8}<span class="nt">&lt;/ProjectGuid&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;OutputType&gt;</span>Library<span class="nt">&lt;/OutputType&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;AppDesignerFolder&gt;</span>Properties<span class="nt">&lt;/AppDesignerFolder&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;RootNamespace&gt;</span>SpecReport<span class="nt">&lt;/RootNamespace&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;AssemblyName&gt;</span>SpecReport<span class="nt">&lt;/AssemblyName&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;TargetFrameworkVersion&gt;</span>v3.5<span class="nt">&lt;/TargetFrameworkVersion&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;FileAlignment&gt;</span>512<span class="nt">&lt;/FileAlignment&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/PropertyGroup&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Step 2: Apply conditional compilation for not including the test code when compiling in release mode</h2>
+
+<p>So, the tests sit right next to the tested code, right? We presumable don&#8217;t want our tests to be deployed to production. We can achieve this
+in MSBuild fairly easy with conditional compilation and wildcards.</p>
+
+<figure class='code'><figcaption><span>Including the specs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;ItemGroup&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c">&lt;!-- The line below skips all files ending with &#39;Spec.cs&#39; when compiling in a mode other than DEBUG --&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Compile</span> <span class="na">Condition=</span><span class="s">&quot;&#39;$(Configuration)&#39; == &#39;Debug&#39;&quot;</span> <span class="na">Include=</span><span class="s">&quot;**\*Specs.cs&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;Compile</span> <span class="na">Include=</span><span class="s">&quot;IReportEngine.cs&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Compile</span> <span class="na">Include=</span><span class="s">&quot;IReportGenerator.cs&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Compile</span> <span class="na">Include=</span><span class="s">&quot;Notification.cs&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Compile</span> <span class="na">Include=</span><span class="s">&quot;NotificationCollection.cs&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Compile</span> <span class="na">Include=</span><span class="s">&quot;Properties\AssemblyInfo.cs&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Compile</span> <span class="na">Include=</span><span class="s">&quot;ReportEngine.cs&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Compile</span> <span class="na">Include=</span><span class="s">&quot;ReportEngineArgs.cs&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/ItemGroup&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Step 3: Apply conditional compilation for not deploying the test-related assemblies when compiling in release mode</h2>
+
+<p>In order to get rid of the test-specific assemblies for production deployment you can also apply conditionals to the assembly references of
+a project.</p>
+
+<figure class='code'><figcaption><span>Excluding assemblies from deployment</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;ItemGroup&gt;</span>
+</span><span class='line'><span class="nt">&lt;Reference</span> <span class="na">Condition=</span><span class="s">&quot;&#39;$(Configuration)&#39; == &#39;Debug&#39;&quot;</span> <span class="na">Include=</span><span class="s">&quot;Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Reference</span> <span class="na">Condition=</span><span class="s">&quot;&#39;$(Configuration)&#39; == &#39;Debug&#39;&quot;</span> <span class="na">Include=</span><span class="s">&quot;Rhino.Mocks, Version=3.5.0.1337, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;SpecificVersion&gt;</span>False<span class="nt">&lt;/SpecificVersion&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;HintPath&gt;</span>..\Externals\RhinoMocks35\Rhino.Mocks.dll<span class="nt">&lt;/HintPath&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Reference&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Reference</span> <span class="na">Include=</span><span class="s">&quot;System&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Reference</span> <span class="na">Include=</span><span class="s">&quot;System.Core&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;RequiredTargetFramework&gt;</span>3.5<span class="nt">&lt;/RequiredTargetFramework&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Reference&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Reference</span> <span class="na">Include=</span><span class="s">&quot;System.Xml.Linq&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;RequiredTargetFramework&gt;</span>3.5<span class="nt">&lt;/RequiredTargetFramework&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Reference&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Reference</span> <span class="na">Include=</span><span class="s">&quot;System.Data.DataSetExtensions&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;RequiredTargetFramework&gt;</span>3.5<span class="nt">&lt;/RequiredTargetFramework&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Reference&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Reference</span> <span class="na">Include=</span><span class="s">&quot;System.Data&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Reference</span> <span class="na">Include=</span><span class="s">&quot;System.Xml&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/ItemGroup&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Et voila: The approach described in this post seams to work fine. At least I&#8217;m not experiencing side effects since I&#8217;ve configured it that
+way &#8230;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/05/04/what-is-actually-a-composite-application/">What Is Actually a Composite Application?</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-05-04T23:04:40+02:00" pubdate  data-updated="true" >May 4<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&#8216;Composite application&#8217; is one of those terms you talk endlessly with other developers about, only to find out that each of them has a totally
+different understanding of what the term actually means. If you try to google it you&#8217;ll find several definitions ranging from &#8216;a solution
+stitched composed of loosely coupled semi-independent components&#8217; over &#8216;application built by combining multiple existing functions into a new
+application&#8217; over &#8216;business mashups&#8217; to &#8216;frontends to a Service Oriented Architecture&#8217;. Just to be clear, I like none of those definitions and I
+won&#8217;t give you a formal definition either. Instead I would like to take quick look at the key differences (as I see them) between composite
+applications and conventional architectures. If take a look at how software developers &amp; architects deal with complexity IMHO it mostly
+boils down to two things: 1. Decomposition and 2. Integration. Complex problems get broken down into handier pieces which can be solved more
+easily. We apply this divide-and-conquer-strategy at multiple levels (classes, algorithms, components, layers, tiers, just to name a few). We
+do this to achieve all sort of things like maintainability, reversibility, testability, etc. However, in order to have a working
+solution you need to reintegrate all those parts and that integration aspect for me personally is one of the main differences between
+conventional and composite architectures:</p>
+
+<ul>
+<li>Integration in conventional architectures is performed in a static way, mainly by the compiler but also by deployment tools (f.e.
+ILMerge).</li>
+<li>Compared to that, integration in composite architectures is more or less dynamic. It&#8217;s performed at runtime by some kind of integration
+architecture with a kernel built around the concept of dependency inversion. When inspecting composite applications you&#8217;ll very often
+find a host-process which dynamically loads modules and a container based infrastructure which does the actual low level composition.
+This container can be an actual Inversion-of-Control-container, but this isn&#8217;t a must. The Managed Extensibility Framework for instance
+is able to achieve similar things.</li>
+</ul>
+
+
+<p>Besides that, another aspect really important to composite architecture is the <strong>Open-Closed-Principle applied to architecture</strong>.</p>
+
+<p>OCP was originally formulated by Uncle Bob Martin as</p>
+
+<blockquote><p>software entities (classes, modules, functions, etc.) should be open for extension, but closed for modification.</p></blockquote>
+
+<p>What does this mean to architecture? It basically means that you&#8217;re able extend your host environment without
+having the need to recompile it. This can range from adding a new module to the system, over registering new business capabilities to extending
+the UI of host environment (which is called the shell). So far I&#8217;ve talked a bit about the IMHO typical aspects of composite applications,
+but not why you might want to use such an architecture and what possible benefits of such an architecture might be. I guess this is worth an own
+post, so I&#8217;ll spare that for now &#8230; .</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/04/01/in-case-youre-interested-in-bdd/">In Case You&#8217;re Interested in BDD &#8230;</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-04-01T19:17:11+02:00" pubdate  data-updated="true" >Apr 1<span>st</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&#8230; you should take a look at this wonderful article by Scott Bellware</p>
+
+<p><a href="http://www.code-magazine.com/article.aspx?quickid=0805061" title="http://www.code-magazine.com/article.aspx?quickid=0805061">http://www.code-magazine.com/article.aspx?quickid=0805061</a></p>
+
+<p>Enjoy the reading!</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/03/30/composite-apps/">Composite Apps</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-03-30T22:53:21+02:00" pubdate  data-updated="true" >Mar 30<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&#8217;m currently in the process of preparing material for a workshop at my current client. The workshop will be mainly focused on implementing
+client-side Composite Apps with the Composite UI Application Block / SCSF but it&#8217;ll also contain a large portion about Composite Apps in
+general. While the CAB / SCSF is good documented in several blogs, I&#8217;m not aware of a good overview on the general part of Composite Apps,
+especially when it comes to typical pitfalls of such architectures and how to avoid them. I believe that a lot of the problems related to such
+architectures are reoccuring (like patterns). At least I&#8217;ve seen them on the last three apps I worked on. Bottomline: I thought it might be a
+good idea to share my current view on the topic and discuss it in further posts. Stuff I&#8217;m planing to cover:</p>
+
+<ul>
+<li><a href="/2009/05/04/what-is-actually-a-composite-application/">What is actually a Composite App?</a></li>
+<li>When should you invest in a composite architecture?</li>
+<li>Typical pitfall: Assembly explosion</li>
+<li>Typical pitfall: The composite monolith aka broken module autonomy (This will probably be more than just one post)</li>
+<li>Typical pitfall: Nontransparent remote calls</li>
+<li>Typical pitfall: Synchronous communication</li>
+</ul>
+
+
+<p>The index of content is work in progress and I don&#8217;t consider it to be
+complete. Feel free to post any suggestions and feedback &#8230;</p>
+
+<p>Stay tuned for more !</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/03/19/contextual-composition/">Contextual Composition</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-03-19T23:00:22+01:00" pubdate  data-updated="true" >Mar 19<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today I would like to talk a little bit about something I&#8217;ve witnessed in software development over and over again. Actually, I&#8217;ve seen this
+more or less in every commercial codebase I&#8217;ve worked with so far. I&#8217;m talking about giant switch statements, the misuse of inheritance and
+code that is so entangled that it&#8217;s a pain to work with it. And it just becomes harder and harder every day. Sounds familiar? I bet so. I&#8217;m
+talking about the tiny little variations in behaviour of software and typical code that is written to handle them. Sounds abstract? Maybe a
+little example might help.</p>
+
+<h2>Example: A WorkItem viewer</h2>
+
+<p>To be honest, I&#8217;m not really good at examples. I hope the following one is sufficient enough to transport what I&#8217;d like to show you. Let&#8217;s say we&#8217;re building
+a software that displays WorkItems. WorkItems are in short a concept often used in ALM (Application Lifecycle Management) tools in order to
+perform work and defect tracking. WorkItems can be assigned to a participating user. To add a little twist, let&#8217;s say that there&#8217;re two
+roles in the application: Administrator and Developer. The Administrator is able to see all the items, while the Developer only sees the ones
+assigned to him. This is how our little domain might look like:</p>
+
+<p><a href="/images/posts/domain.bmp"><img src="/images/posts/domain.bmp" alt="WorkItem Domain Model" /></a></p>
+
+<p>So let&#8217;s have a look at how this might be implemented using Windows Forms, starting with the most common type.</p>
+
+<h2>Type 1: The procedural one</h2>
+
+<figure class='code'><figcaption><span>A typical procedural implementation</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">partial</span> <span class="k">class</span> <span class="nc">WorkItemExplorer</span> <span class="p">:</span> <span class="n">Form</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">readonly</span> <span class="n">IWorkItemRepository</span> <span class="n">workItemRepository</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="nf">WorkItemExplorer</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">InitializeComponent</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="nf">WorkItemExplorer</span><span class="p">(</span><span class="n">IWorkItemRepository</span> <span class="n">workItemRepository</span><span class="p">)</span> <span class="p">:</span> <span class="k">this</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="n">workItemRepository</span> <span class="p">=</span> <span class="n">workItemRepository</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">OnLoad</span><span class="p">(</span><span class="n">EventArgs</span> <span class="n">e</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">IList</span> <span class="n">workItems</span><span class="p">;</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="n">Thread</span><span class="p">.</span><span class="n">CurrentPrincipal</span><span class="p">.</span><span class="n">IsInRole</span><span class="p">(</span><span class="n">ApplicationRoles</span><span class="p">.</span><span class="n">Admin</span><span class="p">))</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>          <span class="n">workItems</span> <span class="p">=</span> <span class="n">workItemRepository</span><span class="p">.</span><span class="n">ToList</span><span class="p">();</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      <span class="k">else</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>          <span class="n">workItems</span> <span class="p">=</span> <span class="n">workItemRepository</span>
+</span><span class='line'>                                  <span class="p">.</span><span class="n">Where</span><span class="p">(</span><span class="n">wi</span> <span class="p">=&gt;</span> <span class="n">Equals</span><span class="p">(</span><span class="n">wi</span><span class="p">.</span><span class="n">AssignedTo</span><span class="p">.</span><span class="n">Alias</span><span class="p">,</span> <span class="n">Thread</span><span class="p">.</span><span class="n">CurrentPrincipal</span><span class="p">.</span><span class="n">Identity</span><span class="p">.</span><span class="n">Name</span><span class="p">))</span>
+</span><span class='line'>                                  <span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">wi</span> <span class="p">=&gt;</span> <span class="n">wi</span><span class="p">)</span>
+</span><span class='line'>                                  <span class="p">.</span><span class="n">ToList</span><span class="p">();</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">workItemList</span><span class="p">.</span><span class="n">DataSource</span> <span class="p">=</span> <span class="n">workItems</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This piece of code really raises strong emotions in me. Don&#8217;t get me wrong I&#8217;ve written stuff like that myself, but I don&#8217;t want to see code like this
+anymore. What I especially don&#8217;t like about it (besides the inability to be unit tested) is how easily it falls apart and becomes messy when new
+roles with slightly different behaviour must be integrated later on.</p>
+
+<h2>Type 2: The inheritance based one</h2>
+
+<p>If not procedural, let&#8217;s do it the classic object oriented way. Isn&#8217;t inheritance useful to solve our
+problem? Why don&#8217;t we use subclasses and polymorphism? This could get us something like this &#8230;</p>
+
+<p><a href="/images/posts/inheritance.bmp"><img src="/images/posts/inheritance.bmp" alt="image" /></a></p>
+
+<p>&#8230; or if you prever code:</p>
+
+<figure class='code'><figcaption><span>Using inheritance</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">partial</span> <span class="k">class</span> <span class="nc">AdminWorkItemExplorer</span> <span class="p">:</span> <span class="n">Form</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">readonly</span> <span class="n">IWorkItemRepository</span> <span class="n">workItemRepository</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="nf">AdminWorkItemExplorer</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">InitializeComponent</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="nf">AdminWorkItemExplorer</span><span class="p">(</span><span class="n">IWorkItemRepository</span> <span class="n">workItemRepository</span><span class="p">)</span> <span class="p">:</span> <span class="k">this</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="n">workItemRepository</span> <span class="p">=</span> <span class="n">workItemRepository</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">OnLoad</span><span class="p">(</span><span class="n">EventArgs</span> <span class="n">e</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">base</span><span class="p">.</span><span class="n">OnLoad</span><span class="p">(</span><span class="n">e</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">workItemList</span><span class="p">.</span><span class="n">DataSource</span> <span class="p">=</span> <span class="n">LoadItems</span><span class="p">(</span><span class="n">workItemRepository</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">protected</span> <span class="k">virtual</span> <span class="n">IList</span> <span class="nf">LoadItems</span><span class="p">(</span><span class="n">IWorkItemRepository</span> <span class="n">workItemRepository</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">workItemRepository</span><span class="p">.</span><span class="n">ToList</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">partial</span> <span class="k">class</span> <span class="nc">DeveloperWorkItemExplorer</span> <span class="p">:</span> <span class="n">AdminWorkItemExplorer</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="nf">DeveloperWorkItemExplorer</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">InitializeComponent</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="nf">DeveloperWorkItemExplorer</span><span class="p">(</span><span class="n">IWorkItemRepository</span> <span class="n">workItemRepository</span><span class="p">)</span> <span class="p">:</span> <span class="k">base</span><span class="p">(</span><span class="n">workItemRepository</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">protected</span> <span class="k">override</span> <span class="n">IList</span> <span class="nf">LoadItems</span><span class="p">(</span><span class="n">IWorkItemRepository</span> <span class="n">workItemRepository</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">workItemRepository</span><span class="p">.</span><span class="n">Where</span><span class="p">(</span><span class="n">wi</span> <span class="p">=&gt;</span> <span class="n">Equals</span><span class="p">(</span><span class="n">wi</span><span class="p">.</span><span class="n">AssignedTo</span><span class="p">.</span><span class="n">Alias</span><span class="p">,</span> <span class="n">Thread</span><span class="p">.</span><span class="n">CurrentPrincipal</span><span class="p">.</span><span class="n">Identity</span><span class="p">.</span><span class="n">Name</span><span class="p">))</span>
+</span><span class='line'>                      <span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">wi</span> <span class="p">=&gt;</span> <span class="n">wi</span><span class="p">)</span>
+</span><span class='line'>                      <span class="p">.</span><span class="n">ToList</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">WorkItemExplorerFactory</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">static</span> <span class="n">Form</span> <span class="nf">CreateExplorer</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">var</span> <span class="n">wiRepository</span> <span class="p">=</span> <span class="k">new</span> <span class="n">WorkItemRepository</span><span class="p">();</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">if</span> <span class="p">(</span><span class="n">Thread</span><span class="p">.</span><span class="n">CurrentPrincipal</span><span class="p">.</span><span class="n">IsInRole</span><span class="p">(</span><span class="n">ApplicationRoles</span><span class="p">.</span><span class="n">Admin</span><span class="p">))</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="k">new</span> <span class="nf">AdminWorkItemExplorer</span><span class="p">(</span><span class="n">wiRepository</span><span class="p">);</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">return</span> <span class="k">new</span> <span class="nf">DeveloperWorkItemExplorer</span><span class="p">(</span><span class="n">wiRepository</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Instead of one we&#8217;ve now got three classes: One Form for each role in addition to a little <code>Factory</code>. The <code>Factory</code> was added to encapsulate the creation of the concrete Form. The specialized behaviour is extracted into a virtual
+method and overridden where it was needed. This is code I&#8217;ve seen less often in my career than the procedural one, but still I&#8217;ve seen it
+often. This was the standard way for me personally to handle variation not so many years ago. When I originally started to write code for
+object oriented systems, I almost all the time thought OO was about solving problems through inheritance. I can only guess, but I tend to
+think that same applies to a lot of other developers out there. So what might be wrong with this design? First the obvious one: A
+<code>DeveloperWorkItemExplorer</code> is a specialized <code>AdminWorkItemExplorer</code>. Aha, nice one! Inheritance is only used for technical reasons here. The
+inheritance chain by itself doesn&#8217;t really make sense on its own.  Besides that the <code>Extract &amp; Override-Pattern</code> used here also tends to
+degrade very fast. After time you&#8217;ll often see more and more virtual methods appear in your class hierarchy as more variations are introduced
+to your system. Another thing to mention is that you can only inherit once in .NET. The inheritance based solution becomes quickly messy when
+you have to share code between different leaves of the inheritance tree, which are in no direct connection.</p>
+
+<h2>Type 3: A glimpse at contextual composition</h2>
+
+<p>Why don&#8217;t we use composition to achieve what we need? Let&#8217;s play a bit with generics and
+try to build classes which can be composed together. Let&#8217;s look at a possible implementation and its implications.</p>
+
+<p><a href="/images/posts/contextualcomposition.bmp"><img src="/images/posts/contextualcomposition.bmp" alt="image" /></a></p>
+
+<p>So whats different here (besides the amount of involved components :-))?</p>
+
+<p>There is only one View. The complete behaviour is moved into a newly created <code>Presenter</code> class.</p>
+
+<figure class='code'><figcaption><span>Refactoring to composition with a swappable Presenter</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">partial</span> <span class="k">class</span> <span class="nc">WorkItemExplorerView</span> <span class="p">:</span> <span class="n">Form</span><span class="p">,</span> <span class="n">IWorkItemView</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">readonly</span> <span class="n">IPresenter</span> <span class="n">presenter</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="nf">WorkItemExplorerView</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">InitializeComponent</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="nf">WorkItemExplorerView</span><span class="p">(</span><span class="n">IPresenter</span> <span class="n">presenter</span><span class="p">)</span> <span class="p">:</span> <span class="k">this</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="n">presenter</span> <span class="p">=</span> <span class="n">presenter</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="n">presenter</span><span class="p">.</span><span class="n">View</span> <span class="p">=</span> <span class="k">this</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cp">#region IWorkItemView Members public void RenderWorkItems(IList workItems) </span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">workItemList</span><span class="p">.</span><span class="n">DataSource</span> <span class="p">=</span> <span class="n">workItems</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="cp">#endregion</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">OnLoad</span><span class="p">(</span><span class="n">EventArgs</span> <span class="n">e</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">base</span><span class="p">.</span><span class="n">OnLoad</span><span class="p">(</span><span class="n">e</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">presenter</span><span class="p">.</span><span class="n">Load</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There&#8217;re two presenters, one for each role.</p>
+
+<figure class='code'><figcaption><span>The Presenters</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">AdminWorkItemExplorerPresenter</span> <span class="p">:</span> <span class="n">Presenter</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">readonly</span> <span class="n">IWorkItemRepository</span> <span class="n">repository</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="nf">AdminWorkItemExplorerPresenter</span><span class="p">(</span><span class="n">IWorkItemRepository</span> <span class="n">repository</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="n">repository</span> <span class="p">=</span> <span class="n">repository</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Load</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>          <span class="n">View</span><span class="p">.</span><span class="n">RenderWorkItems</span><span class="p">(</span><span class="n">repository</span><span class="p">.</span><span class="n">ToList</span><span class="p">());</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">DeveloperWorkItemExplorerPresenter</span> <span class="p">:</span> <span class="n">Presenter</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">readonly</span> <span class="n">IWorkItemRepository</span> <span class="n">repository</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="nf">DeveloperWorkItemExplorerPresenter</span><span class="p">(</span><span class="n">IWorkItemRepository</span> <span class="n">repository</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="n">repository</span> <span class="p">=</span> <span class="n">repository</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Load</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">View</span><span class="p">.</span><span class="n">RenderWorkItems</span><span class="p">(</span> <span class="n">repository</span>
+</span><span class='line'>          <span class="p">.</span><span class="n">Where</span><span class="p">(</span><span class="n">wi</span><span class="p">=&gt;</span> <span class="n">Equals</span><span class="p">(</span><span class="n">wi</span><span class="p">.</span><span class="n">AssignedTo</span><span class="p">.</span><span class="n">Alias</span><span class="p">,</span> <span class="n">Thread</span><span class="p">.</span><span class="n">CurrentPrincipal</span><span class="p">.</span><span class="n">Identity</span><span class="p">.</span><span class="n">Name</span><span class="p">))</span>
+</span><span class='line'>          <span class="p">.</span><span class="n">Select</span><span class="p">(</span><span class="n">wi</span> <span class="p">=&gt;</span> <span class="n">wi</span><span class="p">)</span>
+</span><span class='line'>          <span class="p">.</span><span class="n">ToList</span><span class="p">());</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The Factory is composed out of reusable parts.</p>
+
+<figure class='code'><figcaption><span>A generic composable factory</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IFactory</span><span class="p">&lt;</span><span class="n">TSubject</span><span class="p">,</span> <span class="n">TContext</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">TSubject</span> <span class="nf">Create</span><span class="p">(</span><span class="n">TContext</span> <span class="n">context</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">InlineFactory</span><span class="p">&lt;</span><span class="n">TSubject</span><span class="p">,</span> <span class="n">TContext</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IFactory</span><span class="p">&lt;</span><span class="n">TFactory</span><span class="p">,</span> <span class="n">TContext</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">readonly</span> <span class="n">Func</span><span class="p">&lt;</span><span class="n">TContext</span><span class="p">,</span> <span class="n">TSubject</span><span class="p">&gt;</span> <span class="n">inlineFactory</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="nf">InlineFactory</span><span class="p">(</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">TContext</span><span class="p">,</span> <span class="n">TSubject</span><span class="p">&gt;</span> <span class="n">inlineFactory</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="n">inlineFactory</span> <span class="p">=</span> <span class="n">inlineFactory</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>      
+</span><span class='line'>  <span class="cp">#region IFactory&lt;TContext, TSubject&gt; Members </span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="n">TSubject</span> <span class="nf">Create</span><span class="p">(</span><span class="n">TContext</span> <span class="n">context</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nf">inlineFactory</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>      
+</span><span class='line'>  <span class="cp">#endregion </span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IContextualFactory</span><span class="p">&lt;</span><span class="n">TSubject</span><span class="p">,</span> <span class="n">TContext</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IFactory</span><span class="p">&lt;</span><span class="n">TSubject</span><span class="p">,</span> <span class="n">TContext</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">bool</span> <span class="nf">CanHandle</span><span class="p">(</span><span class="n">TContext</span> <span class="n">context</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">ContextualFactory</span><span class="p">&lt;</span><span class="n">TSubject</span><span class="p">,</span><span class="n">TContext</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IContextualFactory</span><span class="p">&lt;</span><span class="n">TSubject</span><span class="p">,</span> <span class="n">TContext</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">readonly</span> <span class="n">ISpecification</span><span class="p">&lt;</span><span class="n">TContext</span><span class="p">&gt;</span> <span class="n">contextSpec</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">readonly</span> <span class="n">IFactory</span><span class="p">&lt;</span><span class="n">TSubject</span><span class="p">,</span> <span class="n">TContext</span><span class="p">&gt;</span> <span class="n">factory</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="nf">ContextualFactory</span><span class="p">(</span>
+</span><span class='line'>      <span class="n">ISpecification</span><span class="p">&lt;</span><span class="n">TContext</span><span class="p">&gt;</span> <span class="n">contextSpec</span><span class="p">,</span>
+</span><span class='line'>      <span class="n">IFactory</span><span class="p">&lt;</span><span class="n">TSubject</span><span class="p">,</span> <span class="n">TContext</span><span class="p">&gt;</span> <span class="n">factory</span><span class="p">)</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="n">contextSpec</span> <span class="p">=</span> <span class="n">contextSpec</span><span class="p">;</span>
+</span><span class='line'>          <span class="k">this</span><span class="p">.</span><span class="n">factory</span> <span class="p">=</span> <span class="n">factory</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      
+</span><span class='line'>  <span class="k">public</span> <span class="nf">ContextualFactory</span><span class="p">(</span>
+</span><span class='line'>      <span class="n">Predicate</span><span class="p">&lt;</span><span class="n">TContext</span><span class="p">&gt;</span> <span class="n">inlineSpec</span><span class="p">,</span>
+</span><span class='line'>      <span class="n">Func</span><span class="p">&lt;</span><span class="n">TContext</span><span class="p">,</span> <span class="n">TSubject</span><span class="p">&gt;</span> <span class="n">inlineFactory</span><span class="p">)</span> <span class="p">:</span> <span class="k">this</span><span class="p">(</span>
+</span><span class='line'>          <span class="k">new</span> <span class="nf">InlineSpecification</span><span class="p">(</span><span class="n">inlineSpec</span><span class="p">),</span>
+</span><span class='line'>          <span class="k">new</span> <span class="nf">InlineFactory</span><span class="p">(</span><span class="n">inlineFactory</span><span class="p">)</span> <span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cp">#region IContextualFactory&lt;TSubject, TContext&gt; Members </span>
+</span><span class='line'>      
+</span><span class='line'>  <span class="k">public</span> <span class="kt">bool</span> <span class="nf">CanHandle</span><span class="p">(</span><span class="n">TContext</span> <span class="n">context</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">contextSpec</span><span class="p">.</span><span class="n">IsSatisfiedBy</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>      
+</span><span class='line'>  <span class="k">public</span> <span class="n">TSubject</span> <span class="nf">Create</span><span class="p">(</span><span class="n">TContext</span> <span class="n">context</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">factory</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cp">#endregion</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">ISpecification</span><span class="p">&lt;</span><span class="n">TSubject</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">bool</span> <span class="nf">IsSatisfiedBy</span><span class="p">(</span><span class="n">TSubject</span> <span class="n">subject</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">InlineSpecification</span> <span class="p">:</span> <span class="n">ISpecification</span><span class="p">&lt;</span><span class="n">TSubject</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">readonly</span> <span class="n">Predicate</span><span class="p">&lt;</span><span class="n">TSubject</span><span class="p">&gt;</span> <span class="n">predicate</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="nf">InlineSpecification</span><span class="p">(</span><span class="n">Predicate</span><span class="p">&lt;</span><span class="n">TSubject</span><span class="p">&gt;</span> <span class="n">predicate</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="n">predicate</span> <span class="p">=</span> <span class="n">predicate</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="kt">bool</span> <span class="nf">IsSatisfiedBy</span><span class="p">(</span><span class="n">Subject</span> <span class="n">subject</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="nf">predicate</span><span class="p">(</span><span class="n">subject</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">ComposedFactory</span><span class="p">&lt;</span><span class="n">TSubject</span><span class="p">,</span> <span class="n">TContext</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IFactory</span><span class="p">&lt;</span><span class="n">TSubject</span><span class="p">,</span> <span class="n">TContext</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">readonly</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">IContextualFactory</span><span class="p">&lt;</span><span class="n">TSubject</span><span class="p">,</span> <span class="n">TContext</span><span class="p">&gt;&gt;</span> <span class="n">factories</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="nf">ComposedFactory</span><span class="p">(</span><span class="k">params</span> <span class="n">IContextualFactory</span><span class="p">&lt;</span><span class="n">TSubject</span><span class="p">,</span> <span class="n">TContext</span><span class="p">&gt;[]</span> <span class="n">factories</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="n">factories</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&gt;&lt;</span><span class="n">TSubject</span><span class="p">,</span> <span class="n">TContext</span><span class="p">&gt;();</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="n">factories</span><span class="p">.</span><span class="n">AddRange</span><span class="p">(</span><span class="n">factories</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cp">#region IFactory Members </span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="n">TSubject</span> <span class="nf">Create</span><span class="p">(</span><span class="n">TContext</span> <span class="n">context</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>          <span class="k">return</span> <span class="n">factories</span><span class="p">.</span><span class="n">First</span><span class="p">(</span><span class="n">factory</span> <span class="p">=&gt;</span> <span class="n">factory</span><span class="p">.</span><span class="n">CanHandle</span><span class="p">(</span><span class="n">context</span><span class="p">)).</span><span class="n">Create</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cp">#endregion </span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>There is a composed factory consisting of special factories for each role. The composed factory chooses the inner factory based on its ability to handle the
+context and delegates the creation to it.</p>
+
+<figure class='code'><figcaption><span>Composing the factory</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">var</span> <span class="n">composedFactory</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ComposedFactory</span><span class="p">&lt;</span><span class="n">Form</span><span class="p">,</span> <span class="n">IPrincipal</span><span class="p">&gt;(</span>
+</span><span class='line'>  <span class="k">new</span> <span class="n">ContextualFactory</span><span class="p">&lt;</span><span class="n">Form</span><span class="p">,</span> <span class="n">IPrincipal</span><span class="p">&gt;(</span>
+</span><span class='line'>      <span class="n">context</span> <span class="p">=&gt;</span> <span class="n">context</span><span class="p">.</span><span class="n">IsInRole</span><span class="p">(</span><span class="n">ApplicationRoles</span><span class="p">.</span><span class="n">Admin</span><span class="p">),</span>
+</span><span class='line'>      <span class="n">create</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="n">WorkItemExplorerView</span><span class="p">(</span><span class="k">new</span> <span class="n">AdminWorkItemExplorerPresenter</span><span class="p">(</span><span class="k">new</span> <span class="n">WorkItemRepository</span><span class="p">()))),</span>
+</span><span class='line'>  <span class="k">new</span> <span class="n">ContextualFactory</span><span class="p">&lt;</span><span class="n">Form</span><span class="p">,</span> <span class="n">IPrincipal</span><span class="p">&gt;(</span>
+</span><span class='line'>      <span class="n">context</span> <span class="p">=&gt;</span> <span class="n">context</span><span class="p">.</span><span class="n">IsInRole</span><span class="p">(</span><span class="n">ApplicationRoles</span><span class="p">.</span><span class="n">Developer</span><span class="p">),</span>
+</span><span class='line'>      <span class="n">create</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="n">WorkItemExplorerView</span><span class="p">(</span><span class="k">new</span> <span class="n">DeveloperWorkItemExplorerPresenter</span><span class="p">(</span><span class="k">new</span> <span class="n">WorkItemRepository</span><span class="p">())))</span> <span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This one was fun to write and I think it&#8217;s a good step forward in comparison to the previous examples.
+However I must admit that I&#8217;m not overwhelmed by the end result. One the one hand we can change a lot of the stuff easily without affecting other
+code. The classes are small and are focused on their responsibilities.  We&#8217;ve managed to extract some code that is potentially reusable. On the
+flipside it looks quite a bit over engineered, especially for this tiny little example. There is a lot of stuff we need to pull together in
+order to make the solution work (although you could of course hide a lot of the details of the composition by wrapping it up in an internal
+DSL.).</p>
+
+<h2>Type 4: Contextual composition + IoC</h2>
+
+<p>Doesn&#8217;t this look like a good situation to introduce an inversion of control container? Probably, but there&#8217;s a tiny little problem. Most of the .NET IoC-Frameworks
+unfortunately don&#8217;t support dynamic contextual binding. This type of binding uses a context (for instance a parameter or something like the
+current principle used in the current example) and determines how to resolve the target on-the-fly based on the context. This is more or less
+the behaviour that I tried to implement manually in the previous example. To our luck there is one framework that implements such a
+behaviour. This is Nate Koharis NInject. The reworked initialization of the code looks like this.</p>
+
+<figure class='code'><figcaption><span>Configuring contextual composition with NInject</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">WorkItemExplorerModule</span> <span class="p">:</span> <span class="n">NinjectModule</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Load</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">Bind</span><span class="p">&lt;</span><span class="n">IPresenter</span><span class="p">&lt;</span><span class="n">IWorkItemExplorerView</span><span class="p">&gt;&gt;()</span>
+</span><span class='line'>          <span class="p">.</span><span class="n">To</span><span class="p">&lt;</span><span class="n">AdminWorkItemExplorerPresenter</span><span class="p">&gt;()</span>
+</span><span class='line'>          <span class="p">.</span><span class="n">When</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">Thread</span><span class="p">.</span><span class="n">CurrentPrincipal</span><span class="p">.</span><span class="n">IsInRole</span><span class="p">(</span><span class="n">ApplicationRoles</span><span class="p">.</span><span class="n">Admin</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">Bind</span><span class="p">&lt;</span><span class="n">IPresenter</span><span class="p">&lt;</span><span class="n">IWorkItemExplorerView</span><span class="p">&gt;&gt;()</span>
+</span><span class='line'>          <span class="p">.</span><span class="n">To</span><span class="p">&lt;</span><span class="n">DeveloperWorkItemExplorerPresenter</span><span class="p">&gt;()</span>
+</span><span class='line'>          <span class="p">.</span><span class="n">When</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">Thread</span><span class="p">.</span><span class="n">CurrentPrincipal</span><span class="p">.</span><span class="n">IsInRole</span><span class="p">(</span><span class="n">ApplicationRoles</span><span class="p">.</span><span class="n">Developer</span><span class="p">));</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">Bind</span><span class="p">&lt;</span><span class="n">IWorkItemRepository</span><span class="p">&gt;().</span><span class="n">To</span><span class="p">&lt;</span><span class="n">WorkItemRepository</span><span class="p">&gt;();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and it could be used like this</p>
+
+<figure class='code'><figcaption><span>Configuring an running an app with NInject</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">var</span> <span class="n">kernel</span> <span class="p">=</span> <span class="k">new</span> <span class="n">StandardKernel</span><span class="p">(</span><span class="k">new</span> <span class="n">WorkItemExplorerModule</span><span class="p">());</span>
+</span><span class='line'><span class="n">Application</span><span class="p">.</span><span class="n">Run</span><span class="p">(</span><span class="n">kernel</span><span class="p">.</span><span class="n">Get</span><span class="p">&lt;</span><span class="n">WorkItemExplorerView</span><span class="p">&gt;());</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Do you see any unnecessary mechanics here?</p>
+
+<h2>Bottomline </h2>
+
+<p>With a little help of our little ninja friend we&#8217;ve managed to build a loosely coupled
+system which is a) easy to change and b) easy to extend. NInject hides a lot of the needed mechanics behind the scenes and lets us focus on the
+essence of the actual composition. While NInject certainly helps a lot, everything is still doable without such a container. That beeing said:
+Favor composition over inheritance. Combine stuff in order to deal with variation. Leave nasty procedual and primarily inheritance bases
+solutions behind. It will make your life a lot easier, at least it worked for me &#8230;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/02/09/beat-the-it/">Beat the It</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-02-09T11:45:55+01:00" pubdate  data-updated="true" >Feb 9<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>&#8230; or how one could implement the It-Syntax introduced by MSpec. If you don&#8217;t know what the hell I&#8217;m talking about take a look at this code.
+(I don&#8217;t know if that&#8217;s the current MSpec syntax but I think you&#8217;ll get where I&#8217;d like to take you &#8230; )</p>
+
+<figure class='code'><figcaption><span>Using delegates for running a specification</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[Description]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">Transferring_between_from_account_and_to_account</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">static</span> <span class="n">Account</span> <span class="n">fromAccount</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">static</span> <span class="n">Account</span> <span class="n">toAccount</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">Context</span> <span class="n">before_each</span> <span class="p">=()=&gt;</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">fromAccount</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Account</span> <span class="p">{</span><span class="n">Balance</span> <span class="p">=</span> <span class="m">1</span><span class="n">m</span><span class="p">};</span>
+</span><span class='line'>      <span class="n">toAccount</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Account</span> <span class="p">{</span><span class="n">Balance</span> <span class="p">=</span> <span class="m">1</span><span class="n">m</span><span class="p">};</span>
+</span><span class='line'>  <span class="p">};</span>
+</span><span class='line'>      
+</span><span class='line'>  <span class="n">When</span> <span class="n">the_transfer_is_made</span> <span class="p">=()=&gt;</span> <span class="n">fromAccount</span><span class="p">.</span><span class="n">Transfer</span><span class="p">(</span><span class="m">1</span><span class="n">m</span><span class="p">,</span> <span class="n">toAccount</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">It</span> <span class="n">should_debit_the_from_account_by_the_amount_transferred</span> <span class="p">=</span>
+</span><span class='line'>      <span class="p">()=&gt;</span> <span class="n">fromAccount</span><span class="p">.</span><span class="n">Balance</span><span class="p">.</span><span class="n">ShouldEqual</span><span class="p">(</span><span class="m">0</span><span class="n">m</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">It</span> <span class="n">should_credit_the_to_account_by_the_amount_transferred</span> <span class="p">=</span>
+</span><span class='line'>      <span class="p">()=&gt;</span> <span class="n">toAccount</span><span class="p">.</span><span class="n">Balance</span><span class="p">.</span><span class="n">ShouldEqual</span><span class="p">(</span><span class="m">2</span><span class="n">m</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What you&#8217;ll see in this post is part of a spike I did some month ago <a href="http://www.bjoernrochel.de/2008/11/27/a-new-syntax-for-xunitbddextensions/">while I was considering</a>
+to move the xUnit.BDDExtensions syntax to something more GWT and MSpec like. I finally decided against that, partially because I realized that
+there is absolutely no need for a MSpec-Clone; partially because I&#8217;m still not so happy with the implications / side effects of the syntax
+(nearly everything in you spec needs to become static). Anyway, <a href="http://blog.jpboodhoo.com/SlightAdditionToJpboodhoobdd.aspx">recently</a>
+JP Boodhoo introduced the same feature to his jpboodhoo.bdd codebase. A lot of the comments requested a more detailed description of how he
+implemented that feature. While I can&#8217;t answer that question, I can talk about how I tackled that problem. So here we go!</p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/2009/02/09/beat-the-it/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/01/30/verifying-indirect-outputs-with-rhinomocks-in-xunitbddextensions/">Verifying Indirect Outputs With Rhino.Mocks in xUnit.BDDExtensions</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-01-30T23:51:31+01:00" pubdate  data-updated="true" >Jan 30<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><a href="http://weblogs.asp.net/sfeldman/archive/2009/01/29/factory-per-dto.aspx">This</a> post by Sean Feldman was kind of an eye opener to me. It introduced me
+to a feature of Rhino.Mocks I wasn&#8217;t really aware of and helped to solve a problem I was never able to solve in a really satisfying way.</p>
+
+<p>As you might know xUnit.BDDExtensions is using Rhino.Mocks behind the scenes, but hides a lot of the mechanics of the library. This was done
+in order to eliminate a lot of the ceremony in a specification, so that a writer of a specification could focus on its essence (Quote MASHUP
+from JP and Jeremy D. Miller :-) ). However, especially when configuring and verifying behaviors Rhino.Mocks still shines through (with all its power).</p>
+
+<p>So let&#8217;s take a closer look at the problem I&#8217;m referring to. It has to do with specifications which observe indirect outputs. The following
+code is part of a little object-to-object-mapper I wrote some months ago.</p>
+
+<figure class='code'><figcaption><span>An class with indirect outputs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">ExpressionBasedWriter</span><span class="p">&lt;</span><span class="n">Target</span><span class="p">,</span> <span class="n">PropertyType</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IWriteStrategy</span><span class="p">&lt;</span><span class="n">Target</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">readonly</span> <span class="n">IExpressionHandler</span> <span class="n">expressionHandler</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">readonly</span> <span class="n">MemberExpression</span> <span class="n">memberExpression</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="nf">ExpressionBasedWriter</span><span class="p">(</span><span class="n">Expression</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&gt;</span> <span class="n">memberSelector</span><span class="p">,</span> <span class="n">IExpressionHandler</span> <span class="n">expressionHandler</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="n">memberExpression</span> <span class="p">=</span> <span class="p">(</span><span class="n">MemberExpression</span><span class="p">)</span> <span class="n">memberSelector</span><span class="p">.</span><span class="n">Body</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="n">expressionHandler</span> <span class="p">=</span> <span class="n">expressionHandler</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">WriteTo</span><span class="p">(</span><span class="n">Target</span> <span class="n">instance</span><span class="p">,</span> <span class="kt">object</span> <span class="k">value</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">expressionHandler</span><span class="p">.</span><span class="n">Handle</span><span class="p">(</span><span class="k">new</span> <span class="n">HandlerContext</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>              <span class="n">TargetInstanceType</span> <span class="p">=</span> <span class="n">instance</span><span class="p">.</span><span class="n">GetType</span><span class="p">(),</span>
+</span><span class='line'>              <span class="n">TargetInstance</span> <span class="p">=</span> <span class="n">instance</span><span class="p">,</span>
+</span><span class='line'>              <span class="n">ValueToWrite</span> <span class="p">=</span> <span class="k">value</span><span class="p">,</span>
+</span><span class='line'>              <span class="n">MemberSelector</span> <span class="p">=</span> <span class="n">memberExpression</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It&#8217;s not so important to understand the full context of the code. The important part is in the body of the <code>WriteTo()</code> method. Do you see it? It
+constructs an instance and passes it into an internal dependency. The interesting question now is how to verify the indirect output passed to
+the dependeny in a spec&#8230;</p>
+
+<h2>Take 1: Overriding Equals and GetHashcode() in the indirect output class</h2>
+
+<p>In case you correctly implemented both of these methods you could write
+a spec, that looks like somewhat like this.</p>
+
+<figure class='code'><figcaption><span>Overriding GetHashcode()</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[Concern(typeof(ExpressionBasedWriter&lt;,&gt;))]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">When_something_is_about_to_be_written</span> <span class="p">:</span> <span class="n">InstanceContextSpecification</span><span class="p">&lt;</span><span class="n">IWriteStrategy</span><span class="p">&lt;</span><span class="n">TestDto1</span><span class="p">&gt;&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">IExpressionHandler</span> <span class="n">expressionHandler</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">Expression</span> <span class="n">targetExpression</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">TestDto1</span> <span class="n">target</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="kt">string</span> <span class="n">valueToWrite</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">EstablishContext</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">targetExpression</span> <span class="p">=</span> <span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">StringProperty</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">expressionHandler</span> <span class="p">=</span> <span class="n">Dependency</span><span class="p">&lt;</span><span class="n">IExpressionHandler</span><span class="p">&gt;();</span>
+</span><span class='line'>      <span class="n">target</span> <span class="p">=</span> <span class="k">new</span> <span class="n">TestDto1</span><span class="p">();</span>
+</span><span class='line'>      <span class="n">valueToWrite</span> <span class="p">=</span> <span class="s">&quot;uninteresting value&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">protected</span> <span class="k">override</span> <span class="n">IWriteStrategy</span> <span class="nf">CreateSut</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="k">new</span> <span class="nf">ExpressionBasedWriter</span><span class="p">(</span><span class="n">targetExpression</span><span class="p">,</span> <span class="n">expressionHandler</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Because</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">Sut</span><span class="p">.</span><span class="n">WriteTo</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">valueToWrite</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="na"> </span>
+</span><span class='line'><span class="na"> [Observation]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">should_form_a_context_and_pass_it_to_the_actual_expression_handler</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">expressionHandler</span><span class="p">.</span><span class="n">WasToldTo</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Handle</span><span class="p">(</span><span class="k">new</span> <span class="n">HandlerContext</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>          <span class="n">MemberSelector</span> <span class="p">=</span> <span class="p">(</span><span class="n">MemberExpression</span><span class="p">)</span><span class="n">targetExpression</span><span class="p">.</span><span class="n">Body</span><span class="p">,</span>
+</span><span class='line'>          <span class="n">TargetInstance</span> <span class="p">=</span> <span class="n">target</span><span class="p">,</span>
+</span><span class='line'>          <span class="n">TargetInstanceType</span> <span class="p">=</span> <span class="n">target</span><span class="p">.</span><span class="n">GetType</span><span class="p">(),</span>
+</span><span class='line'>          <span class="n">ValueToWrite</span> <span class="p">=</span> <span class="n">valueToWrite</span>
+</span><span class='line'>      <span class="p">}));</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This works. Ok, but what I don&#8217;t like about this solution is that I expose the concrete HandlerContext class to the spec. Test isolation is
+broken here. Besides I have to be very carefully with my implementation of Equals in this case, although it might only be needed in the
+specification.</p>
+
+<h2>Take 2: Introduce a factory</h2>
+
+<p>You can prevent the direct exposure of the specification to the concrete HandlerContext by introducing a factory which abstacts the creation of
+the HandlerContext class away.</p>
+
+<figure class='code'><figcaption><span>Handling creation via a factory</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">ExpressionBasedWriter</span> <span class="p">:</span> <span class="n">IWriteStrategy</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">readonly</span> <span class="n">IExpressionHandler</span> <span class="n">expressionHandler</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">readonly</span> <span class="n">IHandlerContextFactory</span> <span class="n">handleContextFactory</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">readonly</span> <span class="n">MemberExpression</span> <span class="n">memberExpression</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="nf">ExpressionBasedWriter</span><span class="p">(</span> <span class="n">Expression</span> <span class="n">memberSelector</span><span class="p">,</span> <span class="n">IExpressionHandler</span> <span class="n">expressionHandler</span><span class="p">,</span> <span class="n">IHandlerContextFactory</span> <span class="n">handleContextFactory</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="n">memberExpression</span> <span class="p">=</span> <span class="p">(</span><span class="n">MemberExpression</span><span class="p">)</span> <span class="n">memberSelector</span><span class="p">.</span><span class="n">Body</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="n">expressionHandler</span> <span class="p">=</span> <span class="n">expressionHandler</span><span class="p">;</span>
+</span><span class='line'>      <span class="k">this</span><span class="p">.</span><span class="n">handleContextFactory</span> <span class="p">=</span> <span class="n">handleContextFactory</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">WriteTo</span><span class="p">(</span><span class="n">Target</span> <span class="n">instance</span><span class="p">,</span> <span class="kt">object</span> <span class="k">value</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">var</span> <span class="n">context</span> <span class="p">=</span> <span class="n">handleContextFactory</span><span class="p">.</span><span class="n">CreateContext</span><span class="p">(</span><span class="n">memberExpression</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="k">value</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">expressionHandler</span><span class="p">.</span><span class="n">Handle</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na">[Concern(typeof (ExpressionBasedWriter&lt;,&gt;))]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">When_something_is_about_to_be_written</span> <span class="p">:</span> <span class="n">InstanceContextSpecification</span><span class="p">&lt;</span><span class="n">IWriteStrategy</span><span class="p">&lt;</span><span class="n">TestDto1</span><span class="p">&gt;&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">IExpressionHandler</span> <span class="n">expressionHandler</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">IHandlerContext</span> <span class="n">handlerContext</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">IHandlerContextFactory</span> <span class="n">handlerContextFactory</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">TestDto1</span> <span class="n">target</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">Expression</span> <span class="n">targetExpression</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="kt">string</span> <span class="n">valueToWrite</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">EstablishContext</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">targetExpression</span> <span class="p">=</span> <span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">StringProperty</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">expressionHandler</span> <span class="p">=</span> <span class="n">Dependency</span><span class="p">&lt;</span><span class="n">IExpressionHandler</span><span class="p">&gt;();</span>
+</span><span class='line'>      <span class="n">handlerContextFactory</span> <span class="p">=</span> <span class="n">Dependency</span><span class="p">&lt;</span><span class="n">IHandlerContextFactory</span><span class="p">&gt;();</span>
+</span><span class='line'>      <span class="n">handlerContext</span> <span class="p">=</span> <span class="n">Dependency</span><span class="p">&lt;</span><span class="n">IHandlerContext</span><span class="p">&gt;();</span>
+</span><span class='line'>      <span class="n">target</span> <span class="p">=</span> <span class="k">new</span> <span class="n">TestDto1</span><span class="p">();</span>
+</span><span class='line'>      <span class="n">valueToWrite</span> <span class="p">=</span> <span class="s">&quot;uninteresting value&quot;</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">handlerContextFactory</span>
+</span><span class='line'>          <span class="p">.</span><span class="n">WhenToldTo</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">CreateContext</span><span class="p">((</span><span class="n">MemberExpression</span><span class="p">)</span><span class="n">targetExpression</span><span class="p">.</span><span class="n">Body</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">valueToWrite</span><span class="p">))</span>
+</span><span class='line'>          <span class="p">.</span><span class="n">Return</span><span class="p">(</span><span class="n">handlerContext</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">protected</span> <span class="k">override</span> <span class="n">IWriteStrategy</span> <span class="nf">CreateSut</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="k">new</span> <span class="nf">ExpressionBasedWriter</span><span class="p">(</span><span class="n">targetExpression</span><span class="p">,</span> <span class="n">expressionHandler</span><span class="p">,</span> <span class="n">handlerContextFactory</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Because</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">Sut</span><span class="p">.</span><span class="n">WriteTo</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">valueToWrite</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="na"> </span>
+</span><span class='line'><span class="na"> [Observation]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">should_call_the_context_handler_factory_in_order_to_create_a_context</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">handlerContextFactory</span><span class="p">.</span><span class="n">WasToldTo</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">CreateContext</span><span class="p">((</span><span class="n">MemberExpression</span><span class="p">)</span><span class="n">targetExpression</span><span class="p">.</span><span class="n">Body</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">valueToWrite</span><span class="p">));</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na"> [Observation]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">should_call_the_expression_handler_in_order_to_handle_the_created_context</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">expressionHandler</span><span class="p">.</span><span class="n">WasToldTo</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Handle</span><span class="p">(</span><span class="n">handlerContext</span><span class="p">));</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Again, this works too. But is that really a path one should go?  Introducing an additional factory + interface everytime one encounters
+an indirect output? Besides that, did you notice how the specification kind of degraded? So much additional noise now in there. This one causes
+me actually more pain than Take 1, which takes me to &#8230;</p>
+
+<h2>Take 3: A neat Rhino.Mocks feature</h2>
+
+<p>Leave the code from Take 1 as it is. Here&#8217;s how you can write the specification, without exposing it to the concrete HandlerContext class and without causing to much noise in the specification itself.</p>
+
+<figure class='code'><figcaption><span>Using RhinoMocks argument constraints</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[Concern(typeof(ExpressionBasedWriter&lt;,&gt;))]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">When_something_is_about_to_be_written</span> <span class="p">:</span> <span class="n">InstanceContextSpecification</span><span class="p">&lt;</span><span class="n">IWriteStrategy</span><span class="p">&lt;</span><span class="n">TestDto1</span><span class="p">&gt;&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">IExpressionHandler</span> <span class="n">expressionHandler</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">Expression</span> <span class="n">targetExpression</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">TestDto1</span> <span class="n">target</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="kt">string</span> <span class="n">valueToWrite</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">EstablishContext</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">targetExpression</span> <span class="p">=</span> <span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">StringProperty</span><span class="p">;</span>
+</span><span class='line'>      <span class="n">expressionHandler</span> <span class="p">=</span> <span class="n">Dependency</span><span class="p">&lt;</span><span class="n">IExpressionHandler</span><span class="p">&gt;();</span>
+</span><span class='line'>      <span class="n">target</span> <span class="p">=</span> <span class="k">new</span> <span class="n">TestDto1</span><span class="p">();</span>
+</span><span class='line'>      <span class="n">valueToWrite</span> <span class="p">=</span> <span class="s">&quot;uninteresting value&quot;</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">protected</span> <span class="k">override</span> <span class="n">IWriteStrategy</span> <span class="nf">CreateSut</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="k">new</span> <span class="nf">ExpressionBasedWriter</span><span class="p">(</span><span class="n">targetExpression</span><span class="p">,</span> <span class="n">expressionHandler</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Because</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">Sut</span><span class="p">.</span><span class="n">WriteTo</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">valueToWrite</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="na"> </span>
+</span><span class='line'><span class="na"> [Observation]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">should_form_a_context_and_pass_it_to_the_actual_expression_handler</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">expressionHandler</span><span class="p">.</span><span class="n">WasToldTo</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Handle</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Matches</span><span class="p">(</span><span class="n">matcher</span> <span class="p">=&gt;</span>
+</span><span class='line'>          <span class="n">matcher</span><span class="p">.</span><span class="n">MemberSelector</span> <span class="p">==</span> <span class="n">targetExpression</span><span class="p">.</span><span class="n">Body</span> <span class="p">&amp;&amp;</span>
+</span><span class='line'>          <span class="n">matcher</span><span class="p">.</span><span class="n">TargetInstance</span> <span class="p">==</span> <span class="n">target</span> <span class="p">&amp;&amp;</span>
+</span><span class='line'>          <span class="n">matcher</span><span class="p">.</span><span class="n">TargetInstanceType</span> <span class="p">==</span> <span class="n">target</span><span class="p">.</span><span class="n">GetType</span><span class="p">()</span> <span class="p">&amp;&amp;</span>
+</span><span class='line'>          <span class="n">matcher</span><span class="p">.</span><span class="n">ValueToWrite</span><span class="p">.</span><span class="n">Equals</span><span class="p">(</span><span class="n">valueToWrite</span><span class="p">))));</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The interesting stuff happens around the generic Arg class. You can use it to specify a callback with which the indirect output can be verified.</p>
+
+<h2>Conclusion</h2>
+
+<p>In the past I mostly did what I demonstrated with Take 1 when I encountered a situation where I needed to verify indirect outputs.
+Introducing a factory for this was never really an option for me. I don&#8217;t see a real benefit there. The generic argument matching
+capabilities of Rhino.Mocks really close a gap for me and they&#8217;re what I&#8217;m going to use for solving similar situations from now on.</p>
+
+<p>I hope I&#8217;m not the only kid on the street who didn&#8217;t know that this feature exists &#8230;</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/01/27/ilmerge-and-rake-go-xunitbddextensions/">ILMerge and Rake Go xunit.BDDExtensions</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-01-27T14:48:54+01:00" pubdate  data-updated="true" >Jan 27<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today I added this little piece of code to the trunk of xUnit.BDDExtensions. It&#8217;s a rake task for merging assemblies via the ILMerge tool.</p>
+
+<figure class='code'><figcaption><span>Merging assemblies with ILMerge</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">desc</span> <span class="s2">&quot;Merges the assemblies&quot;</span>
+</span><span class='line'><span class="n">task</span> <span class="ss">:merge</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">mkdir</span> <span class="no">DEPLOY_DIR</span> <span class="k">unless</span> <span class="no">File</span><span class="o">.</span><span class="n">exists?</span><span class="p">(</span><span class="no">DEPLOY_DIR</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">cp</span> <span class="s2">&quot;xunit.dll&quot;</span><span class="o">.</span><span class="n">expand_to</span><span class="p">(</span><span class="ss">:build_dir</span><span class="p">),</span> <span class="s2">&quot;xunit.dll&quot;</span><span class="o">.</span><span class="n">expand_to</span><span class="p">(</span><span class="ss">:deploy_dir</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">cp</span> <span class="s2">&quot;Rhino.Mocks.dll&quot;</span><span class="o">.</span><span class="n">expand_to</span><span class="p">(</span><span class="ss">:build_dir</span><span class="p">),</span> <span class="s2">&quot;Rhino.Mocks.dll&quot;</span><span class="o">.</span><span class="n">expand_to</span><span class="p">(</span><span class="ss">:deploy_dir</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">assemblies_to_merge</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;xUnit.BDDExtensions.dll&quot;</span><span class="p">,</span> <span class="s2">&quot;StructureMap.dll&quot;</span><span class="p">,</span> <span class="s2">&quot;StructureMap.AutoMocking.dll&quot;</span><span class="o">]</span>
+</span><span class='line'>  <span class="n">ilmerge</span> <span class="s2">&quot;xunit.bddextensions.dll&quot;</span><span class="p">,</span> <span class="n">assemblies_to_merge</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ruby is a fantastic language. The more I learn about it the more I actually like it. Let&#8217;s have a look at how this task is implemented.
+First of all I opened up Ruby&#8217;s string class and added new methods to it (this is called MonkeyPatching, and worth a blog post on its own :-))</p>
+
+<figure class='code'><figcaption><span>Extending the String class</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">String</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">escape</span>
+</span><span class='line'>    <span class="s2">&quot;&quot;</span><span class="c1">#{self.to_s}&quot;&quot; </span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">expand_to</span> <span class="n">dir_symbol</span>
+</span><span class='line'>    <span class="k">case</span> <span class="n">dir_symbol</span>
+</span><span class='line'>      <span class="k">when</span> <span class="ss">:build_dir</span> <span class="n">path</span> <span class="o">=</span> <span class="no">BUILD_DIR</span>
+</span><span class='line'>      <span class="k">when</span> <span class="ss">:source_dir</span> <span class="n">path</span> <span class="o">=</span> <span class="no">SOURCE_DIR</span>
+</span><span class='line'>      <span class="k">when</span> <span class="ss">:externals_dir</span> <span class="n">path</span> <span class="o">=</span> <span class="no">EXTERNALS_DIR</span>
+</span><span class='line'>      <span class="k">when</span> <span class="ss">:deploy_dir</span> <span class="n">path</span> <span class="o">=</span> <span class="no">DEPLOY_DIR</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">self</span><span class="o">.</span><span class="n">to_s</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And here is the actual <code>ilmerge</code> - method. It simply gets the complete path to the ILMerge.exe (not shown here), expands the name to all
+assemblies that have to be merged and escapes them, before the actual call to ILMerge is issued over the console &#8230;</p>
+
+<figure class='code'><figcaption><span>The ilmerge method</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">ilmerge</span><span class="p">(</span><span class="n">output_name</span><span class="p">,</span> <span class="n">assemblies</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">ilmerge</span> <span class="o">=</span> <span class="n">get_tool</span> <span class="ss">:ILMerge</span> <span class="n">expanded_assemblies</span> <span class="o">=</span> <span class="n">assemblies</span><span class="o">.</span><span class="n">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">x</span><span class="o">.</span><span class="n">expand_to</span><span class="p">(</span><span class="ss">:build_dir</span><span class="p">)</span><span class="o">.</span><span class="n">escape</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="n">sh</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">ilmerge</span><span class="o">.</span><span class="n">escape</span><span class="si">}</span><span class="s2"> /out:</span><span class="si">#{</span><span class="n">output_name</span><span class="o">.</span><span class="n">expand_to</span><span class="p">(</span><span class="ss">:deploy_dir</span><span class="p">)</span><span class="o">.</span><span class="n">escape</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">expanded_assemblies</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Currently 3 assemblies pop out of the Rake build. These are <code>xunit.dll</code>, <code>xunit.bddextensions.dll</code> and <code>Rhino.Mocks.dll</code>. While it&#8217;s technically no
+problem to merge them into a single assembly (and of course I would love to have it that way) there are two problems currently not solved. The
+R# runner dynamically loads the <code>xunit.dll</code> to run the tests and <code>StructureMap.AutoMocking.dll</code> dynamically loads <code>Rhino.Mocks.dll</code>. That&#8217;s
+the reason why I&#8217;m currently not able to merge it.</p>
+
+<p>Any suggestions how to solve that?</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <nav class="pagination">
+    <div>
+      
+        <a class="prev" href="/blog/page/6/">&larr; Older</a>
+      
+      <a href="/blog/archives">Blog Archives</a>
+      
+      <a class="next" href="/blog/page/4/">Newer &rarr;</a>
+      
+    </div>
+  </nav>
+</div>
+<aside class="sidebar">
+  
+    <section>
+	<h1>About me</h1>
+  <p><br/><img src="/images/bjro-eyes.jpg" alt="portrait" /></p>
+	<p>
+  My name is <strong>Björn Rochel</strong>.  I&#8217;m a 32 year old geek, who&#8217;s crazy about software development, living in Cologne and
+  currently working for <a href="http://www.intercomponentware.com">ICW</a> as a .NET Developer / Architect.
+	</p>
+	<ul class="badges">
+		<li><a href="http://www.xing.com/profile/Bjoern_Rochel"><img src="/images/badges/xing2-small.png" alt="Xing" /></a></li>
+		<li><a href="http://www.github.com/BjRo"><img src="/images/badges/github-small.png" alt="Github" /></a></li>
+		<li><a href="http://www.twitter.com/bjoernrochel"><img src="/images/badges/twitter-square-small.png" alt="Twitter" /></a></li>
+		<li><a href="/atom.xml"><img src="/images/badges/rss-circle-small.png" alt="Rss" /></a></li>
+	</ul>
+</section>
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/Conferences/'>Conferences (8)</a></li>
+<li class='category'><a href='/blog/categories/FSharp/'>FSharp (3)</a></li>
+<li class='category'><a href='/blog/categories/Katas/'>Katas (2)</a></li>
+<li class='category'><a href='/blog/categories/StoryTeller/'>StoryTeller (14)</a></li>
+<li class='category'><a href='/blog/categories/StructureMap/'>StructureMap (9)</a></li>
+<li class='category'><a href='/blog/categories/Testing/'>Testing (20)</a></li>
+<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (7)</a></li>
+<li class='category'><a href='/blog/categories/dotnet/'>dotnet (65)</a></li>
+<li class='category'><a href='/blog/categories/ruby/'>ruby (3)</a></li>
+<li class='category'><a href='/blog/categories/sw-design/'>sw-design (13)</a></li>
+<li class='category'><a href='/blog/categories/xUnitBDDExtensions/'>xUnitBDDExtensions (15)</a></li>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("bjoernrochel", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/bjoernrochel" class="twitter-follow-button" data-width="208px" data-show-count="false">Follow @bjoernrochel</a>
+  
+</section>
+
+<section>
+<h1>Disclaimer</h1>
+<p>
+The opinions expressed herein are my own personal opinions and do not necessarily represent the opinion of any other organization or person, including (but not limited to) my fellow employees, my employer, its clients or their agents. 
+</p>
+<p>
+ Copyright &copy; 2011 - Björn Rochel
+</p>
+<section>
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Björn Rochel -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'bjro';
+      
+        
+        var disqus_script = 'count.js';
+      
+
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>

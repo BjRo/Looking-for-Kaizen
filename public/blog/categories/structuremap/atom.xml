@@ -1,0 +1,844 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: StructureMap | Dude, where's my Kaizen?]]></title>
+  <link href="http://www.bjoernrochel.de/blog/categories/structuremap/atom.xml" rel="self"/>
+  <link href="http://www.bjoernrochel.de/"/>
+  <updated>2011-11-06T22:05:04+01:00</updated>
+  <id>http://www.bjoernrochel.de/</id>
+  <author>
+    <name><![CDATA[Björn Rochel]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Cutting the fluff from Service registration with StructureMap - revisited]]></title>
+    <link href="http://www.bjoernrochel.de/2010/03/15/cutting-the-fluff-from-service-registration-with-structuremap-revisited/"/>
+    <updated>2010-03-15T21:28:45+01:00</updated>
+    <id>http://www.bjoernrochel.de/2010/03/15/cutting-the-fluff-from-service-registration-with-structuremap-revisited</id>
+    <content type="html"><![CDATA[<p>This is just a quick update of an <a href="/2009/07/24/cutting-the-fluff-from-service-registration-or-how-to-do-funky-stuff-with-coc-castledynamicproxy-structuremap/">older post of mine</a>.
+Since StructureMap's convention API has <a href="/2010/01/05/changes-in-structuremap-254/">changed quite a bit</a>,
+here is the updated version of the code used in the post using the new APIs introduced in StructureMap 2.5.4.</p>
+
+<!--more-->
+
+
+<p>The new code is actually easier. It should look something like this . . . .</p>
+
+<p>``` csharp Singleton registration convention</p>
+
+<pre><code>public class ServicesAreSingletonsAndProxies : IRegistrationConvention
+{
+    #region IRegistrationConvention Members
+
+    public void Process(Type type, Registry registry)
+    {
+        if (!type.IsConcrete() || !IsService(type) || !Constructor.HasConstructors(type))
+        {
+            return;
+        }
+
+        Type pluginType = FindPluginType(type);
+
+        if (pluginType == null)
+        {
+            return;
+        }
+
+        registry
+            .For(pluginType)
+            .Singleton()
+            .Use(new ConfiguredInstance(type)
+            {
+              Interceptor = new DynamicProxyInterceptor(pluginType)
+            });
+    }
+
+    #endregion
+
+    private static bool IsService(Type type)
+    {
+        return type.Name.EndsWith("Service");
+    }
+
+    private static Type FindPluginType(Type concreteType)
+    {
+        string interfaceName = "I" + concreteType.Name;
+
+        return concreteType
+            .GetInterfaces()
+            .Where(t =&gt; string.Equals(t.Name, interfaceName, StringComparison.Ordinal))
+            .FirstOrDefault();
+    }
+}
+</code></pre>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[StructureMap: Registry usage]]></title>
+    <link href="http://www.bjoernrochel.de/2010/01/06/structuremap-registry-usage/"/>
+    <updated>2010-01-06T00:37:22+01:00</updated>
+    <id>http://www.bjoernrochel.de/2010/01/06/structuremap-registry-usage</id>
+    <content type="html"><![CDATA[<p>I recently read something like this on Twitter:</p>
+
+<p><blockquote><p>It feels wrong to have registration and scanning in the Registry class</p></blockquote></p>
+
+<p><strong>I absolutely second that</strong>.
+One of the decisions in my current project (a composite smart client) was to
+separate these two things, in order to give clear guidance on "which to use when".
+Here is our setup:</p>
+
+<p>``` csharp Bootstrapping our container
+ObjectFactory.Initialize(x =>
+{</p>
+
+<pre><code>x.AddRegistry(new InfrastructureRegistry()); 
+x.Scan(scanner =&gt; 
+{
+        scanner.AssembliesFromPath("Modules"); 
+        scanner.Convention&lt;ProjectConventions&gt;();
+        scanner.LookForRegistries(); 
+});
+</code></pre>
+
+<p>});
+```</p>
+
+<ul>
+<li>We packaged our conventions for the project into a single composite convention. This includes the easier mappings ala <code>IFoo</code> -- <code>Foo</code>, as
+well as more complex conventions for services which are automatically instrumented on creation via <code>Castle.DynamicProxy</code>.</li>
+<li><code>Registry</code> classes are used for all the stuff we're not able to configure via conventions.<br/>
+  This includes mappings from interfaces to types with completely different names, adding externally created stuff to the container or configuring complex constructions like a composite.</li>
+<li>There is exactly 1 <code>Registry</code> per module in our application (+ 1 for the infrastructure).</li>
+<li><code>Registry</code> classes are dynamically found during the scan process by looking into each assembly configured in the Scanner.</li>
+</ul>
+
+
+<p>Any opinions? If you're using Registries, how do you use them?</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Changes in StructureMap 2.5.4]]></title>
+    <link href="http://www.bjoernrochel.de/2010/01/05/changes-in-structuremap-254/"/>
+    <updated>2010-01-05T23:45:14+01:00</updated>
+    <id>http://www.bjoernrochel.de/2010/01/05/changes-in-structuremap-254</id>
+    <content type="html"><![CDATA[<p>Interesting what some people do during the Christmas holidays. In the case of Jeremy D. Miller this was releasing a new version of
+StructureMap and working heavily on the Fubu MVC codebase. Today I had the pleasure to migrate my current projects codebase (which previously
+used Unity and Unity.Interception) to the newest StructureMap version 2.5.4 and Castle.DynamicProxy2.</p>
+
+<p>It was an interesting experience mostly because I tried to re-use some code pieces for setting up conventions
+from an earlier project based on StructureMap 2.5.3. Quite a few things have been changed in the API. Needless to say, all for good. I just
+wanted to give a quick overview of the things I noticed.</p>
+
+<h2>ITypeScanner was replaced by IRegistrationConvention</h2>
+
+<p>If you wanted to write custom conventions in StructureMap 2.5.3 you needed to implement the <code>ITypeScanner</code> interface
+(An example is described <a href="/2009/07/24/cutting-the-fluff-from-service-registration-or-how-to-do-funky-stuff-with-coc-castledynamicproxy-structuremap/">here</a>).</p>
+
+<p>``` csharp ITypeScanner was replaced by IRegistrationConvention
+//StructureMap 2.5.3
+public interface ITypeScanner
+{</p>
+
+<pre><code>void Process(Type type, PluginGraph graph); 
+</code></pre>
+
+<p>}</p>
+
+<p>//StructureMap 2.5.4
+public interface IRegistrationConvention
+{</p>
+
+<pre><code>void Process(Type type, Registry registry);
+</code></pre>
+
+<p>}
+```</p>
+
+<p>As you can see, it's not only a renaming. The signature of the <code>Process</code>-method has changed, too. It now uses the good old <code>Registry</code> class for doing the
+registration. Very consistent, good choice. Modifying the <code>PluginGraph</code> always left me with the feeling that I was digging too deep into the StuctureMap internals.</p>
+
+<h2>TypeRules base class has been replaced with Extension methods</h2>
+
+<p>In the past you could re-use some utility methods for reflection (like checking whether a type is concrete, etc.) by
+inheriting from the <code>TypeRules</code> class. This class has been completely removed, but the functionality is still available via Extension methods.</p>
+
+<h2>Lot's and lot's of renaming </h2>
+
+<p>A lot of renaming has been done. The most interesting stuff happened in the <code>Registry</code> class.</p>
+
+<p>``` csharp Renamings in the fluent api
+//StructureMap 2.5.3
+public class MyRegistry
+{</p>
+
+<pre><code>public MyRegistry()
+{
+    ForRequestedType&lt;IFoo&gt;().TheDefaultIsConcreteType&lt;Foo&gt;();
+    ForRequestedType&lt;IBar&gt;().TheDefaultIsConcreteType&lt;Bar&gt;().AsSingleton();
+
+    ForRequestedType&lt;IFoo&gt;().TheDefault.IsThis(new Foo)
+    ForRequestedType&lt;IBar&gt;().TheDefault.Is.ConstructedBy(x =&gt; new Bar());
+}
+</code></pre>
+
+<p>}</p>
+
+<p>//StructureMap 2.5.4
+public class MyRegistry
+{</p>
+
+<pre><code>public MyRegistry()
+{
+    For&lt;IFoo&gt;().Use&lt;Foo&gt;();
+    ForSingleton&lt;IBar&gt;().Use&lt;Bar&gt;();
+
+    For&lt;IFoo&gt;().Use(new Foo)
+    For&lt;IBar&gt;().Use(x =&gt; new Bar());
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>The new version is a lot less wordier and a lot more consistent in naming. It also feels very familiar, although
+I'm unable to determine why.</p>
+
+<h2>Some new slick features I noticed</h2>
+
+<p>From playing around with the StructureMap trunk version during the "Diving into the StoryTeller Series" I already stumbled over this killer
+feature.</p>
+
+<p><code>csharp Convention based registration
+_container = new Container(x =&gt; x.Scan(s =&gt;
+{
+   s.AssemblyContainingType&lt;ISomeService&gt;();
+   s.ConnectImplementationsToTypesClosing(typeof(IHandler&lt;&gt;));
+}));
+</code></p>
+
+<p>Jimmy Bogard has already written an <a href="http://www.lostechies.com/blogs/jimmy_bogard/archive/2009/12/17/advanced-structuremap-connecting-implementations-to-open-generic-types.aspx">excellent article</a>
+about that particular feature. So instead let us take a look at this new ability.</p>
+
+<p><code>csharp Accessing the container model
+ObjectFactory.Model.GetAllPossible&lt;IInitializable&gt;();
+</code></p>
+
+<p>This resolves all instances from the configuration model which implement the <code>IInitializable</code> interface.</p>
+
+<h2>Stuff you don't see</h2>
+
+<p>If you've followed Jeremy D. Miller closely on Twitter you may have heard that the biggest
+change in the new release has happened under the hood of StructureMap.  In previous versions StructureMap used Reflection.Emit to emit an
+assembly for the construction of the types at runtime. This has been completely rewritten using <code>ExpressionTrees</code>. I'm quite curious how he
+implemented that.</p>
+
+<p>Feels like yet another source to learn has emerged ;-)</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Cutting the fluff from Service registration (or how to do funky stuff with CoC, Castle.DynamicProxy & StructureMap)]]></title>
+    <link href="http://www.bjoernrochel.de/2009/07/24/cutting-the-fluff-from-service-registration-or-how-to-do-funky-stuff-with-coc-castledynamicproxy-structuremap/"/>
+    <updated>2009-07-24T18:46:07+02:00</updated>
+    <id>http://www.bjoernrochel.de/2009/07/24/cutting-the-fluff-from-service-registration-or-how-to-do-funky-stuff-with-coc-castledynamicproxy-structuremap</id>
+    <content type="html"><![CDATA[<p>The more I play around with Convention over Configuration in combination
+with StructureMap the more I'm amazed about what you can do with it and
+how much it reduces the amount of code you need in order to configure
+and wire stuff together. Today I implemented this convention for our
+current prototype:</p>
+
+<blockquote><p>Every class whose class name ends with 'Service' and who implements a
+service interface ( 'I' + ServiceName) is automatically registered as
+a Singleton and proxied</p></blockquote>
+
+<p>The reasoning behind this convention is that I'd like to remove a lot of
+the common, redundant instrumentation code from Services in our
+application. This includes for instance a lot of the logging, caching or
+maybe argument validation aspects. It's currently implemented using
+Castle.DynamicProxy2 although the actual service call interceptors
+haven't been implemented so far. So let's walk through the code and see
+what is necessary in order to realize this.</p>
+
+<p>First of all you need to implement the <code>ITypeScanner</code> interface. Its basic
+purpose is to inspect every type which has been picked up in the
+scanning process of StructureMap and do container registration with it
+in case the type meets the expected criteria. The interface looks like
+this.</p>
+
+<p><code>csharp StuctureMaps TypeScanner
+public interface ITypeScanner
+{
+  void Process(Type type, PluginGraph graph);
+}
+</code></p>
+
+<p>StructureMap contains a handy base class which contains a lot of helper
+methods for implementing a convention, the <code>TypeRules</code> class. The basic
+code for my convention looks like this:</p>
+
+<p>``` csharp My convention</p>
+
+<p>public class ServicesAreSingletonsAndProxies : TypeRules, ITypeScanner
+{
+  #region ITypeScanner Members</p>
+
+<p>  public void Process(Type type, PluginGraph graph)
+  {</p>
+
+<pre><code>if (!IsConcrete(type) || !IsService(type) || !Constructor.HasConstructors(type)) 
+{ 
+  return; 
+} 
+
+var pluginType = FindPluginType(type); 
+
+if (pluginType == null)
+{ 
+  return;
+}
+
+var family = GetFamiliy(graph, pluginType); 
+var instance = CreateInstance(pluginType, type); 
+
+family.AddInstance(instance);
+family.SetScopeTo(InstanceScope.Singleton); 
+</code></pre>
+
+<p>  }</p>
+
+<p>  #endregion
+}
+```</p>
+
+<p>When my convention inspects a type, it first checks whether the type is
+concrete, the type name ends with <code>Service</code> and whether the type has a
+public constructor. If any of this criteria is not satisfied the type is
+ignored. Then it tries to find the primary interface for the concrete
+type. In case an interface has been found a bit StructureMap magic is
+applied which configures the DynamicProxy integration and the plugin
+family to be scoped as Singletons.</p>
+
+<p>In order to integrate DynamicProxy the registration has to be done a bit
+differently compared to how I've described it in previous posts. Instead
+of using <code>PluginGraph.AddType()</code> I'm using
+<code>PluginGraph.AddInstance(IInstance)</code>. This gives you some more options for
+configuration, including adding <code>InstanceInterceptors</code> which are called
+when an instance is resolved via StructureMap. That's the extension
+point I've used. The configuration looks like this . . .</p>
+
+<p>``` csharp Configuring an interceptor
+private static Instance CreateInstance(Type pluginType, Type concreteType)
+{
+  return new ConfiguredInstance(concreteType)
+  {</p>
+
+<pre><code>Interceptor = new DynamicProxyInterceptor(pluginType) 
+</code></pre>
+
+<p>  };
+}
+```</p>
+
+<p>. . . and the code for the interceptor looks like this . . .</p>
+
+<p>``` csharp An Castle.DynamicProxy interceptor
+internal class DynamicProxyInterceptor : InstanceInterceptor
+{
+  private static readonly ProxyGenerator ProxyGenerator = new ProxyGenerator();
+  private readonly Type _pluginType;</p>
+
+<p>  public DynamicProxyInterceptor(Type pluginType)
+  {</p>
+
+<pre><code>_pluginType = pluginType; 
+</code></pre>
+
+<p>  }</p>
+
+<p>  #region InstanceInterceptor Members</p>
+
+<p>  public object Process(object target, IContext context)
+  {</p>
+
+<pre><code>return ProxyGenerator.CreateInterfaceProxyWithTargetInterface( 
+          _pluginType,
+          target, 
+          new LoggingInterceptor()); 
+</code></pre>
+
+<p>  }</p>
+
+<p>  #endregion
+}
+```</p>
+
+<p>I'm using proxy creation over interfaces here. I prefer this over the
+proxy over classes approach, because it doesn't force implementation
+constraints like having to make every public method virtual or the need
+to inherit from <code>MarshalByRef</code> onto the service classes.</p>
+
+<p>That's basically it. The best of it: The whole rule can be easily tested
+in a unit test. The following code uses xUnit.BDDExtensions for this.</p>
+
+<p>``` csharp Testing the convention with xUnit.BDDExtensions
+[Concern(typeof (ServicesAreSingletonsAndProxies))]
+public class When_applying_the<strong>ServicesAreSingletonsAndProxies</strong>convention : StaticContextSpecification
+{
+  private Container _container;</p>
+
+<p>  protected override void Because()
+  {</p>
+
+<pre><code>_container = new Container(x =&gt; x.Scan(s =&gt;
+{ 
+  s.AssemblyContainingType&lt;IGuitarPlayerService&gt;(); 
+  s.With&lt;ServicesAreSingletonsAndProxies&gt;(); 
+}));
+</code></pre>
+
+<p>  }</p>
+
+<p>  [Observation]
+  public void Should_register_all_classes_ending_with<strong>Service</strong>which_also_have_a_contract_interface()
+  {</p>
+
+<pre><code>_container.GetInstance&lt;IGuitarPlayerService&gt;().ShouldNotBeNull(); 
+</code></pre>
+
+<p>  }</p>
+
+<p>  [Observation]
+  public void Should_register_services_as_singletons_by_default()
+  {</p>
+
+<pre><code>_container.GetInstance&lt;IGuitarPlayerService&gt;().ShouldBeEqualTo(_container.GetInstance()); 
+</code></pre>
+
+<p>  }</p>
+
+<p>  [Observation]
+  public void Should_wrapp_a_service_in_a_dynamic_proxy_in_order_to_perform_AOPish_stuff()
+  {</p>
+
+<pre><code>var instance = _container.GetInstance&lt;IGuitarPlayerService&gt;();
+instance.GetType().ShouldNotBeEqualTo(typeof(GuitarPlayerService)); 
+</code></pre>
+
+<p>  }
+}</p>
+
+<h1>region Test helpers</h1>
+
+<p>public interface IGuitarPlayerService {}</p>
+
+<p>public class GuitarPlayerService : IGuitarPlayerService { }</p>
+
+<h1>endregion</h1>
+
+<p>```
+Here is the full code for this convention. Feel free to play with it / use it. That's all for today.</p>
+
+<p>Read you soon . . .</p>
+
+<p>``` csharp The full convention
+public class ServicesAreSingletonsAndProxies : TypeRules, ITypeScanner
+{</p>
+
+<pre><code>#region ITypeScanner Members
+
+public void Process(Type type, PluginGraph graph)
+{
+    if (!IsConcrete(type) || !IsService(type) || !Constructor.HasConstructors(type))
+    {
+        return;
+    }
+
+    var pluginType = FindPluginType(type);
+
+    if (pluginType == null)
+    {
+        return;
+    }
+
+    var family = GetFamiliy(graph, pluginType);
+    var instance = CreateInstance(pluginType, type);
+
+    family.AddInstance(instance);
+    family.SetScopeTo(InstanceScope.Singleton);
+}
+
+#endregion
+
+private static Instance CreateInstance(Type pluginType, Type concreteType)
+{
+    return new ConfiguredInstance(concreteType)
+    {
+        Interceptor = new DynamicProxyInterceptor(pluginType)
+    };
+}
+
+private static PluginFamily GetFamiliy(PluginGraph graph, Type pluginType)
+{
+    if (!graph.ContainsFamily(pluginType))
+    {
+        graph.CreateFamily(pluginType);
+    }
+
+    return graph.FindFamily(pluginType);
+}
+
+private static bool IsService(Type type)
+{
+    return type.Name.EndsWith("Service");
+}
+
+private static Type FindPluginType(Type concreteType)
+{
+    var interfaceName = "I" + concreteType.Name;
+
+    return concreteType
+        .GetInterfaces()
+        .Where(t =&gt; string.Equals(t.Name, interfaceName, StringComparison.Ordinal))
+        .FirstOrDefault();
+}
+</code></pre>
+
+<p>}</p>
+
+<p>internal class DynamicProxyInterceptor : InstanceInterceptor
+{</p>
+
+<pre><code>private static readonly ProxyGenerator ProxyGenerator = new ProxyGenerator();
+private readonly Type _pluginType;
+
+public DynamicProxyInterceptor(Type pluginType)
+{
+    _pluginType = pluginType;
+}
+
+#region InstanceInterceptor Members
+
+public object Process(object target, IContext context)
+{
+    return ProxyGenerator.CreateInterfaceProxyWithTargetInterface(
+        _pluginType,
+        target,
+        new LoggingInterceptor());
+}
+
+#endregion
+</code></pre>
+
+<p>}</p>
+
+<p>[Concern(typeof (ServicesAreSingletonsAndProxies))]
+public class When_applying_the<strong>ServicesAreSingletonsAndProxies</strong>convention_for_a_particular_interface : StaticContextSpecification
+{</p>
+
+<pre><code>private Container _container;
+
+protected override void Because()
+{
+    _container = new Container(x =&gt; x.Scan(s =&gt;
+    {
+        s.AssemblyContainingType&lt;IGuitarPlayerService&gt;();
+        s.With&lt;ServicesAreSingletonsAndProxies&gt;();
+    }));
+}
+
+[Observation]
+public void Should_register_all_classes_ending_with__Service__which_also_have_a_contract_interface()
+{
+    _container.GetInstance&lt;IGuitarPlayerService&gt;().ShouldNotBeNull();
+}
+
+[Observation]
+public void Should_register_services_as_singletons_by_default()
+{
+    _container.GetInstance&lt;IGuitarPlayerService&gt;().ShouldBeEqualTo(_container.GetInstance&lt;IGuitarPlayerService&gt;());
+}
+
+[Observation]
+public void Should_wrapp_a_service_in_a_dynamic_proxy_in_order_to_perform_AOPish_stuff()
+{
+    var instance = _container.GetInstance&lt;IGuitarPlayerService&gt;();
+    instance.GetType().ShouldNotBeEqualTo(typeof(GuitarPlayerService));
+}
+</code></pre>
+
+<p>}</p>
+
+<h1>region Test helpers</h1>
+
+<p>public interface IGuitarPlayerService {}</p>
+
+<p>public class GuitarPlayerService : IGuitarPlayerService { }</p>
+
+<h1>endregion</h1>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Diving into the StoryTeller trunk, Part 5: The EventAggregator]]></title>
+    <link href="http://www.bjoernrochel.de/2009/07/20/diving-into-the-storyteller-trunk-part-5-the-eventaggregator/"/>
+    <updated>2009-07-20T21:19:11+02:00</updated>
+    <id>http://www.bjoernrochel.de/2009/07/20/diving-into-the-storyteller-trunk-part-5-the-eventaggregator</id>
+    <content type="html"><![CDATA[<p>I've spend some time with the Pub / Sub topic on my own in the past. Although I
+still like my own implementation, even a year after I've originally
+written it (yes, rare but sometimes that happens), I really like how
+Jeremy implemented it. The <code>EventAggregator</code> in StoryTeller is one of
+those examples of how much you can achieve with only a few lines of
+code. So let's go diving again ;-)</p>
+
+<p>A type who is interested in recieving messages from the EventAggregator
+in StoryTeller has to implement the <code>IListener&lt;T&gt;</code> interface where T
+specifies the concrete message / event. A container extension is used
+for automatic registration of instances at the <code>EventAggregator</code> after
+instances have been created in the container (more on this later in the
+post).</p>
+
+<p><code>csharp The listener interface
+public interface IListener&lt;T&gt;
+{
+  void Handle(T message);
+}
+</code>
+The interface to the <code>EventAggregator</code> looks like this.
+<code>csharp The EventAggregator interface
+public interface IEventAggregator
+{
+  void SendMessage&lt;T&gt;(Action&lt;T&gt; action) where T : class;
+  void SendMessage&lt;T&gt;(T message);
+  void AddListener(object listener);
+  void RemoveListener(object listener);
+}
+</code></p>
+
+<p>Most of the interface looks familiar to me, except the
+<code>SendMessage&lt;T&gt;(Action&lt;T&gt; action)</code> method. The <code>EventAggregator</code>
+implementation in StoryTeller adds a interesting feature to the topic:
+Using delegates instead of explicit event classes. One of the things
+Jeremy mentioned in his NDC "Presentation Patterns" talk is that
+sometimes creating event classes for events felt a bit tedious to him,
+especially when those events only have signal character and don't carry
+any data with them around. IIRIC the varation with delegates instead of
+event classes implemented in StoryTeller came up in discussion with
+Glenn Block and the Prism team. However it didn't make it into Prism in
+the end. See the difference in usage for yourself:</p>
+
+<p><code>csharp Classic vs. delegate based messaging
+//Using message objects
+aggregator.SendMessage(new ScreenClosingMessage(screen));
+//Using delegates as messages
+aggregator.SendMessage&lt;IWantToKnowWhenAScreenClosed&gt;(x =&gt; x.ScreenHasClosed(screen));
+</code></p>
+
+<p>Below is the code for the <code>EventAggregator</code>. There are some interesting things to notice.</p>
+
+<ul>
+<li>First of all, the <code>EventBroker</code> doesn't know about subscriptions for a
+particular type. It only knows listener objects. Compatible
+listeners are found on the fly when the event / message is published
+by iterating over all known listener objects and calling the CallOn
+extension method. I'll spare the code for this extension method
+because all it does is executing an <code>Action&lt;T&gt;</code> only when an object
+can be cast to the type specified by <code>T</code>.</li>
+<li>Automatic thread-synchronization to the main-thread is applied by
+using the <code>SynchronizationContext</code> class. Imho, one of the gems in the
+.NET 2.0 release that more people should be aware of. I think this
+class is a really great feature for freeing client code from dealing
+with callback synchronization issues. Just let the framework handle
+the <code>InvokeRequired</code> stuff for you. No one likes to write that stuff
+anyway.</li>
+<li>Jeremy likes it functional ;-). I think this is an interesting
+example how C# 3.0 code can actually differ from an 1.0
+implementation. The shown code is really, really dense and focussed
+by using a lot of the C# 2.0 and 3.0 features like lamda
+expressions, extension methods and of course generics. Personally I
+really like this coding style, however a lot of my colleagues don't.
+The debugging story differs a lot from the one using classic if and
+for loops, which isn't such a problem for the test-first or
+test-parallel guys, but I can see where this might feel a bit
+awkward when you've relied on the debugger for most of your
+developing efforts in the past. In my opinion it's just a matter of
+personal taste. Just give it a try and make your own opinion . . .</li>
+</ul>
+
+
+<p>``` csharp The EventAggregator as implemented in StoryTeller
+public class EventAggregator : IEventAggregator
+{
+  private readonly SynchronizationContext <em>context;
+  private readonly List<object> </em>listeners = new List<object>();
+  private readonly object _locker = new object();</p>
+
+<p>  public EventAggregator(SynchronizationContext context)
+  {</p>
+
+<pre><code>_context = context; 
+</code></pre>
+
+<p>  }</p>
+
+<p>  #region IEventAggregator Members
+  public void SendMessage<T>(Action<T> action) where T : class
+  {</p>
+
+<pre><code>sendAction(() =&gt; all().Each(x =&gt; x.CallOn(action))); 
+</code></pre>
+
+<p>  }</p>
+
+<p>  public void SendMessage<T>(T message)
+  {</p>
+
+<pre><code>sendAction(() =&gt; all().CallOnEach&gt;(x =&gt; 
+{
+  x.Handle(message); 
+})); 
+</code></pre>
+
+<p>  }</p>
+
+<p>  public void AddListener(object listener)
+  {</p>
+
+<pre><code>withinLock(() =&gt; 
+{ 
+    if (_listeners.Contains(listener)) return;
+
+    _listeners.Add(listener); 
+});
+</code></pre>
+
+<p>  }</p>
+
+<p>  public void RemoveListener(object listener)
+  {</p>
+
+<pre><code>withinLock(() =&gt; _listeners.Remove(listener)); 
+</code></pre>
+
+<p>  }</p>
+
+<p>  #endregion</p>
+
+<p>  public void AddListeners(params object[] listeners)
+  {</p>
+
+<pre><code>foreach (object listener in listeners)
+{ 
+  AddListener(listener); 
+} 
+</code></pre>
+
+<p>  }</p>
+
+<p>  public bool HasListener(object listener)
+  {</p>
+
+<pre><code>return _listeners.Contains(listener); 
+</code></pre>
+
+<p>  }</p>
+
+<p>  public void RemoveAllListeners()
+  {</p>
+
+<pre><code>_listeners.Clear(); 
+</code></pre>
+
+<p>  }</p>
+
+<p>  protected virtual void sendAction(Action action)
+  {</p>
+
+<pre><code>_context.Send(state =&gt; { action(); }, null); 
+</code></pre>
+
+<p>  }</p>
+
+<p>  private object[] all()
+  {</p>
+
+<pre><code>lock (_locker) 
+{ 
+  return _listeners.ToArray(); 
+} 
+</code></pre>
+
+<p>  }</p>
+
+<p>  private void withinLock(Action action)
+  {</p>
+
+<pre><code>lock(_locker) 
+{
+  action(); 
+} 
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>As I said earlier in this post, instances are registered after they've been
+created by the container. The functionality for this is provided by a
+TypeInterceptor class. This class is part of the StructureMap API. Once
+it has been registered every created instances is passed through this
+interceptor after it has been resolved. If the instance is identified as
+relevant for the <code>EventAggregator</code> it is automatically registered.</p>
+
+<p>``` csharp Integrating the EventAggregator into StructureMap
+public class EventAggregatorInterceptor : TypeInterceptor
+{
+  #region TypeInterceptor Members</p>
+
+<p>  public object Process(object target, IContext context)
+  {</p>
+
+<pre><code>context.GetInstance&lt;IEventAggregator&gt;().AddListener(target); 
+return target; 
+</code></pre>
+
+<p>  }</p>
+
+<p>  public bool MatchesType(Type type)
+  {</p>
+
+<pre><code>return type.ImplementsInterfaceTemplate(typeof(IListener&lt;&gt;)) || 
+  type.CanBeCastTo(typeof (ITestListener)) ||
+  type.CanBeCastTo(typeof (ICloseable)); 
+</code></pre>
+
+<p>  }</p>
+
+<p>  #endregion
+}
+```</p>
+
+<h2>Conclusion</h2>
+
+<p>EventAggregation is one of the standard patterns in modern enterprise
+applications. I like the elegant way how Jeremy implemented this.
+However having spend some time with this in the past, I miss a
+functional part in his implementation: Type based subscriptions. Type
+based subscriptions can be really handy when you're implementing
+PageFlows or state-ful MessageHandlers. Once a message is recieved the
+type is resolved by the container and the related handler method is
+called on the newly created type. I had them in my last application and
+liked them a lot. Maybe StoryTeller goes alternative routes to achive a
+similar effect. We'll see as we proceed in the code . . .</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,727 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Notifications the WPF way (I guess), Part III - Dude, where's my Kaizen?</title>
+  <meta name="author" content="Björn Rochel">
+
+  
+  <meta name="description" content="Today I would like to conclude my little series about the NotificationPattern with (I guess at least for some of you) the most interestingpart:Today &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.bjoernrochel.de/2009/11/02/notifications-the-wpf-way-i-guess-part-iii/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Dude, where's my Kaizen?" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+</head>
+
+<body   >
+  <header role="banner"><div id="logo">
+	<img src="/images/kaizen.png" alt="Kaizen" title="Kaizen" />
+</div>
+<hgroup>
+  <h1><a href="/">Dude, where's my Kaizen?</a></h1>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.bjoernrochel.de" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Notifications the WPF Way (I Guess), Part III</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-11-02T19:59:00+01:00" pubdate  data-updated="true" >Nov 2<span>nd</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Today I would like to conclude my little series about the Notification
+Pattern with (I guess at least for some of you) the most interesting
+part:</p>
+
+<h2>Today is all about displaying Notifications in the UI</h2>
+
+<p>This post will guide you through all the steps I took in order to achieve the
+affect I demonstrated in the <a href="/2009/10/20/notifications-the-wpf-way-i-guess-part-i/">introduction post</a>.
+Last time I showed how I&#8217;m transfering <code>Notifications</code> from the <code>ViewModel</code>
+into the logical WPF tree. If you&#8217;ve not read the previous posts, please
+give them some minutes, because I&#8217;m not going to repeat a lot of them
+today. You can find them
+<a href="/2009/08/28/implementing-the-notification-pattern-using-dataannotation-validators/">here</a>,
+<a href="/2009/10/20/notifications-the-wpf-way-i-guess-part-i/">here</a>
+and
+<a href="/2009/10/27/notifications-the-wpf-way-i-guess-part-ii/">here</a>.
+As always, a quick reminder:</p>
+
+<blockquote><p>What I&#8217;m showing is in this series is <strong>how I&#8217;ve implemented the Notification Pattern</strong>. I&#8217;m not claiming that
+it&#8217;s the only or the best way to do so. However, it&#8217;s the one that works
+very good for me.</p></blockquote>
+
+<h3>How to get the red border effect</h3>
+
+<p>The red border has to be displayed when Notifications exists for a control. Technically
+this means that the attached property <code>Notifications</code> (which is defined
+on the <code>ValidationBehavior</code> class I showed in the last post) is set to a
+non empty <code>NotificationCollection</code>. We can react to this by defining a
+<code>DataTrigger</code> for this. In my own words I would describe a <code>DataTrigger</code> as</p>
+
+<blockquote><p>An in XAML defined event handler with a related criteria. When the
+criteria is matched the DataTrigger gets executed. When it isn&#8217;t matched
+any more, the DataTrigger reverts the state of the element on which it&#8217;s
+defined to the state before it was executed.</p></blockquote>
+
+<p>Sounds usable for our purpose. Think about it, we only want to show the red border, when the
+attached property is set to a non empty collection. If the property is
+reset the border needs to disappear. The only difficulty with
+<code>DataTriggers</code> we need to solve on our way is how to configure that
+exactly in XAML. <code>DataTriggers</code> can be easily set on primitives (such as
+string, bool, etc.) or null, but there isn&#8217;t an out of the box way for
+setting our criteria in XAML. However you can use a custom Converter for
+converting our value to a primitive &#8220;switch&#8221;.</p>
+
+<figure class='code'><figcaption><span>An IValueConverter for our DataTrigger</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[ValueConversion(typeof(NotificationCollection), typeof(bool))]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">ContainsNotificationConverter</span> <span class="p">:</span> <span class="n">IValueConverter</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="kt">object</span> <span class="nf">Convert</span><span class="p">(</span><span class="kt">object</span> <span class="k">value</span><span class="p">,</span> <span class="n">Type</span> <span class="n">targetType</span><span class="p">,</span> <span class="kt">object</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">CultureInfo</span> <span class="n">culture</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">(</span><span class="k">value</span> <span class="p">!=</span> <span class="k">null</span> <span class="p">&amp;&amp;</span> <span class="k">value</span> <span class="k">is</span> <span class="n">NotificationCollection</span> <span class="p">&amp;&amp;</span> <span class="p">((</span><span class="n">NotificationCollection</span><span class="p">)</span><span class="k">value</span><span class="p">).</span><span class="n">Any</span><span class="p">());</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="kt">object</span> <span class="nf">ConvertBack</span><span class="p">(</span><span class="kt">object</span> <span class="k">value</span><span class="p">,</span> <span class="n">Type</span> <span class="n">targetType</span><span class="p">,</span> <span class="kt">object</span> <span class="n">parameter</span><span class="p">,</span> <span class="n">CultureInfo</span> <span class="n">culture</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="k">throw</span> <span class="k">new</span> <span class="nf">NotSupportedException</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Using this converter we can define our DataTrigger in the Style for Controls like this:</p>
+
+<figure class='code'><figcaption><span>Wiring it up via XAML DataTriggers</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;Fx:ContainsNotificationConverter</span> <span class="na">x:Key=</span><span class="s">&quot;notificationConverter&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;Style</span> <span class="na">TargetType=</span><span class="s">&quot;Control&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Fx:ValidationBehavior.IsEnabled&quot;</span> <span class="na">Value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;Style.Triggers&gt;</span>
+</span><span class='line'>         <span class="nt">&lt;DataTrigger</span>
+</span><span class='line'>             <span class="na">Binding=</span><span class="s">&quot;{Binding Path=(Fx:ValidationBehavior.Notifications),</span>
+</span><span class='line'><span class="s">             Converter={StaticResource notificationConverter},</span>
+</span><span class='line'><span class="s">             RelativeSource={x:Static RelativeSource.Self}}&quot;</span> <span class="na">Value=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>             <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;BorderBrush&quot;</span> <span class="na">Value=</span><span class="s">&quot;Red&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>             <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;BorderThickness&quot;</span> <span class="na">Value=</span><span class="s">&quot;2&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>         <span class="nt">&lt;/DataTrigger&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;/Style.Triggers&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/Style&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>How to display Notifications in a Tooltip</h2>
+
+<p>Solving the Tooltip requirement was a bit more tricky (at least for me).
+It took me quite some time to figure out how to do this in WPF. The
+solution I&#8217;m going to show uses only XAML based code.</p>
+
+<h3>1. Integrating the Tooltip into the DataTrigger</h3>
+
+<p>We simply use our <code>DataTrigger</code> to automatically set the tooltip of a
+<code>Control</code> in case <code>Notifications</code> exist.</p>
+
+<figure class='code'><figcaption><span>Adding the tooltip </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;ToolTip</span> <span class="na">x:Key=</span><span class="s">&quot;ValidationErrorTooltip&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;Style</span> <span class="na">TargetType=</span><span class="s">&quot;Control&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Fx:ValidationBehavior.IsEnabled&quot;</span> <span class="na">Value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;Style.Triggers&gt;</span>
+</span><span class='line'>         <span class="nt">&lt;DataTrigger</span>
+</span><span class='line'>             <span class="na">Binding=</span><span class="s">&quot;{Binding Path=(Fx:ValidationBehavior.Notifications),</span>
+</span><span class='line'><span class="s">             Converter={StaticResource notificationConverter},</span>
+</span><span class='line'><span class="s">             RelativeSource={x:Static RelativeSource.Self}}&quot;</span> <span class="na">Value=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>             <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;BorderBrush&quot;</span> <span class="na">Value=</span><span class="s">&quot;Red&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>             <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;BorderThickness&quot;</span> <span class="na">Value=</span><span class="s">&quot;2&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>             <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;ToolTip&quot;</span> <span class="na">Value=</span><span class="s">&quot;{StaticResource ValidationErrorTooltip}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>         <span class="nt">&lt;/DataTrigger&gt;</span>
+</span><span class='line'>     <span class="nt">&lt;/Style.Triggers&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/Style&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now the UI looks really crappy. The tooltip is not recognizable as one.</p>
+
+<p><img src="/images/posts/signup_emptytooltip1.jpg" alt="Horrible Tooltip" /></p>
+
+<h3>2. Using a ControlTemplate to style the Tooltip</h3>
+
+<p>In order to shape the appearance of the tooltip we can use XAML Styles again.
+You can change the whole visual appearance of a Control using Styles and
+<code>ControlTemplates</code>. The template I defined consists mostly of a <code>DockPanel</code>
+containing a <code>Label</code> (which provides the tooltips caption) and a <code>TextBlock</code>
+(which will later contain the Notification messages).</p>
+
+<figure class='code'><figcaption><span>Adding ControlTemplates to the mix  </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;Style</span> <span class="na">x:Key=</span><span class="s">&quot;ErrorTooltipSyle&quot;</span> <span class="na">TargetType=</span><span class="s">&quot;ToolTip&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Template&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;Setter.Value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;ControlTemplate</span> <span class="na">TargetType=</span><span class="s">&quot;ToolTip&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;Border</span> <span class="na">BorderBrush=</span><span class="s">&quot;Black&quot;</span> <span class="na">BorderThickness=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;DockPanel&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;Label</span> <span class="na">DockPanel.Dock=</span><span class="s">&quot;Top&quot;</span>
+</span><span class='line'>                          <span class="na">FontWeight=</span><span class="s">&quot;Bold&quot;</span>
+</span><span class='line'>                          <span class="na">Background=</span><span class="s">&quot;Red&quot;</span>
+</span><span class='line'>                          <span class="na">Foreground=</span><span class="s">&quot;White&quot;</span>
+</span><span class='line'>                          <span class="na">Content=</span><span class="s">&quot;Validation Error&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;TextBlock</span>
+</span><span class='line'>                          <span class="na">Padding=</span><span class="s">&quot;10&quot;</span>
+</span><span class='line'>                          <span class="na">Background=</span><span class="s">&quot;White&quot;</span>
+</span><span class='line'>                          <span class="na">Foreground=</span><span class="s">&quot;Black&quot;</span>
+</span><span class='line'>                          <span class="na">TextWrapping=</span><span class="s">&quot;WrapWithOverflow&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/DockPanel&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/Border&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/ControlTemplate&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/Setter.Value&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Setter&gt;</span>
+</span><span class='line'><span class="nt">&lt;/Style&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c">&lt;!-- Notice the defined Style --&gt;</span>
+</span><span class='line'><span class="nt">&lt;ToolTip</span> <span class="na">x:Key=</span><span class="s">&quot;ValidationErrorTooltip&quot;</span> <span class="na">Style=</span><span class="s">&quot;{StaticResource ErrorTooltipSyle}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;Style</span> <span class="na">TargetType=</span><span class="s">&quot;Control&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Fx:ValidationBehavior.IsEnabled&quot;</span> <span class="na">Value=</span><span class="s">&quot;true&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Style.Triggers&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;DataTrigger</span>
+</span><span class='line'>            <span class="na">Binding=</span><span class="s">&quot;{Binding Path=(Fx:ValidationBehavior.Notifications),</span>
+</span><span class='line'><span class="s">            Converter={StaticResource notificationConverter},</span>
+</span><span class='line'><span class="s">            RelativeSource={x:Static RelativeSource.Self}}&quot;</span> <span class="na">Value=</span><span class="s">&quot;true&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;BorderBrush&quot;</span> <span class="na">Value=</span><span class="s">&quot;Red&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;BorderThickness&quot;</span> <span class="na">Value=</span><span class="s">&quot;2&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;ToolTip&quot;</span> <span class="na">Value=</span><span class="s">&quot;{StaticResource ValidationErrorTooltip}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/DataTrigger&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Style.Triggers&gt;</span>
+</span><span class='line'><span class="nt">&lt;/Style&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Our UI now looks like this.</p>
+
+<p><img src="/images/posts/signup_tooltipwithcontroltemplate1.jpg" alt="Tooltip with ItemSource" /></p>
+
+<p>Not as crappy as before but we&#8217;re not finished yet, because we&#8217;re not
+displaying <code>Notifications</code> yet.</p>
+
+<h3>3. Define Databinding on the Tooltip</h3>
+
+<p>Defining the Databinding was probably the hardest step I had to take.
+The problem is that you need to get the <code>NotificationCollection</code> from the
+<code>Control</code> the tooltip is displayed on. Being not a WPF pro figuring out
+how to do this took quite some time. Anyway, in order to get the
+<code>Notification</code> there isn&#8217;t much you need to do. The trick is to bind
+against the property <code>PlacementTarget</code> on the <code>ToolTip</code> class itself. This
+property holds the reference to the <code>Control</code> on which the <code>Tooltip</code> instance is
+displayed. All we need to do is to add a <code>Binding</code> to the <code>Style</code> definition
+that sets the <code>DataContext</code> of the <code>ToolTip</code> to the related control.</p>
+
+<figure class='code'><figcaption><span>Binding the PlacementTarget to display the tooltip</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;Style</span> <span class="na">x:Key=</span><span class="s">&quot;ErrorTooltipSyle&quot;</span> <span class="na">TargetType=</span><span class="s">&quot;ToolTip&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    ...
+</span><span class='line'>    <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;DataContext&quot;</span> <span class="na">Value=</span><span class="s">&quot;{Binding Path=PlacementTarget, RelativeSource={x:Static RelativeSource.Self}}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    ...
+</span><span class='line'><span class="nt">&lt;/Style&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The next step we need to take is setting up the Binding
+for our attached property <code>Notifications</code>. Because a
+<code>NotificationCollection</code> can contain more than one <code>Notification</code> I used the
+<code>ItemsControl</code> for displaying them in the content area of the tooltip.</p>
+
+<figure class='code'><figcaption><span>Displaying the Notifications </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;Style</span> <span class="na">x:Key=</span><span class="s">&quot;ErrorTooltipSyle&quot;</span> <span class="na">TargetType=</span><span class="s">&quot;ToolTip&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;DataContext&quot;</span> <span class="na">Value=</span><span class="s">&quot;{Binding Path=PlacementTarget, RelativeSource={x:Static RelativeSource.Self}}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Template&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;Setter.Value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;ControlTemplate</span> <span class="na">TargetType=</span><span class="s">&quot;ToolTip&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;Border</span> <span class="na">BorderBrush=</span><span class="s">&quot;Black&quot;</span> <span class="na">BorderThickness=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;DockPanel&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;Label</span> <span class="na">DockPanel.Dock=</span><span class="s">&quot;Top&quot;</span>
+</span><span class='line'>                          <span class="na">FontWeight=</span><span class="s">&quot;Bold&quot;</span>
+</span><span class='line'>                          <span class="na">Background=</span><span class="s">&quot;Red&quot;</span>
+</span><span class='line'>                          <span class="na">Foreground=</span><span class="s">&quot;White&quot;</span>
+</span><span class='line'>                          <span class="na">Content=</span><span class="s">&quot;Validation Error&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;TextBlock</span>
+</span><span class='line'>                          <span class="na">Padding=</span><span class="s">&quot;10&quot;</span>
+</span><span class='line'>                          <span class="na">Background=</span><span class="s">&quot;White&quot;</span>
+</span><span class='line'>                          <span class="na">Foreground=</span><span class="s">&quot;Black&quot;</span>
+</span><span class='line'>                          <span class="na">TextWrapping=</span><span class="s">&quot;WrapWithOverflow&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>
+</span><span class='line'>                            <span class="c">&lt;!-- This control displays our Notifications --&gt;</span>
+</span><span class='line'>                            <span class="nt">&lt;ItemsControl</span> <span class="na">x:Name=</span><span class="s">&quot;notifications&quot;</span>
+</span><span class='line'>                                <span class="na">HorizontalAlignment=</span><span class="s">&quot;Stretch&quot;</span>
+</span><span class='line'>                                <span class="na">Margin=</span><span class="s">&quot;10&quot;</span>
+</span><span class='line'>                                <span class="na">VerticalAlignment=</span><span class="s">&quot;Center&quot;</span>
+</span><span class='line'>                                <span class="na">ItemsSource=</span><span class="s">&quot;{Binding Path=(Fx:ValidationBehavior.Notifications), Mode=OneWay}&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'>                         <span class="nt">&lt;/TextBlock&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/DockPanel&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/Border&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/ControlTemplate&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/Setter.Value&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Setter&gt;</span>
+</span><span class='line'><span class="nt">&lt;/Style&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Voila, our <code>Notifications</code> are finally displayed in the UI.</p>
+
+<p><img src="/images/posts/signup_tooltipwithcontroltemplate2.jpg" alt="Tooltip with ControlTemplate" /></p>
+
+<h3>4. Styling the Notifications</h3>
+
+<p>In my initial post I showed a hyphen in front of each Notification. This
+is fairly easy to add, too. All you have to do is to define a
+<code>DataTemplate</code> for the <code>Notification</code> class and set it as the <code>ItemTemplate</code>
+of the <code>ItemsControl</code> we&#8217;re using.</p>
+
+<figure class='code'><figcaption><span>Styling the notifications</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="c">&lt;!-- Very simple data template --&gt;</span>
+</span><span class='line'><span class="nt">&lt;DataTemplate</span> <span class="na">x:Key=</span><span class="s">&quot;NotificationTemplate&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;StackPanel</span> <span class="na">Orientation=</span><span class="s">&quot;Horizontal&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;TextBlock&gt;</span>-<span class="nt">&lt;/TextBlock&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;TextBlock</span> <span class="na">x:Name=</span><span class="s">&quot;notification&quot;</span> <span class="na">Text=</span><span class="s">&quot;{Binding}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/StackPanel&gt;</span>
+</span><span class='line'><span class="nt">&lt;/DataTemplate&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nt">&lt;Style</span> <span class="na">x:Key=</span><span class="s">&quot;ErrorTooltipSyle&quot;</span> <span class="na">TargetType=</span><span class="s">&quot;ToolTip&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;DataContext&quot;</span> <span class="na">Value=</span><span class="s">&quot;{Binding Path=PlacementTarget, RelativeSource={x:Static RelativeSource.Self}}&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Setter</span> <span class="na">Property=</span><span class="s">&quot;Template&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;Setter.Value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;ControlTemplate</span> <span class="na">TargetType=</span><span class="s">&quot;ToolTip&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;Border</span> <span class="na">BorderBrush=</span><span class="s">&quot;Black&quot;</span> <span class="na">BorderThickness=</span><span class="s">&quot;1&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;DockPanel&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;Label</span> <span class="na">DockPanel.Dock=</span><span class="s">&quot;Top&quot;</span>
+</span><span class='line'>                          <span class="na">FontWeight=</span><span class="s">&quot;Bold&quot;</span>
+</span><span class='line'>                          <span class="na">Background=</span><span class="s">&quot;Red&quot;</span>
+</span><span class='line'>                          <span class="na">Foreground=</span><span class="s">&quot;White&quot;</span>
+</span><span class='line'>                          <span class="na">Content=</span><span class="s">&quot;Validation Error&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>                        <span class="nt">&lt;TextBlock</span>
+</span><span class='line'>                          <span class="na">Padding=</span><span class="s">&quot;10&quot;</span>
+</span><span class='line'>                          <span class="na">Background=</span><span class="s">&quot;White&quot;</span>
+</span><span class='line'>                          <span class="na">Foreground=</span><span class="s">&quot;Black&quot;</span>
+</span><span class='line'>                          <span class="na">TextWrapping=</span><span class="s">&quot;WrapWithOverflow&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                          <span class="nt">&lt;ItemsControl</span> <span class="na">x:Name=</span><span class="s">&quot;notifications&quot;</span>
+</span><span class='line'>                                <span class="na">HorizontalAlignment=</span><span class="s">&quot;Stretch&quot;</span>
+</span><span class='line'>                                <span class="na">Margin=</span><span class="s">&quot;10&quot;</span>
+</span><span class='line'>                                <span class="na">VerticalAlignment=</span><span class="s">&quot;Center&quot;</span>
+</span><span class='line'>                                <span class="na">ItemsSource=</span><span class="s">&quot;{Binding Path=(Fx:ValidationBehavior.Notifications), Mode=OneWay}&quot;</span>
+</span><span class='line'>
+</span><span class='line'>                                <span class="err">&lt;!--</span> <span class="err">This</span> <span class="err">uses</span> <span class="err">configures</span> <span class="err">our</span> <span class="err">template</span> <span class="err">for</span> <span class="err">Notifications</span> <span class="err">--</span><span class="nt">&gt;</span>
+</span><span class='line'>                                ItemTemplate=&quot;{StaticResource NotificationTemplate}&quot; /&gt;
+</span><span class='line'>
+</span><span class='line'>              <span class="nt">&lt;/TextBlock&gt;</span>
+</span><span class='line'>                    <span class="nt">&lt;/DockPanel&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;/Border&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/ControlTemplate&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/Setter.Value&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Setter&gt;</span>
+</span><span class='line'><span class="nt">&lt;/Style&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><code>DataTemplates</code> are also the weapon of choice if you want to
+display errors in a different fashion than warnings (for instance by
+displaying a different icon). This is where we arrived:</p>
+
+<p><img src="/images/posts/signup_tooltipfinishedjpg.jpg" alt="Tooltip finished" /></p>
+
+<h2>Closing thoughts</h2>
+
+<p>What I like about the current solution is that it demonstrates in a nice
+way how different the programming model of WPF actually is compared to
+WinForms. The only imperative code we have is the code that transfers
+<code>Notifications</code> from our <code>ViewModel</code> into the logical tree. That&#8217;s it. The
+rest, the complete visual appeal of the Notifications, is a separated
+concern. Those two things can be changed independently from each other,
+even by different roles in a development team (Designer/Developer).
+Besides that I like the way the composition based WPF model helps my
+application code to stay focused and clean with only minimum
+implementation constraints on the ViewModel itself (the
+INotificationSource interface). There&#8217;re certainly things to improve
+both in XAML and in the glue code but I consider it a good start to
+build on &#8230;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">BjRo</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-11-02T19:59:00+01:00" pubdate  data-updated="true" >Nov 2<span>nd</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/dotnet/'>dotnet</a>, <a class='category' href='/blog/categories/sw-design/'>sw-design</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://www.bjoernrochel.de/2009/11/02/notifications-the-wpf-way-i-guess-part-iii/" data-via="bjoernrochel" data-counturl="http://www.bjoernrochel.de/2009/11/02/notifications-the-wpf-way-i-guess-part-iii/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+</div>
+
+    
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+	<h1>About me</h1>
+  <p><br/><img src="/images/bjro-eyes.jpg" alt="portrait" /></p>
+	<p>
+  My name is <strong>Björn Rochel</strong>.  I'm a 32 year old geek, who's crazy about software development, living in Cologne and
+  currently working for <a href="http://www.intercomponentware.com">ICW</a> as a .NET Developer / Architect.
+	</p>
+	<ul class="badges">
+		<li><a href="http://www.xing.com/profile/Bjoern_Rochel"><img src="/images/badges/xing2-small.png" alt="Xing" /></a></li>
+		<li><a href="http://www.github.com/BjRo"><img src="/images/badges/github-small.png" alt="Github" /></a></li>
+		<li><a href="http://www.twitter.com/bjoernrochel"><img src="/images/badges/twitter-square-small.png" alt="Twitter" /></a></li>
+		<li><a href="/atom.xml"><img src="/images/badges/rss-circle-small.png" alt="Rss" /></a></li>
+	</ul>
+</section>
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/Conferences/'>Conferences (8)</a></li>
+<li class='category'><a href='/blog/categories/FSharp/'>FSharp (3)</a></li>
+<li class='category'><a href='/blog/categories/Katas/'>Katas (2)</a></li>
+<li class='category'><a href='/blog/categories/StoryTeller/'>StoryTeller (14)</a></li>
+<li class='category'><a href='/blog/categories/StructureMap/'>StructureMap (9)</a></li>
+<li class='category'><a href='/blog/categories/Testing/'>Testing (20)</a></li>
+<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (7)</a></li>
+<li class='category'><a href='/blog/categories/dotnet/'>dotnet (65)</a></li>
+<li class='category'><a href='/blog/categories/ruby/'>ruby (3)</a></li>
+<li class='category'><a href='/blog/categories/sw-design/'>sw-design (13)</a></li>
+<li class='category'><a href='/blog/categories/xUnitBDDExtensions/'>xUnitBDDExtensions (15)</a></li>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("bjoernrochel", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/bjoernrochel" class="twitter-follow-button" data-width="208px" data-show-count="false">Follow @bjoernrochel</a>
+  
+</section>
+
+<section>
+<h1>Disclaimer</h1>
+<p>
+The opinions expressed herein are my own personal opinions and do not necessarily represent the opinion of any other organization or person, including (but not limited to) my fellow employees, my employer, its clients or their agents. 
+</p>
+<p>
+ Copyright &copy; 2011 - Björn Rochel
+</p>
+<section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Björn Rochel -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'bjro';
+      
+        
+
+				//TODO: comment disqus_developer out
+				var disqus_developer = 1;
+				var disqus_identifier = 'http://www.bjoernrochel.de/2009/11/02/notifications-the-wpf-way-i-guess-part-iii/';
+				var disqus_url = 'http://www.bjoernrochel.de/2009/11/02/notifications-the-wpf-way-i-guess-part-iii/';
+        var disqus_script = 'embed.js';
+      
+
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,418 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>How to: Visual Studio test runner & side by side test code - Dude, where's my Kaizen?</title>
+  <meta name="author" content="Björn Rochel">
+
+  
+  <meta name="description" content="After spending a lot of time with xUnit.net I recently had to go back to MSTest for my testing again (because it&#8217;s the de facto standard at &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.bjoernrochel.de/2009/05/18/how-to-visual-studio-test-runner-side-by-side-test-code/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Dude, where's my Kaizen?" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+</head>
+
+<body   >
+  <header role="banner"><div id="logo">
+	<img src="/images/kaizen.png" alt="Kaizen" title="Kaizen" />
+</div>
+<hgroup>
+  <h1><a href="/">Dude, where's my Kaizen?</a></h1>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.bjoernrochel.de" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">How to: Visual Studio Test Runner & Side by Side Test Code</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-05-18T22:34:49+02:00" pubdate  data-updated="true" >May 18<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>After spending a lot of time with xUnit.net I recently had to go back to MSTest for my testing again (because it&#8217;s the de facto standard at my
+current client which is not negotiable ;-().</p>
+
+<p>Former colleagues of mine will probably laugh about this, because I&#8217;ve had a love-and-hate-relationship with MSTest and especially the
+VisualStudio runner in the past.  However since I currently have no other option I use what is there.  Better writing tests such an environment, than writing no test at all.
+At least if you ask me.</p>
+
+<p>This brings me back to the topic of the post. Some prerequisites: I like developing software in a TDD manner and am using Resharper with its
+&#8216;Generate&#8217; and &#8216;Move To&#8217; features a lot. I like the idea of having test-code side by side with the actual tested code. With this a lot of
+you&#8217;re daily TDD life becomes at least a bit easier and painless. I see at least two advantages in such an approach:</p>
+
+<ol>
+<li>You don&#8217;t have to copy generated classes from the test-assembly to
+the regular assembly.</li>
+<li>You don&#8217;t have to maintain two different folder hierarchies (The one
+in the code-assembly and the one in the regular assembly) and
+therefore know exactly where to look for test-code.</li>
+</ol>
+
+
+<p>This is one of the things I learned from JP Boodhoo in his NBDN bootcamp, credit for the general idea goes to him for this. So how can
+we achieve this in VisualStudio with MSTest?</p>
+
+<p>DISCLAIMER: The stuff I describe in the rest of the post has to do with modifying the `.csproj&#8217; msbuild file of a project. If this is a &#8216;no go&#8217;
+for you, you can probably stop reading here ;-). For the rest here is the list of steps I took in order to make it work:</p>
+
+<h2>Step 1: Add the ProjectType Guids to your project.</h2>
+
+<p>VisualStudio&#8217;s test explorer scans only projects which are of a certain project type (aka the test project) for tests. VS identifies such a
+project based on the value of a particular node in the <code>.csproj</code> file, the <code>ProjectTypeGuid</code> node. Simply copy this one
+from an actual test project to the <code>.csproj</code> of your regular assembly. Another option of course would be to start with a test project from scratch.</p>
+
+<figure class='code'><figcaption><span>Adding the ProjectType Guids</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;Project</span> <span class="na">ToolsVersion=</span><span class="s">&quot;3.5&quot;</span> <span class="na">DefaultTargets=</span><span class="s">&quot;Build&quot;</span> <span class="na">xmlns=</span><span class="s">&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;PropertyGroup&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Configuration</span> <span class="na">Condition=</span><span class="s">&quot; &#39;$(Configuration)&#39; == &#39;&#39; &quot;</span><span class="nt">&gt;</span>Debug<span class="nt">&lt;/Configuration&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Platform</span> <span class="na">Condition=</span><span class="s">&quot; &#39;$(Platform)&#39; == &#39;&#39; &quot;</span><span class="nt">&gt;</span>AnyCPU<span class="nt">&lt;/Platform&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;ProductVersion&gt;</span>9.0.30729<span class="nt">&lt;/ProductVersion&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;SchemaVersion&gt;</span>2.0<span class="nt">&lt;/SchemaVersion&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c">&lt;!-- The line below has to be added to regular projects --&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;ProjectTypeGuids&gt;</span>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}<span class="nt">&lt;/ProjectTypeGuids&gt;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nt">&lt;ProjectGuid&gt;</span>{890DA3CA-999A-474E-BA87-05A834CAB7B8}<span class="nt">&lt;/ProjectGuid&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;OutputType&gt;</span>Library<span class="nt">&lt;/OutputType&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;AppDesignerFolder&gt;</span>Properties<span class="nt">&lt;/AppDesignerFolder&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;RootNamespace&gt;</span>SpecReport<span class="nt">&lt;/RootNamespace&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;AssemblyName&gt;</span>SpecReport<span class="nt">&lt;/AssemblyName&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;TargetFrameworkVersion&gt;</span>v3.5<span class="nt">&lt;/TargetFrameworkVersion&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;FileAlignment&gt;</span>512<span class="nt">&lt;/FileAlignment&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/PropertyGroup&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Step 2: Apply conditional compilation for not including the test code when compiling in release mode</h2>
+
+<p>So, the tests sit right next to the tested code, right? We presumable don&#8217;t want our tests to be deployed to production. We can achieve this
+in MSBuild fairly easy with conditional compilation and wildcards.</p>
+
+<figure class='code'><figcaption><span>Including the specs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;ItemGroup&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="c">&lt;!-- The line below skips all files ending with &#39;Spec.cs&#39; when compiling in a mode other than DEBUG --&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Compile</span> <span class="na">Condition=</span><span class="s">&quot;&#39;$(Configuration)&#39; == &#39;Debug&#39;&quot;</span> <span class="na">Include=</span><span class="s">&quot;**\*Specs.cs&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nt">&lt;Compile</span> <span class="na">Include=</span><span class="s">&quot;IReportEngine.cs&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Compile</span> <span class="na">Include=</span><span class="s">&quot;IReportGenerator.cs&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Compile</span> <span class="na">Include=</span><span class="s">&quot;Notification.cs&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Compile</span> <span class="na">Include=</span><span class="s">&quot;NotificationCollection.cs&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Compile</span> <span class="na">Include=</span><span class="s">&quot;Properties\AssemblyInfo.cs&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Compile</span> <span class="na">Include=</span><span class="s">&quot;ReportEngine.cs&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;Compile</span> <span class="na">Include=</span><span class="s">&quot;ReportEngineArgs.cs&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'><span class="nt">&lt;/ItemGroup&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Step 3: Apply conditional compilation for not deploying the test-related assemblies when compiling in release mode</h2>
+
+<p>In order to get rid of the test-specific assemblies for production deployment you can also apply conditionals to the assembly references of
+a project.</p>
+
+<figure class='code'><figcaption><span>Excluding assemblies from deployment</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;ItemGroup&gt;</span>
+</span><span class='line'><span class="nt">&lt;Reference</span> <span class="na">Condition=</span><span class="s">&quot;&#39;$(Configuration)&#39; == &#39;Debug&#39;&quot;</span> <span class="na">Include=</span><span class="s">&quot;Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Reference</span> <span class="na">Condition=</span><span class="s">&quot;&#39;$(Configuration)&#39; == &#39;Debug&#39;&quot;</span> <span class="na">Include=</span><span class="s">&quot;Rhino.Mocks, Version=3.5.0.1337, Culture=neutral, PublicKeyToken=0b3305902db7183f, processorArchitecture=MSIL&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;SpecificVersion&gt;</span>False<span class="nt">&lt;/SpecificVersion&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;HintPath&gt;</span>..\Externals\RhinoMocks35\Rhino.Mocks.dll<span class="nt">&lt;/HintPath&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Reference&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Reference</span> <span class="na">Include=</span><span class="s">&quot;System&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Reference</span> <span class="na">Include=</span><span class="s">&quot;System.Core&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;RequiredTargetFramework&gt;</span>3.5<span class="nt">&lt;/RequiredTargetFramework&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Reference&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Reference</span> <span class="na">Include=</span><span class="s">&quot;System.Xml.Linq&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;RequiredTargetFramework&gt;</span>3.5<span class="nt">&lt;/RequiredTargetFramework&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Reference&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Reference</span> <span class="na">Include=</span><span class="s">&quot;System.Data.DataSetExtensions&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;RequiredTargetFramework&gt;</span>3.5<span class="nt">&lt;/RequiredTargetFramework&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/Reference&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Reference</span> <span class="na">Include=</span><span class="s">&quot;System.Data&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;Reference</span> <span class="na">Include=</span><span class="s">&quot;System.Xml&quot;</span> <span class="nt">/&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/ItemGroup&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Et voila: The approach described in this post seams to work fine. At least I&#8217;m not experiencing side effects since I&#8217;ve configured it that
+way &#8230;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">BjRo</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-05-18T22:34:49+02:00" pubdate  data-updated="true" >May 18<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/testing/'>Testing</a>, <a class='category' href='/blog/categories/dotnet/'>dotnet</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://www.bjoernrochel.de/2009/05/18/how-to-visual-studio-test-runner-side-by-side-test-code/" data-via="bjoernrochel" data-counturl="http://www.bjoernrochel.de/2009/05/18/how-to-visual-studio-test-runner-side-by-side-test-code/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+</div>
+
+    
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+	<h1>About me</h1>
+  <p><br/><img src="/images/bjro-eyes.jpg" alt="portrait" /></p>
+	<p>
+  My name is <strong>Björn Rochel</strong>.  I'm a 32 year old geek, who's crazy about software development, living in Cologne and
+  currently working for <a href="http://www.intercomponentware.com">ICW</a> as a .NET Developer / Architect.
+	</p>
+	<ul class="badges">
+		<li><a href="http://www.xing.com/profile/Bjoern_Rochel"><img src="/images/badges/xing2-small.png" alt="Xing" /></a></li>
+		<li><a href="http://www.github.com/BjRo"><img src="/images/badges/github-small.png" alt="Github" /></a></li>
+		<li><a href="http://www.twitter.com/bjoernrochel"><img src="/images/badges/twitter-square-small.png" alt="Twitter" /></a></li>
+		<li><a href="/atom.xml"><img src="/images/badges/rss-circle-small.png" alt="Rss" /></a></li>
+	</ul>
+</section>
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/Conferences/'>Conferences (8)</a></li>
+<li class='category'><a href='/blog/categories/FSharp/'>FSharp (3)</a></li>
+<li class='category'><a href='/blog/categories/Katas/'>Katas (2)</a></li>
+<li class='category'><a href='/blog/categories/StoryTeller/'>StoryTeller (14)</a></li>
+<li class='category'><a href='/blog/categories/StructureMap/'>StructureMap (9)</a></li>
+<li class='category'><a href='/blog/categories/Testing/'>Testing (20)</a></li>
+<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (7)</a></li>
+<li class='category'><a href='/blog/categories/dotnet/'>dotnet (65)</a></li>
+<li class='category'><a href='/blog/categories/ruby/'>ruby (3)</a></li>
+<li class='category'><a href='/blog/categories/sw-design/'>sw-design (13)</a></li>
+<li class='category'><a href='/blog/categories/xUnitBDDExtensions/'>xUnitBDDExtensions (15)</a></li>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("bjoernrochel", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/bjoernrochel" class="twitter-follow-button" data-width="208px" data-show-count="false">Follow @bjoernrochel</a>
+  
+</section>
+
+<section>
+<h1>Disclaimer</h1>
+<p>
+The opinions expressed herein are my own personal opinions and do not necessarily represent the opinion of any other organization or person, including (but not limited to) my fellow employees, my employer, its clients or their agents. 
+</p>
+<p>
+ Copyright &copy; 2011 - Björn Rochel
+</p>
+<section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Björn Rochel -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'bjro';
+      
+        
+
+				//TODO: comment disqus_developer out
+				var disqus_developer = 1;
+				var disqus_identifier = 'http://www.bjoernrochel.de/2009/05/18/how-to-visual-studio-test-runner-side-by-side-test-code/';
+				var disqus_url = 'http://www.bjoernrochel.de/2009/05/18/how-to-visual-studio-test-runner-side-by-side-test-code/';
+        var disqus_script = 'embed.js';
+      
+
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>

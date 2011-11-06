@@ -1,0 +1,530 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Diving into the StoryTeller trunk, Part 4: Registration of Generics - Dude, where's my Kaizen?</title>
+  <meta name="author" content="Björn Rochel">
+
+  
+  <meta name="description" content="I really like the way StructureMap automates the container registration.Part 1 already showed a lot of the convention based containerregistration &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.bjoernrochel.de/2009/07/17/diving-into-the-storyteller-trunk-part-4-registration-of-generics/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Dude, where's my Kaizen?" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+</head>
+
+<body   >
+  <header role="banner"><div id="logo">
+	<img src="/images/kaizen.png" alt="Kaizen" title="Kaizen" />
+</div>
+<hgroup>
+  <h1><a href="/">Dude, where's my Kaizen?</a></h1>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.bjoernrochel.de" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Diving Into the StoryTeller Trunk, Part 4: Registration of Generics</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-07-17T22:36:55+02:00" pubdate  data-updated="true" >Jul 17<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>I really like the way StructureMap automates the container registration.
+Part 1 already showed a lot of the convention based container
+registration mechanism. Today I would like to touch an aspect of
+registration which doesn&#8217;t really fit under the term &#8220;convention over
+configuration&#8221;, but is a really cool functionality non the less. For
+this post I would like to take a look at what you can do with generic
+types in StructureMap (taking you of course through some code parts of
+StoryTeller).</p>
+
+<p>Let&#8217;s start with a look at the <code>IScreenSubject</code> interface in the
+StoryTeller trunk. This interface plays a very important role in the UI
+layer of StoryTeller. Its basic responsibility is the creation and the
+identification of a single screen. The whole topic will be part of later
+posts, so don&#8217;t be mad with me, if I don&#8217;t go into full detail here.
+What matters for the context of this post is that there is also an
+<code>IScreenSubject&lt;T&gt;</code> marker interface.</p>
+
+<figure class='code'><figcaption><span>The IScreenSubject interfaces</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IScreenSubject</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="kt">bool</span> <span class="nf">Matches</span><span class="p">(</span><span class="n">IScreen</span> <span class="n">screen</span><span class="p">);</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="n">IScreen</span> <span class="nf">CreateScreen</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="c1">//Marker interface </span>
+</span><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IScreenSubject</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IScreenSubject</span> <span class="p">{</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you take a look at StoryTellers <code>UserInterfaceRegistry</code> class, the class containing all the StructureMap
+configuration, you&#8217;ll notice a method on the configuration expression with the name
+<code>ConnectImplementationsToTypesClosing</code> which takes a single open generic type as the parameter (The <code>IScreenSubject&lt;&gt;</code> type in
+the following snippet).</p>
+
+<figure class='code'><figcaption><span>ConnectImplmentationsToTypesClosing</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">UserInterfaceRegistry</span> <span class="p">:</span> <span class="n">Registry</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="nf">UserInterfaceRegistry</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="p">.</span> <span class="p">.</span> <span class="p">.</span>
+</span><span class='line'>      <span class="n">Scan</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>          <span class="n">x</span><span class="p">.</span><span class="n">TheCallingAssembly</span><span class="p">();</span>
+</span><span class='line'>          <span class="n">x</span><span class="p">.</span><span class="n">WithDefaultConventions</span><span class="p">();</span>
+</span><span class='line'>          <span class="n">x</span><span class="p">.</span><span class="n">ConnectImplementationsToTypesClosing</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IScreenSubject</span><span class="p">&lt;&gt;));</span>
+</span><span class='line'>      <span class="p">});</span>
+</span><span class='line'>      <span class="p">.</span> <span class="p">.</span> <span class="p">.</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For those of you who haven&#8217;t heard of open and closed generic types:
+An open generic type is a generic type which doesn&#8217;t have his type parameters specified
+(for instance <code>typeof(IListener&lt;&gt;)</code>), while a closed generic type is a generic type which has his type parameters
+specified (for example <code>typeof(IListener&lt;string&gt;)</code>).</p>
+
+<p>So what&#8217;s the deal with those types? StoryTeller has several
+implementations of the <code>IScreenSubject&lt;T&gt;</code> interface. The following
+snippet shows one of them. It has been a bit simplified for this post.
+What&#8217;s important here is that because this type closes the <code>IScreenSubject&lt;T&gt;</code> type with the TestScreen type, it is automatically
+registered in the container if it resides in one of the assemblies
+scanned by StructureMap.</p>
+
+<figure class='code'><figcaption><span>An test implementation of IScreenSubject<T></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">TestScreenSubject</span> <span class="p">:</span> <span class="n">IScreenSubject</span><span class="p">&lt;</span><span class="n">TestScreen</span><span class="p">&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">readonly</span> <span class="n">IContainer</span> <span class="n">_container</span><span class="p">;</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="nf">ScreenSubject</span><span class="p">(</span><span class="n">IContainer</span> <span class="n">container</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_container</span> <span class="p">=</span> <span class="n">container</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cp">#region IScreenSubject Members </span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="kt">bool</span> <span class="nf">Matches</span><span class="p">(</span><span class="n">IScreen</span> <span class="n">screen</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">screen</span> <span class="k">is</span> <span class="n">TestScreen</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="n">IScreen</span> <span class="nf">CreateScreen</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">_container</span><span class="p">.</span><span class="n">GetInstance</span><span class="p">&lt;</span><span class="n">TestScreen</span><span class="p">&gt;();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cp">#endregion </span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Client code can access this instance after registration via</p>
+
+<figure class='code'><figcaption><span>Accessing our TestScreenSubject implementation</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">container</span><span class="p">.</span><span class="n">GetInstance</span><span class="p">&lt;</span><span class="n">IScreenSubject</span><span class="p">&lt;</span><span class="n">TestScreen</span><span class="p">&gt;();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What we&#8217;ve seen so far is how instances can be automatically registered for closed generic interfaces
+by StructureMap. However if we take a look at the <code>TestScreenSubject</code> class, isn&#8217;t there something which can be generalized and reused? In
+fact you can find the <code>ScreenSubject&lt;SCREEN&gt;</code> class in the StoryTeller which looks like a generalized version of it.</p>
+
+<figure class='code'><figcaption><span>A generic IScreenSubject<T> implementation</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">ScreenSubject</span><span class="p">&lt;</span><span class="n">SCREEN</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IScreenSubject</span> <span class="n">where</span> <span class="n">SCREEN</span> <span class="p">:</span> <span class="n">IScreen</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">readonly</span> <span class="n">IContainer</span> <span class="n">_container</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="nf">ScreenSubject</span><span class="p">(</span><span class="n">IContainer</span> <span class="n">container</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_container</span> <span class="p">=</span> <span class="n">container</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="cp">#region IScreenSubject Members</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="kt">bool</span> <span class="nf">Matches</span><span class="p">(</span><span class="n">IScreen</span> <span class="n">screen</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">screen</span> <span class="k">is</span> <span class="n">SCREEN</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">public</span> <span class="n">IScreen</span> <span class="nf">CreateScreen</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="n">_container</span><span class="p">.</span><span class="n">GetInstance</span><span class="p">&lt;</span><span class="n">SCREEN</span><span class="p">&gt;();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="cp">#endregion</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This class however isn&#8217;t automatically picked up by auto
+registration or one of the conventions. Besides that, notice that this
+is not an abstract class. So, using it as a base class in order to fit
+in the <code>ConnectImplementationsToTypesClosing</code> scheme is probably not
+really the main usage scenario for this class (although you could of
+course do it). What we can do instead is register this class as the
+default implementation for the <code>IScreenSubject&lt;T&gt;</code> interface. (SIDENOTE:
+StoryTeller doesn&#8217;t really use this so the rest of the post is more or
+less a StructureMap feature demo ;-))</p>
+
+<figure class='code'><figcaption><span>Configuring the generic bits</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">UserInterfaceRegistry</span> <span class="p">:</span> <span class="n">Registry</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="nf">UserInterfaceRegistry</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="p">.</span> <span class="p">.</span> <span class="p">.</span>
+</span><span class='line'>      <span class="n">For</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IScreenSubject</span><span class="p">&lt;&gt;)).</span><span class="n">TheDefaultIsConcreteType</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">ScreenSubject</span><span class="p">&lt;&gt;));</span>
+</span><span class='line'>      <span class="p">.</span> <span class="p">.</span> <span class="p">.</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Looks strange at first, but it&#8217;s a really handy thing
+once you&#8217;ve got used to it. Here&#8217;s an example how the container behaves
+after both <code>TestScreenSubject</code> (implicitly by <code>ConnectAllTypeClosing</code>) and
+<code>ScreenSubject&lt;T&gt;</code> (explicitly by <code>For</code>) have been registered.</p>
+
+<figure class='code'><figcaption><span>How this is resolved from a client perspective</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="c1">//This will return an instance of the type TestScreenSubject </span>
+</span><span class='line'><span class="n">container</span><span class="p">.</span><span class="n">GetInstance</span><span class="p">&lt;</span><span class="n">IScreenSubject</span><span class="p">&lt;</span><span class="n">TestScreen</span><span class="p">&gt;&gt;();</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//This will return an instance of the ScreenSubject </span>
+</span><span class='line'><span class="n">container</span><span class="p">.</span><span class="n">GetInstance</span><span class="p">&lt;</span><span class="n">IScreenSubject</span><span class="p">&lt;</span><span class="n">SomeOtherScreen</span><span class="p">&gt;&gt;();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The container basically does this: If the requested closed generic type is
+directly implemented by a registered type (<code>TestScreenSubject</code> here) this
+type is resolved. On the other hand when the requested generic type is
+not directly implemented by any registered type, but an open generic
+type implementing the open version of the interface is registered
+(<code>ScreenSubject&lt;&gt;</code> here) the container will close that type and return an
+instance for it. AFAIK this is called &#8220;generic specialization&#8221;.</p>
+
+<p>A simple example where generic specialization is really handy: You want to
+implement validation. Therefore you create an <code>IValidator&lt;T&gt;</code> interface
+and an standard implementation <code>Validator&lt;T&gt;</code> for it which validates
+static rules based on attributes (string length, not null, etc). For one
+particular type you realize that this is not sufficient, because maybe
+you need some sort of catalog in order to validate correctly. With
+generic specialization you&#8217;re able to introduce this special case for
+the particular type very, very easily. Just follow the steps described
+in this post. From a clients perspective nothing changes &#8230;</p>
+
+<h2>Conclusion</h2>
+
+<p>Generic specialization is one of the things I really love when using an
+IoC. It&#8217;s one of those areas where IoC imho really shines. To be fair,
+this ability is not StructureMap exclusive. Most of the other containers
+have it, too. However, I&#8217;m amazed how much fluff (or ceremony as Jeremy
+likes to say) can be cut from registration by StructureMap &#8230;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">BjRo</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-07-17T22:36:55+02:00" pubdate  data-updated="true" >Jul 17<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/storyteller/'>StoryTeller</a>, <a class='category' href='/blog/categories/structuremap/'>StructureMap</a>, <a class='category' href='/blog/categories/dotnet/'>dotnet</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://www.bjoernrochel.de/2009/07/17/diving-into-the-storyteller-trunk-part-4-registration-of-generics/" data-via="bjoernrochel" data-counturl="http://www.bjoernrochel.de/2009/07/17/diving-into-the-storyteller-trunk-part-4-registration-of-generics/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+</div>
+
+    
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+	<h1>About me</h1>
+  <p><br/><img src="/images/bjro-eyes.jpg" alt="portrait" /></p>
+	<p>
+  My name is <strong>Björn Rochel</strong>.  I'm a 32 year old geek, who's crazy about software development, living in Cologne and
+  currently working for <a href="http://www.intercomponentware.com">ICW</a> as a .NET Developer / Architect.
+	</p>
+	<ul class="badges">
+		<li><a href="http://www.xing.com/profile/Bjoern_Rochel"><img src="/images/badges/xing2-small.png" alt="Xing" /></a></li>
+		<li><a href="http://www.github.com/BjRo"><img src="/images/badges/github-small.png" alt="Github" /></a></li>
+		<li><a href="http://www.twitter.com/bjoernrochel"><img src="/images/badges/twitter-square-small.png" alt="Twitter" /></a></li>
+		<li><a href="/atom.xml"><img src="/images/badges/rss-circle-small.png" alt="Rss" /></a></li>
+	</ul>
+</section>
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/Conferences/'>Conferences (8)</a></li>
+<li class='category'><a href='/blog/categories/FSharp/'>FSharp (3)</a></li>
+<li class='category'><a href='/blog/categories/Katas/'>Katas (2)</a></li>
+<li class='category'><a href='/blog/categories/StoryTeller/'>StoryTeller (14)</a></li>
+<li class='category'><a href='/blog/categories/StructureMap/'>StructureMap (9)</a></li>
+<li class='category'><a href='/blog/categories/Testing/'>Testing (20)</a></li>
+<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (7)</a></li>
+<li class='category'><a href='/blog/categories/dotnet/'>dotnet (65)</a></li>
+<li class='category'><a href='/blog/categories/ruby/'>ruby (3)</a></li>
+<li class='category'><a href='/blog/categories/sw-design/'>sw-design (13)</a></li>
+<li class='category'><a href='/blog/categories/xUnitBDDExtensions/'>xUnitBDDExtensions (15)</a></li>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("bjoernrochel", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/bjoernrochel" class="twitter-follow-button" data-width="208px" data-show-count="false">Follow @bjoernrochel</a>
+  
+</section>
+
+<section>
+<h1>Disclaimer</h1>
+<p>
+The opinions expressed herein are my own personal opinions and do not necessarily represent the opinion of any other organization or person, including (but not limited to) my fellow employees, my employer, its clients or their agents. 
+</p>
+<p>
+ Copyright &copy; 2011 - Björn Rochel
+</p>
+<section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Björn Rochel -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'bjro';
+      
+        
+
+				//TODO: comment disqus_developer out
+				var disqus_developer = 1;
+				var disqus_identifier = 'http://www.bjoernrochel.de/2009/07/17/diving-into-the-storyteller-trunk-part-4-registration-of-generics/';
+				var disqus_url = 'http://www.bjoernrochel.de/2009/07/17/diving-into-the-storyteller-trunk-part-4-registration-of-generics/';
+        var disqus_script = 'embed.js';
+      
+
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>

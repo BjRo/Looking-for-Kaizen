@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Katas | Dude, where's my Kaizen?]]></title>
+  <link href="http://www.bjoernrochel.de/blog/categories/katas/atom.xml" rel="self"/>
+  <link href="http://www.bjoernrochel.de/"/>
+  <updated>2011-11-06T22:05:04+01:00</updated>
+  <id>http://www.bjoernrochel.de/</id>
+  <author>
+    <name><![CDATA[Björn Rochel]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Kata StringCalculator in F#]]></title>
+    <link href="http://www.bjoernrochel.de/2010/05/12/kata-stringcalculator-in-f/"/>
+    <updated>2010-05-12T19:36:38+02:00</updated>
+    <id>http://www.bjoernrochel.de/2010/05/12/kata-stringcalculator-in-f</id>
+    <content type="html"><![CDATA[<p>Yesterday's F# bookclub meeting in Munich was awesome as usual. It’s very interesting to see our overall understanding of functional programming progressing.
+Slowly, but steady. Main topics we discussed on the last meeting were Currying and Tail Recursion. Finally "got that" (at least I think so ;-))</p>
+
+<p>Two meetings ago we decided to do some coding on every meeting. The previous meeting we solved Kata FizzBuzz and on yesterday’s meeting we tried to dance with
+<a href="http://osherove.com/tdd-kata-1/">Roy Osheroves StringCalculator</a>. We didn't make it completely to the end, but I think we solved most of the Kata.</p>
+
+<!--more-->
+
+
+<p>You can find yesterdays code at the end of this post. I'm sure in parts it smells a bit imperative and it definitely uses too much Regex - KungFu,
+but overall I'm pleased with the result. We've tried to incorporate the feedback we got on the Kata FizzBuzz code. I would love to get feedback on this one as well.
+What could be done better, cleaner or simply differently?</p>
+
+<p>``` csharp Kata StringCalculator in F#
+open System
+open System.Text.RegularExpressions
+open Xunit</p>
+
+<p>let shouldBeEqualTo a b = Assert.Equal(a,b)</p>
+
+<p>let parse value =</p>
+
+<pre><code>if String.IsNullOrEmpty(value) then 0 else
+match Int32.TryParse value with
+| (false,_) -&gt; failwithf "Did not parse value %s" value  
+| (true, n) when n &lt; 0 -&gt; failwithf "Negatives not allowed %s" value
+| (true, n) when n &gt;= 1000 -&gt;0
+| (true, n) -&gt; n
+</code></pre>
+
+<p>let splitIntoDelimitersAndRest (calculationString:String) =</p>
+
+<pre><code>let defaultDelmiters = [",";"\n"]
+let regex = new Regex("^//(?&lt;defaultDelimiter&gt;.*?)\\n(?&lt;rest&gt;.*)$", RegexOptions.Singleline)
+match regex.Match calculationString with
+| m when m.Success -&gt;
+    let delimiters = List.Cons(m.Groups.["defaultDelimiter"].Value, defaultDelmiters)
+    (delimiters, m.Groups.["rest"].Value)
+| _ -&gt; (defaultDelmiters, calculationString)
+</code></pre>
+
+<p>let add (calculationString:String) =
+   let splitResult = splitIntoDelimitersAndRest calculationString
+   let delimiters = fst splitResult |> List.toArray
+   let rest = snd splitResult
+   rest.Split(delimiters, StringSplitOptions.RemoveEmptyEntries)
+   |> List.ofSeq
+   |> List.map parse
+   |> List.sum</p>
+
+<p>[<Fact>]
+let <code>When an empty string is supplied it should return 0</code>() =</p>
+
+<pre><code>String.Empty
+|&gt; add
+|&gt; (shouldBeEqualTo 0)
+</code></pre>
+
+<p>[<Fact>]
+let <code>When a single digit is supplied it should return the digits value</code>() =</p>
+
+<pre><code>["1"; "2"; "3"]
+|&gt; List.map add
+|&gt; List.iter2 shouldBeEqualTo [1;2;3]
+</code></pre>
+
+<p>[<Fact>]
+let <code>When two digits are supplied separated by a comma it should be able to some them up</code>() =</p>
+
+<pre><code>["1,2"; "3,4"; "4,5"]
+|&gt; List.map add
+|&gt; List.iter2 shouldBeEqualTo [3;7;9]
+</code></pre>
+
+<p>[<Fact>]
+let <code>When more than two digits are supplied separated by a comma it should be able to sum them up</code>() =</p>
+
+<pre><code>["1,2,4,5"; "3,4,5"; "4,5,6,7,8"]
+|&gt; List.map add
+|&gt; List.iter2 shouldBeEqualTo [12;12;30]
+</code></pre>
+
+<p>[<Fact>]
+let <code>When more than two digits are supplied separated by new line character be able to to sum them up</code>() =</p>
+
+<pre><code>["1\n2\n4\n5"; "3\n4\n5"; "4\n5\n6\n7\n8"]
+|&gt; List.map add
+|&gt; List.iter2 shouldBeEqualTo [12;12;30]
+</code></pre>
+
+<p>[<Fact>]
+let <code>When more than two digits are supplied separated by new line character or comma it should be able to some them up</code>() =</p>
+
+<pre><code>["1,2\n4,5"; "3,4\n5"; "4,5\n6\n7\n8"]
+|&gt; List.map add
+|&gt; List.iter2 shouldBeEqualTo [12;12;30]
+</code></pre>
+
+<p>[<Fact>]
+let <code>When more than two digits are supplied separated by a user supplied default delimiter it should be able to sum them up</code>() =</p>
+
+<pre><code>["//*\n1*2*4*5"; "//$\n3$4$5"; "//%\n4%5%6%7%8"]
+|&gt; List.map add
+|&gt; List.iter2 shouldBeEqualTo [12;12;30] 
+</code></pre>
+
+<p>[<Fact>]
+let <code>When more than two digits are supplied separated by a user supplied default delimiter or one of the standard delimiters it should be able to sum them up</code>() =</p>
+
+<pre><code>["//*\n1*2*4*5"; "//$\n3$4$5"; "//%\n4\n5%6%7%8"]
+|&gt; List.map add
+|&gt; List.iter2 shouldBeEqualTo [12;12;30]
+</code></pre>
+
+<p>[<Fact>]
+let <code>When digits greater than 1000 are supplied it should ignore them</code>() =</p>
+
+<pre><code>["//*\n1*2000*4*5"; "//$\n3$4$1000"]
+|&gt; List.map add
+|&gt; List.iter2 shouldBeEqualTo [10;7]
+</code></pre>
+
+<p>[<Fact>]
+let <code>When using more than two digits with with a custom separator of multiple characters ít should be able to sum them up</code>() =</p>
+
+<pre><code>["//asdf\n1asdf4asdf5"; "//as\n3as4as"]
+|&gt; List.map add
+|&gt; List.iter2 shouldBeEqualTo [10;7]
+</code></pre>
+
+<p>```</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Kata FizzBuzz in F#]]></title>
+    <link href="http://www.bjoernrochel.de/2010/04/29/kata-fizzbuzz-in-f/"/>
+    <updated>2010-04-29T19:00:00+02:00</updated>
+    <id>http://www.bjoernrochel.de/2010/04/29/kata-fizzbuzz-in-f</id>
+    <content type="html"><![CDATA[<p>Last F# book club meeting in Munich was awesome (as usual). 2 weeks ago we decided to do a Code Kata on each subsequent meeting. This week was our first, with Kata FizzBuzz.</p>
+
+<!--more-->
+
+
+<p>This is what we came up with. (BTW: Partial function application and pipelining rocks !!!)</p>
+
+<p>``` csharp Kata FizzBuzz in F#
+open Xunit</p>
+
+<p>let fizzBuzz number =</p>
+
+<pre><code> match number with     
+ | n when n%15=0 -&gt; "FizzBuzz"     
+ | n when n%3=0 -&gt; "Fizz"    
+ | n when n%5=0 -&gt; "Buzz"    
+ | _ -&gt; number.ToString()  
+</code></pre>
+
+<p>let areEqual expected actual =</p>
+
+<pre><code> Assert.Equal(expected, actual)  
+</code></pre>
+
+<p>[<Fact>]
+let Should_return_the_digit_for_numbers_which_are_not_dividable_by_3_or_5()  =</p>
+
+<pre><code>[1;2;11;13;16]     
+|&gt; List.map fizzBuzz
+|&gt; List.iter2 areEqual ["1";"2";"11";"13";"16"]  
+</code></pre>
+
+<p>[<Fact>]
+let Should_return_Fizz_for_digits_dividable_by_3() =</p>
+
+<pre><code>[3;6;9;12]     
+|&gt; List.map fizzBuzz      
+|&gt; List.iter (areEqual "Fizz")
+</code></pre>
+
+<p>[<Fact>]
+let Should_return_Buzz_for_digits_dividable_by_5() =</p>
+
+<pre><code>[5;10;20;25]     
+|&gt; List.map fizzBuzz      
+|&gt; List.iter (areEqual "Buzz")  
+</code></pre>
+
+<p>[<Fact>]
+let Should_return_FizzBuzz_for_digits_dividable_by_3_and_5() =</p>
+
+<pre><code>[15;30;45;60]     
+|&gt; List.map fizzBuzz      
+|&gt; List.iter (areEqual "FizzBuzz")  
+</code></pre>
+
+<p>```</p>
+
+<p>If anyone of you hardcore functional guys out there notices something utterly wrong or something that could radically simplified, please let me know.
+We’re eager to learn more.</p>
+]]></content>
+  </entry>
+  
+</feed>

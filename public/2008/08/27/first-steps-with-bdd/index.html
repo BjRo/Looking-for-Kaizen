@@ -1,0 +1,811 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>First steps with BDD - Dude, where's my Kaizen?</title>
+  <meta name="author" content="Björn Rochel">
+
+  
+  <meta name="description" content="One of the positive things of being ill and staying at home is havingtime to look into stuff I always wanted to look into but never actuallyhad the &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.bjoernrochel.de/2008/08/27/first-steps-with-bdd/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Dude, where's my Kaizen?" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+</head>
+
+<body   >
+  <header role="banner"><div id="logo">
+	<img src="/images/kaizen.png" alt="Kaizen" title="Kaizen" />
+</div>
+<hgroup>
+  <h1><a href="/">Dude, where's my Kaizen?</a></h1>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.bjoernrochel.de" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">First Steps With BDD</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-08-27T13:35:06+02:00" pubdate  data-updated="true" >Aug 27<span>th</span>, 2008</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>One of the positive things of being ill and staying at home is having
+time to look into stuff I always wanted to look into but never actually
+had the time to. A good example for this is Behavior Driven Development
+or in short BDD. BDD is described by its creator Dan North as an
+enhancement to classic TDD with an emphasis on behavior specifications.
+It tries to provide business value by using classes and methods written
+as human readable sentences which can be reflected in order to generate
+a behavior specification document for the classes under test. The
+document can fulfill multiple purposes. It could be used as
+documentation for the tested system and even more important as an
+enabler for the ubiquitous language of the project (in terms of Evans
+DDD).</p>
+
+<p>Before looking at something more concrete about BDD, first a brief
+history of my personal experience with testing throughout the last 3
+years. I think this helps me to clarify, why I liked BDD from the moment
+I started reading about it. My first unit tests looked very much like a
+lot of tests I&#8217;ve seen from a lot of people starting with unit tests
+since. (The examples are using the NUnit syntax but you can project this
+to any unit testing framework you want.)</p>
+
+<h2>Every fresh start is hard.</h2>
+
+<figure class='code'><figcaption><span>Unstructured tests</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TestFixture]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">FactoryTest</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">Factory</span> <span class="n">_Factory</span><span class="p">;</span>
+</span><span class='line'><span class="na"> </span>
+</span><span class='line'><span class="na"> [SetUp]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">SetUp</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_Factory</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Factory</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="na"> </span>
+</span><span class='line'><span class="na"> [Test]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">Test1</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">SomeProduct</span> <span class="n">product</span> <span class="p">=</span> <span class="n">_Factory</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="s">&quot;FooProduct&quot;</span><span class="p">);</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">Assert</span><span class="p">.</span><span class="n">IsNotNull</span><span class="p">(</span><span class="n">product</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="n">product</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="s">&quot;FooProduct&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="n">product</span><span class="p">.</span><span class="n">Vendor</span><span class="p">,</span> <span class="s">&quot;Foo&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="na"> </span>
+</span><span class='line'><span class="na"> [Test]</span>
+</span><span class='line'><span class="na"> [ExpectedException(typeof(ArgumentNullException))]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">Test2</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_Factory</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="k">null</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For every class I wanted to test I wrote a corresponding test class,
+which had the suffix &#8220;Test&#8221; and contained all tests for that class under test.
+I discovered later that this is a testing strategy known as <code>TEST-CASE-CLASS-PER-CLASS</code>
+while reading &#8220;XUnit Test Patterns&#8221; by Gerard Meszaros. At that time it felt pretty confident with what I did. I mean, I wrote tested code, which was
+to a particular degree bug free. Yeah right, but let&#8217;s have a look at the downside of what I was doing:</p>
+
+<ul>
+<li>When such a test failed I didn&#8217;t have a clue what the test was actually verifying. I had to debug the testcode.</li>
+<li>When a test like <code>Test1</code> failed I didn&#8217;t know what assertion was broken. I had to debug the testcode.</li>
+<li>It didn&#8217;t scale well. I became quite messy and unclear as the number of tests increased.</li>
+<li>I always hat a hard time coming back to the test after having spend days in a different topic.</li>
+</ul>
+
+
+<h2>Incorporating a standard naming scheme for tests</h2>
+
+<p>As one result of the observed problems I incorporated a standard naming scheme (inspired by a post of Roy Osherove)
+to my tests which followed the following scheme: <code>MethodName_Scenario_Behavior</code>.
+Applied to the sample code it would look like this:</p>
+
+<figure class='code'><figcaption><span>Applying a name scheme</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TestFixture]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">FactoryTest</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">Factory</span> <span class="n">_Factory</span><span class="p">;</span>
+</span><span class='line'><span class="na"> </span>
+</span><span class='line'><span class="na"> [SetUp]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">SetUp</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_Factory</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Factory</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="na"> </span>
+</span><span class='line'><span class="na"> [Test]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">Create_ValidCreationData_CreatesAValidProduct</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">SomeProduct</span> <span class="n">product</span> <span class="p">=</span> <span class="n">_Factory</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="s">&quot;FooProduct&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">Assert</span><span class="p">.</span><span class="n">IsNotNull</span><span class="p">(</span><span class="n">product</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="n">product</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="s">&quot;FooProduct&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="n">product</span><span class="p">.</span><span class="n">Vendor</span><span class="p">,</span> <span class="s">&quot;Foo&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="na"> </span>
+</span><span class='line'><span class="na"> [Test]</span>
+</span><span class='line'><span class="na"> [ExpectedException(typeof(ArgumentNullException))]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">Create_NullForArgument_ThrowsArgumentNullException</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_Factory</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="k">null</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The naming scheme helped me a lot for maintaining my tests. When a test failed I knew instantly a)
+which class was tested, b) what the test scenario was and c) what the expected behavior was, that was broken. However, the problem with the
+multiple assertions still existed. You can fix this issue by providing error messages with every assertion. I must admit that I never really
+liked that approach. I would rather go down the <code>SINGLE-ASSERTION-PER-TEST-METHOD</code> way.</p>
+
+<p>This way you have the behavior of the class under test completely discoverable by a unit test framework
+which is something I appreciate. (Maybe I&#8217;m alone with this. Several members of my team disagree with this.)</p>
+
+<h2>Single Assertion per Test</h2>
+
+<p>After refactoring the test it would look like this:</p>
+
+<figure class='code'><figcaption><span>Adding single assertions per test</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TestFixture]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">FactoryTest</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">Factory</span> <span class="n">_Factory</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="na"> [SetUp]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">SetUp</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_Factory</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Factory</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="na"> </span>
+</span><span class='line'><span class="na"> [Test]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">Create_ValidCreationData_CreatedProductHasName</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">SomeProduct</span> <span class="n">product</span> <span class="p">=</span> <span class="n">_Factory</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="s">&quot;FooProduct&quot;</span><span class="p">);</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="n">product</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="s">&quot;FooProduct&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="na"> </span>
+</span><span class='line'><span class="na"> [Test]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">Create_ValidCreationData_CreatesProductHasNameOfVendor</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">SomeProduct</span> <span class="n">product</span> <span class="p">=</span> <span class="n">_Factory</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="s">&quot;FooProduct&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="n">product</span><span class="p">.</span><span class="n">Vendor</span><span class="p">,</span> <span class="s">&quot;Foo&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na"> [Test]</span>
+</span><span class='line'><span class="na"> [ExpectedException(typeof(ArgumentNullException))]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">Create_NullForArgument_ThrowsArgumentNullException</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_Factory</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="k">null</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>One downside of this approach is the sudden code duplication you now have in the code. It isn&#8217;t that
+big in the example but it can be in reality. You should treat test code as you&#8217;re treating production code. Don&#8217;t repeat yourself! I usually
+dealt with that situation by switching the test strategy.</p>
+
+<h2>Switching to TEST-CLASS-PER-FIXTURE</h2>
+
+<p><code>TEST-CLASS-PER-FIXTURE</code> is again a test strategy described by Gerald Meszaros in this book &#8220;XUnit Test Patterns&#8221;.
+The basic idea is that you split your test classes into several test classes based on the common initialization / execution logic the methods share.
+Applied to the sample code this would result in this:</p>
+
+<figure class='code'><figcaption><span>Applying Test case class per fixture</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[TestFixture]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">FactoryTest_ArgumentTests</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">Factory</span> <span class="n">_Factory</span><span class="p">;</span>
+</span><span class='line'><span class="na"> [SetUp]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">SetUp</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_Factory</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Factory</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="na"> </span>
+</span><span class='line'><span class="na"> [Test]</span>
+</span><span class='line'><span class="na"> [ExpectedException(typeof(ArgumentNullException))]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">Create_NullForArgument_ThrowsArgumentNullException</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_Factory</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="k">null</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na">[TestFixture]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">FactoryTest_CreatingAValidProduct</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">Factory</span> <span class="n">_Factory</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">SomeProduct</span> <span class="n">_Product</span><span class="p">;</span>
+</span><span class='line'><span class="na"> </span>
+</span><span class='line'><span class="na"> [SetUp]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">SetUp</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_Factory</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Factory</span><span class="p">();</span>
+</span><span class='line'>      <span class="n">_Product</span> <span class="p">=</span> <span class="n">_Factory</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="s">&quot;FooProduct&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="na"> </span>
+</span><span class='line'><span class="na"> [Test]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">Create_ValidCreationData_CreatedProductHasName</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="n">_Product</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="s">&quot;FooProduct&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na"> [Test]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">Create_ValidCreationData_CreatesProductHasNameOfVendor</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">Assert</span><span class="p">.</span><span class="n">AreEqual</span><span class="p">(</span><span class="n">_Product</span><span class="p">.</span><span class="n">Vendor</span><span class="p">,</span> <span class="s">&quot;Foo&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I&#8217;ve worked with that approach for 2 years now. It suited my needs very well.
+However the tests are often not as expressive as I like them to be in terms of the naming.
+I&#8217;ll guess there&#8217;s a better naming scheme when using something like the <code>TEST-CASE-CLASS-PER-FIXTURE</code> testing strategy
+and that&#8217;s where the circle closes for me.</p>
+
+<h2>Coming back to BDD </h2>
+
+<p>While working through the preparation material for JP Boodhoos Nothing but .NET bootcamp I
+made first contact with his style of applying BDD. I must admit that I&#8217;m pretty amazed,
+because I&#8217;ve seen a lot of things of value for me. Sometimes sourcecode says more than
+a thousand words, so this is what the sample would look like if his BDD conventions have been
+applied to it:</p>
+
+<figure class='code'><figcaption><span>The same tests context specification style</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="na">[Concern(typeof (Factory))]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">When_creating_a_valid_product</span> <span class="p">:</span> <span class="n">ContextSpecification</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">Factory</span> <span class="n">_Factory</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">Product</span> <span class="n">_CreatedProduct</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">establish_context</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_Factory</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Factory</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">because</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_CreatedProduct</span> <span class="p">=</span> <span class="n">_Factory</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="s">&quot;Foo&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="na"> </span>
+</span><span class='line'><span class="na"> [Observation]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">the_product_should_contain_the_correct_product_name</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_CreatedProduct</span><span class="p">.</span><span class="n">Name</span><span class="p">.</span><span class="n">should_be_equal_to</span><span class="p">(</span><span class="s">&quot;FooProduct&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na"> [Observation]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">the_product_should_contain_the_correct_vendor_name</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_CreatedProduct</span><span class="p">.</span><span class="n">Vendor</span><span class="p">.</span><span class="n">should_be_equal_to</span><span class="p">(</span><span class="s">&quot;Foo&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na">[Concern(typeof(Factory))]</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">When_passing_null_for_product_name</span> <span class="p">:</span> <span class="n">ContextSpecification</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">Factory</span> <span class="n">_Factory</span><span class="p">;</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">Action</span> <span class="n">_Call</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">establish_context</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_Factory</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Factory</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'>  <span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">because</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_Call</span> <span class="p">=</span> <span class="n">The</span><span class="p">.</span><span class="n">Action</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="n">_Factory</span><span class="p">.</span><span class="n">Create</span><span class="p">(</span><span class="k">null</span><span class="p">));</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="na"> [Observation]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">should_throw_an_ArgumentNullException</span><span class="p">()</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="n">_Call</span><span class="p">.</span><span class="n">should_throw_an</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>
+Here is the base class that provides the hooks for the unit test framework (in this case MbUnit).</p>
+
+<figure class='code'><figcaption><span>The ContextSpecification base class</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">using</span> <span class="nn">MbUnit.Framework</span><span class="p">;</span>
+</span><span class='line'><span class="k">using</span> <span class="nn">Context</span> <span class="p">=</span> <span class="n">MbUnit</span><span class="p">.</span><span class="n">Framework</span><span class="p">.</span><span class="n">TestFixtureAttribute</span><span class="p">;</span>
+</span><span class='line'><span class="k">namespace</span> <span class="nn">NothinButDotNetPrep.SpecHelpers</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="na"> [Context]</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">abstract</span> <span class="k">class</span> <span class="nc">ContextSpecification</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'><span class="na">     [SetUp]</span>
+</span><span class='line'>      <span class="k">public</span> <span class="k">void</span> <span class="nf">setup</span><span class="p">()</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>          <span class="n">establish_context</span><span class="p">();</span>
+</span><span class='line'>          <span class="n">because</span><span class="p">();</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'><span class="na">     </span>
+</span><span class='line'><span class="na">     [TearDown]</span>
+</span><span class='line'>      <span class="k">public</span> <span class="k">void</span> <span class="nf">teardown</span><span class="p">()</span>
+</span><span class='line'>      <span class="p">{</span>
+</span><span class='line'>          <span class="n">after_each_specification</span><span class="p">();</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      
+</span><span class='line'>      <span class="k">protected</span> <span class="k">abstract</span> <span class="k">void</span> <span class="nf">because</span><span class="p">();</span>
+</span><span class='line'>      <span class="k">protected</span> <span class="k">abstract</span> <span class="k">void</span> <span class="nf">establish_context</span><span class="p">();</span>
+</span><span class='line'>      <span class="k">protected</span> <span class="k">virtual</span> <span class="k">void</span> <span class="nf">after_each_specification</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I like his way to implement the AAA (arrange, act and assert) pattern with the template
+method pattern and C# 3.0 extension method for the actual assertions very much. It feels like a natural progression to what I&#8217;ve been doing
+previously with a lot better readability. Another interesting thing is that he uses a tool called <code>bddunit</code> to generate a behavior
+documentation from the tests. A generated documentation would look like this:</p>
+
+<p>Behavior of Factory</p>
+
+<ul>
+<li><p>When creating a valid product</p>
+
+<ul>
+<li>the product should contain the correct vendor name.</li>
+<li>the product should contain the correct product name.</li>
+</ul>
+</li>
+<li><p>When passing null for product name</p>
+
+<ul>
+<li>should throw an ArgumentNullException</li>
+</ul>
+</li>
+</ul>
+
+
+<p>I&#8217;ll definitely have to dig more into this. If you&#8217;re interested in
+learning more about BDD here are some links I&#8217;ve read this morning.</p>
+
+<ul>
+<li>Dan North: <a href="http://dannorth.net/introducing-bdd">Introducing BDD</a>.</li>
+<li>AgileJoe: <a href="http://www.lostechies.com/blogs/joe_ocampo/archive/2007/08/07/attempting-to-demystify-behavior-driven-development.aspx">Attempting to demyistify BDD</a>.</li>
+<li>JP: Bodhoo: <a href="http://codebetter.com/blogs/jean-paul_boodhoo/archive/2007/11/29/getting-started-with-bdd-style-context-specification-base-na.aspx">Getting started with BDD style Context / Specification base naming</a>.</li>
+<li>Jimmy Bogard: <a href="http://grabbagoft.blogspot.com/2008/01/converting-tests-to-specs-is-bad-idea.html">Converting tests into specs is a bad idea</a>.</li>
+<li>David Laribee: <a href="http://codebetter.com/blogs/david_laribee/archive/2007/12/17/approaching-bdd.aspx">Approaching BDD.</a></li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">BjRo</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-08-27T13:35:06+02:00" pubdate  data-updated="true" >Aug 27<span>th</span>, 2008</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/testing/'>Testing</a>, <a class='category' href='/blog/categories/dotnet/'>dotnet</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://www.bjoernrochel.de/2008/08/27/first-steps-with-bdd/" data-via="bjoernrochel" data-counturl="http://www.bjoernrochel.de/2008/08/27/first-steps-with-bdd/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+</div>
+
+    
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+	<h1>About me</h1>
+  <p><br/><img src="/images/bjro-eyes.jpg" alt="portrait" /></p>
+	<p>
+  My name is <strong>Björn Rochel</strong>.  I'm a 32 year old geek, who's crazy about software development, living in Cologne and
+  currently working for <a href="http://www.intercomponentware.com">ICW</a> as a .NET Developer / Architect.
+	</p>
+	<ul class="badges">
+		<li><a href="http://www.xing.com/profile/Bjoern_Rochel"><img src="/images/badges/xing2-small.png" alt="Xing" /></a></li>
+		<li><a href="http://www.github.com/BjRo"><img src="/images/badges/github-small.png" alt="Github" /></a></li>
+		<li><a href="http://www.twitter.com/bjoernrochel"><img src="/images/badges/twitter-square-small.png" alt="Twitter" /></a></li>
+		<li><a href="/atom.xml"><img src="/images/badges/rss-circle-small.png" alt="Rss" /></a></li>
+	</ul>
+</section>
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/Conferences/'>Conferences (8)</a></li>
+<li class='category'><a href='/blog/categories/FSharp/'>FSharp (3)</a></li>
+<li class='category'><a href='/blog/categories/Katas/'>Katas (2)</a></li>
+<li class='category'><a href='/blog/categories/StoryTeller/'>StoryTeller (14)</a></li>
+<li class='category'><a href='/blog/categories/StructureMap/'>StructureMap (9)</a></li>
+<li class='category'><a href='/blog/categories/Testing/'>Testing (20)</a></li>
+<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (7)</a></li>
+<li class='category'><a href='/blog/categories/dotnet/'>dotnet (65)</a></li>
+<li class='category'><a href='/blog/categories/ruby/'>ruby (3)</a></li>
+<li class='category'><a href='/blog/categories/sw-design/'>sw-design (13)</a></li>
+<li class='category'><a href='/blog/categories/xUnitBDDExtensions/'>xUnitBDDExtensions (15)</a></li>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("bjoernrochel", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/bjoernrochel" class="twitter-follow-button" data-width="208px" data-show-count="false">Follow @bjoernrochel</a>
+  
+</section>
+
+<section>
+<h1>Disclaimer</h1>
+<p>
+The opinions expressed herein are my own personal opinions and do not necessarily represent the opinion of any other organization or person, including (but not limited to) my fellow employees, my employer, its clients or their agents. 
+</p>
+<p>
+ Copyright &copy; 2011 - Björn Rochel
+</p>
+<section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Björn Rochel -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'bjro';
+      
+        
+
+				//TODO: comment disqus_developer out
+				var disqus_developer = 1;
+				var disqus_identifier = 'http://www.bjoernrochel.de/2008/08/27/first-steps-with-bdd/';
+				var disqus_url = 'http://www.bjoernrochel.de/2008/08/27/first-steps-with-bdd/';
+        var disqus_script = 'embed.js';
+      
+
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>

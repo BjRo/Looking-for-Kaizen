@@ -1,0 +1,349 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Dude, I can do reports - Dude, where's my Kaizen?</title>
+  <meta name="author" content="Björn Rochel">
+
+  
+  <meta name="description" content="Over the past days I finally managed to spend some time withxUnit.BDDExtensions. I can&#8217;t possibly describe how good coming back toxUnit.net &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.bjoernrochel.de/2009/07/05/dude-i-can-do-reports/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Dude, where's my Kaizen?" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+</head>
+
+<body   >
+  <header role="banner"><div id="logo">
+	<img src="/images/kaizen.png" alt="Kaizen" title="Kaizen" />
+</div>
+<hgroup>
+  <h1><a href="/">Dude, where's my Kaizen?</a></h1>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.bjoernrochel.de" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Dude, I Can Do Reports</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-07-05T13:54:49+02:00" pubdate  data-updated="true" >Jul 5<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Over the past days I finally managed to spend some time with
+xUnit.BDDExtensions. I can&#8217;t possibly describe how good coming back to
+xUnit.net feels after working with MSTest in my last project. The
+speed, the extensibility model. It&#8217;s simply not comparable. MSTest is
+certainly a great tool in case you haven&#8217;t worked with a unit test
+framework before and it&#8217;s integration into Visual Studio is definitely a
+plus, too. However once you&#8217;ve got Resharper or Gallio installed the
+integration aspect isn&#8217;t really the big deal any more. Anyway, you can
+find several changes in the current trunk (<a href="http://github.com/bjro/xunitbddextensions/">(http://github.com/bjro/xunitbddextensions/)</a>.</p>
+
+<h2>The biggest addition is the new ReportGenerator</h2>
+
+<p>I&#8217;ve wanted this for quite a while now but never really found the time
+to implement it. After running the <code>RunBuild.cmd</code> in the &#8220;Build&#8221; folder
+of the trunk you&#8217;ll find the .exe in the <code>Deploy</code> folder. It&#8217;s still a
+bit raw but exactly what I need for my current client (yes, you heard
+right. xUnit.BDDExtensions is currently being picked up at my current
+client ;-))</p>
+
+<p>Here are the current console arguments:</p>
+
+<p><code>/assembly</code> configures the spec assembly to extract a report from one or
+more assemblies.</p>
+
+<blockquote><p>ReportGenerator.exe /assembly:SomeSpecAssembly.dll
+ReportGenerator.exe /assembly:C:\Test\SomeSpecAssembly.dll \
+ReportGenerator.exe /assembly:&#8217;C:\Path with spaces\SomeSpecAssembly.dll&#8217;
+ReportGenerator.exe /assembly:SomeSpecAssembly.dll /assembly:SomeOtherSpecAssembly.dll</p></blockquote>
+
+<p><code>/generator</code> configures the generator to use. There are currently two
+generators implemented. One building an <code>ASCII</code> .txt file which looks like
+<a href="/images/posts/xunitbddextensionsreportingspecs.txt">this</a>.
+In order to use it you have to run the generator with</p>
+
+<blockquote><p>ReportGenerator.exe /assembly:SomeSpecAssembly /generator:Text</p></blockquote>
+
+<p>The other creating an HTML file which looks like
+<a href="/images/posts/xunitbddextensionsreportingspecs.html">this</a>.
+This is the default generator which is used when you omit the
+<code>/generator</code>  argument.</p>
+
+<p>The files created by the generator are created on a per assembly basis
+and named like the assembly with the suffix <code>.html</code> or <code>.txt</code>. By default
+they are created in the same directory the generator is run from.</p>
+
+<p>You can change this by configuring a different folder via <code>/path</code>.</p>
+
+<blockquote><p>ReportGenerator.exe /assembly:C:\Test\SomeSpecAssembly.dll /path:C:\temp</p></blockquote>
+
+<h2>The deployment has changed slightly</h2>
+
+<p>The build script now merges xUnit.BDDExtensions to a single assembly
+(the external Rhino.Mocks assembly is not needed any more). Same applies
+to the ReportGenerator which uses StructureMap and NVelocity
+internally.</p>
+
+<h2>Some small changes to the API</h2>
+
+<ul>
+<li><code>Dependency&lt;TDependency&gt;()</code> has been marked as obsolete in
+<code>InstanceContextSpecification&lt;T&gt;</code> and <code>StaticContextSpecification</code>.</li>
+<li><code>AutoDependency&lt;TDependency&gt;()</code> has been marked as obsolete in
+<code>InstanceContextSpecification&lt;T&gt;</code>.</li>
+<li><code>An&lt;TDependency&gt;()</code> and <code>Some&lt;TDependency&gt;()</code> have been added to
+both <code>InstanceCOntextSpecification&lt;T&gt;</code> and <code>StaticContextSpecification</code>.</li>
+<li><code>The&lt;TDependency&gt;()</code> has been added to <code>InstanceCOntextSpecification&lt;T&gt;</code>,</li>
+</ul>
+
+
+<p>Its mostly naming which has been changed. Some discussions at my current
+client made me realize that it&#8217;s easier to describe the behavior of xUnit.BDDExtensions to
+developers who haven&#8217;t used the tool before with <code>An&lt;ICar&gt;()</code> in favor
+of <code>Dependency&lt;ICar&gt;()</code> and <code>The&lt;ICar&gt;()</code> in favor of
+<code>AutoDependency&lt;ICar&gt;()</code>.</p>
+
+<p><code>An&lt;TDependency&gt;()</code> returns a new dynamic stub object every time it&#8217;s
+called. <code>The&lt;TDependency&gt;()</code> behaves differently. BDDExtensions has
+AutoMocking support built-in. Once you let the framework create your
+test object you&#8217;re able to access the automatically injected dynamic
+stubs with this method. Last but not least <code>Some&lt;TDependency&gt;()</code>
+provides the same behavior as <code>An&lt;T&gt;()</code>. It only returns a collection
+of newly created stub objects.</p>
+
+<p>I&#8217;m going to write a more detailed documentation of the current version
+soon. So in case you&#8217;re interested in the BDDExtensions, stay tuned . .
+.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">BjRo</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-07-05T13:54:49+02:00" pubdate  data-updated="true" >Jul 5<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/testing/'>Testing</a>, <a class='category' href='/blog/categories/dotnet/'>dotnet</a>, <a class='category' href='/blog/categories/xunitbddextensions/'>xUnitBDDExtensions</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://www.bjoernrochel.de/2009/07/05/dude-i-can-do-reports/" data-via="bjoernrochel" data-counturl="http://www.bjoernrochel.de/2009/07/05/dude-i-can-do-reports/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+</div>
+
+    
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+	<h1>About me</h1>
+  <p><br/><img src="/images/bjro-eyes.jpg" alt="portrait" /></p>
+	<p>
+  My name is <strong>Björn Rochel</strong>.  I'm a 32 year old geek, who's crazy about software development, living in Cologne and
+  currently working for <a href="http://www.intercomponentware.com">ICW</a> as a .NET Developer / Architect.
+	</p>
+	<ul class="badges">
+		<li><a href="http://www.xing.com/profile/Bjoern_Rochel"><img src="/images/badges/xing2-small.png" alt="Xing" /></a></li>
+		<li><a href="http://www.github.com/BjRo"><img src="/images/badges/github-small.png" alt="Github" /></a></li>
+		<li><a href="http://www.twitter.com/bjoernrochel"><img src="/images/badges/twitter-square-small.png" alt="Twitter" /></a></li>
+		<li><a href="/atom.xml"><img src="/images/badges/rss-circle-small.png" alt="Rss" /></a></li>
+	</ul>
+</section>
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/Conferences/'>Conferences (8)</a></li>
+<li class='category'><a href='/blog/categories/FSharp/'>FSharp (3)</a></li>
+<li class='category'><a href='/blog/categories/Katas/'>Katas (2)</a></li>
+<li class='category'><a href='/blog/categories/StoryTeller/'>StoryTeller (14)</a></li>
+<li class='category'><a href='/blog/categories/StructureMap/'>StructureMap (9)</a></li>
+<li class='category'><a href='/blog/categories/Testing/'>Testing (20)</a></li>
+<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (7)</a></li>
+<li class='category'><a href='/blog/categories/dotnet/'>dotnet (65)</a></li>
+<li class='category'><a href='/blog/categories/ruby/'>ruby (3)</a></li>
+<li class='category'><a href='/blog/categories/sw-design/'>sw-design (13)</a></li>
+<li class='category'><a href='/blog/categories/xUnitBDDExtensions/'>xUnitBDDExtensions (15)</a></li>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("bjoernrochel", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/bjoernrochel" class="twitter-follow-button" data-width="208px" data-show-count="false">Follow @bjoernrochel</a>
+  
+</section>
+
+<section>
+<h1>Disclaimer</h1>
+<p>
+The opinions expressed herein are my own personal opinions and do not necessarily represent the opinion of any other organization or person, including (but not limited to) my fellow employees, my employer, its clients or their agents. 
+</p>
+<p>
+ Copyright &copy; 2011 - Björn Rochel
+</p>
+<section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Björn Rochel -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'bjro';
+      
+        
+
+				//TODO: comment disqus_developer out
+				var disqus_developer = 1;
+				var disqus_identifier = 'http://www.bjoernrochel.de/2009/07/05/dude-i-can-do-reports/';
+				var disqus_url = 'http://www.bjoernrochel.de/2009/07/05/dude-i-can-do-reports/';
+        var disqus_script = 'embed.js';
+      
+
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>

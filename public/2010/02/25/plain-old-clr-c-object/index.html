@@ -1,0 +1,313 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Plain Old CLR / C# Object - Dude, where's my Kaizen?</title>
+  <meta name="author" content="Björn Rochel">
+
+  
+  <meta name="description" content="Crap, time can go by so fast. On Monday a tweet by Ralf Westphal caughtmy attention and I felt the need to comment. It started as a series of Twitter &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.bjoernrochel.de/2010/02/25/plain-old-clr-c-object/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Dude, where's my Kaizen?" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+</head>
+
+<body   >
+  <header role="banner"><div id="logo">
+	<img src="/images/kaizen.png" alt="Kaizen" title="Kaizen" />
+</div>
+<hgroup>
+  <h1><a href="/">Dude, where's my Kaizen?</a></h1>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.bjoernrochel.de" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Plain Old CLR / C# Object</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-02-25T20:51:37+01:00" pubdate  data-updated="true" >Feb 25<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Crap, time can go by so fast. On Monday a <a href="http://twitter.com/ralfw/status/9446904971">tweet</a> by <strong>Ralf Westphal</strong> caught
+my attention and I felt the need to comment. It started as a series of Twitter replies, but to be honest Twitter isn’t suited or made for those kind of discussions.
+So I started to write this post in order to explain why I disagree with Ralf (or at least don’t get the intended message of his tweet).
+Yeah a short look into the calendar indicates that I’m a little late, but I thought better late than ditch the post and forget about it.</p>
+
+<h2>What got me baffled</h2>
+
+<p>In his tweet he basically states (my translation from German to English) that</p>
+
+<blockquote><p>If a domain model consists only of POCOs it should be called data model</p><footer><strong>Ralf Westphal</strong><cite><a href='http://twitter.com/ralfw/status/9446904971'>twitter.com/ralfw/status/&hellip;</a></cite></footer></blockquote>
+
+
+<p>My first thought was a) does he mean anemic domain models and b) what has POCO to do with that? As I found out he didn’t mean
+<a href="http://twitter.com/ralfw/status/9493173442">anemic domain models</a>. So let’s take a look at the POCO aspect.</p>
+
+<!--more-->
+
+
+<h2>POCO / POJO / PONO / POwhatever</h2>
+
+<p>The term exists in several variations and different programming languages. For the sake of simplicity I’m going to use POCO for the rest of the post since
+I’m a .NET guy, but same applies of course to all other versions.
+The English <a href="http://en.wikipedia.org/wiki/Plain_Old_CLR_Object">Wikipedia site</a> defines the term “Plain Old CLR Object” as the
+following:</p>
+
+<blockquote><p>The term is used to contrast a simple object with one that is designed to be used with a complicated, special object frameworks such as an ORM component. <br/>Another way to put it is that POCO&#8217;s are objects unencumbered with inheritance or attributes needed for specific frameworks …</p><footer><strong>Wikipedia</strong><cite><a href='http://en.wikipedia.org/wiki/Plain_Old_CLR_Object'>en.wikipedia.org/wiki/&hellip;</a></cite></footer></blockquote>
+
+
+<p>To me personally, POCO is just a simple, but very important principle or guideline. POCO for me means,
+that you should strive to limit the contact area of your own code and the code of third party frameworks as much as possible.
+This includes staying away from third-party frameworks with heavy attribute usage and / or inheritance requirements.
+Why should you do this? 2 reasons seem to be important to me:</p>
+
+<ul>
+<li><strong>Orthogonality</strong>. Two parts of a system, like features, components, classes, whatever are called orthogonal when changes in one don’t affect the other.
+Following a POCO approach in a solution can greatly support orthogonality in my personal experience. It helps you to design and build solutions that are easy to change and very adaptable to new requirements or frameworks
+(Ever tried to migrate a Microsoft CAB based solution?). Which leads to the second IMHO very important aspect:</li>
+<li><strong>Reversibility</strong>. In the end of the day we’re all human. Sometimes we design the wrong way, sometimes the framework doesn’t work as expected,
+sometimes a particular framework isn’t exactly the right one any more when requirements change drastically.
+All those things happen. All those things can can come up in any project. POCO can help a lot in those situations,
+because it limits the impact of external frameworks or components to your code.</li>
+</ul>
+
+
+<p>POCO mostly comes up in the context of an ORM solution. However, the concept of POCO is not directly bound to persistence or even domain models.
+Which leads me back to the entry of the post and Ralfs tweet. What is the main distinction between a domain model and something we might call a data model?
+In my opinion this is BEHAVIOR. The term POCO itself has nothing to do with behavior itself (at least from my perspective).
+Totally different aspects IMHO. So why should a model consisting of POCOs be called data model?</p>
+
+<p>Am I fighting on lost ground here, missing something or confusing something?</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">BjRo</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-02-25T20:51:37+01:00" pubdate  data-updated="true" >Feb 25<span>th</span>, 2010</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/sw-design/'>sw-design</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://www.bjoernrochel.de/2010/02/25/plain-old-clr-c-object/" data-via="bjoernrochel" data-counturl="http://www.bjoernrochel.de/2010/02/25/plain-old-clr-c-object/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+</div>
+
+    
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+	<h1>About me</h1>
+  <p><br/><img src="/images/bjro-eyes.jpg" alt="portrait" /></p>
+	<p>
+  My name is <strong>Björn Rochel</strong>.  I'm a 32 year old geek, who's crazy about software development, living in Cologne and
+  currently working for <a href="http://www.intercomponentware.com">ICW</a> as a .NET Developer / Architect.
+	</p>
+	<ul class="badges">
+		<li><a href="http://www.xing.com/profile/Bjoern_Rochel"><img src="/images/badges/xing2-small.png" alt="Xing" /></a></li>
+		<li><a href="http://www.github.com/BjRo"><img src="/images/badges/github-small.png" alt="Github" /></a></li>
+		<li><a href="http://www.twitter.com/bjoernrochel"><img src="/images/badges/twitter-square-small.png" alt="Twitter" /></a></li>
+		<li><a href="/atom.xml"><img src="/images/badges/rss-circle-small.png" alt="Rss" /></a></li>
+	</ul>
+</section>
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/Conferences/'>Conferences (8)</a></li>
+<li class='category'><a href='/blog/categories/FSharp/'>FSharp (3)</a></li>
+<li class='category'><a href='/blog/categories/Katas/'>Katas (2)</a></li>
+<li class='category'><a href='/blog/categories/StoryTeller/'>StoryTeller (14)</a></li>
+<li class='category'><a href='/blog/categories/StructureMap/'>StructureMap (9)</a></li>
+<li class='category'><a href='/blog/categories/Testing/'>Testing (20)</a></li>
+<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (7)</a></li>
+<li class='category'><a href='/blog/categories/dotnet/'>dotnet (65)</a></li>
+<li class='category'><a href='/blog/categories/ruby/'>ruby (3)</a></li>
+<li class='category'><a href='/blog/categories/sw-design/'>sw-design (13)</a></li>
+<li class='category'><a href='/blog/categories/xUnitBDDExtensions/'>xUnitBDDExtensions (15)</a></li>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("bjoernrochel", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/bjoernrochel" class="twitter-follow-button" data-width="208px" data-show-count="false">Follow @bjoernrochel</a>
+  
+</section>
+
+<section>
+<h1>Disclaimer</h1>
+<p>
+The opinions expressed herein are my own personal opinions and do not necessarily represent the opinion of any other organization or person, including (but not limited to) my fellow employees, my employer, its clients or their agents. 
+</p>
+<p>
+ Copyright &copy; 2011 - Björn Rochel
+</p>
+<section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Björn Rochel -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'bjro';
+      
+        
+
+				//TODO: comment disqus_developer out
+				var disqus_developer = 1;
+				var disqus_identifier = 'http://www.bjoernrochel.de/2010/02/25/plain-old-clr-c-object/';
+				var disqus_url = 'http://www.bjoernrochel.de/2010/02/25/plain-old-clr-c-object/';
+        var disqus_script = 'embed.js';
+      
+
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>

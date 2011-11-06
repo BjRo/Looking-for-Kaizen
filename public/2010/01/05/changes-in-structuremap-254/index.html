@@ -1,0 +1,405 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Changes in StructureMap 2.5.4 - Dude, where's my Kaizen?</title>
+  <meta name="author" content="Björn Rochel">
+
+  
+  <meta name="description" content="Interesting what some people do during the Christmas holidays. In the case of Jeremy D. Miller this was releasing a new version ofStructureMap and &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.bjoernrochel.de/2010/01/05/changes-in-structuremap-254/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Dude, where's my Kaizen?" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+</head>
+
+<body   >
+  <header role="banner"><div id="logo">
+	<img src="/images/kaizen.png" alt="Kaizen" title="Kaizen" />
+</div>
+<hgroup>
+  <h1><a href="/">Dude, where's my Kaizen?</a></h1>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.bjoernrochel.de" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Changes in StructureMap 2.5.4</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-01-05T23:45:14+01:00" pubdate  data-updated="true" >Jan 5<span>th</span>, 2010</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Interesting what some people do during the Christmas holidays. In the case of Jeremy D. Miller this was releasing a new version of
+StructureMap and working heavily on the Fubu MVC codebase. Today I had the pleasure to migrate my current projects codebase (which previously
+used Unity and Unity.Interception) to the newest StructureMap version 2.5.4 and Castle.DynamicProxy2.</p>
+
+<p>It was an interesting experience mostly because I tried to re-use some code pieces for setting up conventions
+from an earlier project based on StructureMap 2.5.3. Quite a few things have been changed in the API. Needless to say, all for good. I just
+wanted to give a quick overview of the things I noticed.</p>
+
+<h2>ITypeScanner was replaced by IRegistrationConvention</h2>
+
+<p>If you wanted to write custom conventions in StructureMap 2.5.3 you needed to implement the <code>ITypeScanner</code> interface
+(An example is described <a href="/2009/07/24/cutting-the-fluff-from-service-registration-or-how-to-do-funky-stuff-with-coc-castledynamicproxy-structuremap/">here</a>).</p>
+
+<figure class='code'><figcaption><span>ITypeScanner was replaced by IRegistrationConvention</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="c1">//StructureMap 2.5.3 </span>
+</span><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">ITypeScanner</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">void</span> <span class="nf">Process</span><span class="p">(</span><span class="n">Type</span> <span class="n">type</span><span class="p">,</span> <span class="n">PluginGraph</span> <span class="n">graph</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>  
+</span><span class='line'><span class="c1">//StructureMap 2.5.4 </span>
+</span><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IRegistrationConvention</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">void</span> <span class="nf">Process</span><span class="p">(</span><span class="n">Type</span> <span class="n">type</span><span class="p">,</span> <span class="n">Registry</span> <span class="n">registry</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>As you can see, it&#8217;s not only a renaming. The signature of the <code>Process</code>-method has changed, too. It now uses the good old <code>Registry</code> class for doing the
+registration. Very consistent, good choice. Modifying the <code>PluginGraph</code> always left me with the feeling that I was digging too deep into the StuctureMap internals.</p>
+
+<h2>TypeRules base class has been replaced with Extension methods</h2>
+
+<p>In the past you could re-use some utility methods for reflection (like checking whether a type is concrete, etc.) by
+inheriting from the <code>TypeRules</code> class. This class has been completely removed, but the functionality is still available via Extension methods.</p>
+
+<h2>Lot&#8217;s and lot&#8217;s of renaming </h2>
+
+<p>A lot of renaming has been done. The most interesting stuff happened in the <code>Registry</code> class.</p>
+
+<figure class='code'><figcaption><span>Renamings in the fluent api</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="c1">//StructureMap 2.5.3</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">MyRegistry</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">MyRegistry</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">ForRequestedType</span><span class="p">&lt;</span><span class="n">IFoo</span><span class="p">&gt;().</span><span class="n">TheDefaultIsConcreteType</span><span class="p">&lt;</span><span class="n">Foo</span><span class="p">&gt;();</span>
+</span><span class='line'>        <span class="n">ForRequestedType</span><span class="p">&lt;</span><span class="n">IBar</span><span class="p">&gt;().</span><span class="n">TheDefaultIsConcreteType</span><span class="p">&lt;</span><span class="n">Bar</span><span class="p">&gt;().</span><span class="n">AsSingleton</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">ForRequestedType</span><span class="p">&lt;</span><span class="n">IFoo</span><span class="p">&gt;().</span><span class="n">TheDefault</span><span class="p">.</span><span class="n">IsThis</span><span class="p">(</span><span class="k">new</span> <span class="n">Foo</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">ForRequestedType</span><span class="p">&lt;</span><span class="n">IBar</span><span class="p">&gt;().</span><span class="n">TheDefault</span><span class="p">.</span><span class="n">Is</span><span class="p">.</span><span class="n">ConstructedBy</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="n">Bar</span><span class="p">());</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//StructureMap 2.5.4</span>
+</span><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">MyRegistry</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">MyRegistry</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="n">For</span><span class="p">&lt;</span><span class="n">IFoo</span><span class="p">&gt;().</span><span class="n">Use</span><span class="p">&lt;</span><span class="n">Foo</span><span class="p">&gt;();</span>
+</span><span class='line'>        <span class="n">ForSingleton</span><span class="p">&lt;</span><span class="n">IBar</span><span class="p">&gt;().</span><span class="n">Use</span><span class="p">&lt;</span><span class="n">Bar</span><span class="p">&gt;();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">For</span><span class="p">&lt;</span><span class="n">IFoo</span><span class="p">&gt;().</span><span class="n">Use</span><span class="p">(</span><span class="k">new</span> <span class="n">Foo</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">For</span><span class="p">&lt;</span><span class="n">IBar</span><span class="p">&gt;().</span><span class="n">Use</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="k">new</span> <span class="n">Bar</span><span class="p">());</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The new version is a lot less wordier and a lot more consistent in naming. It also feels very familiar, although
+I&#8217;m unable to determine why.</p>
+
+<h2>Some new slick features I noticed</h2>
+
+<p>From playing around with the StructureMap trunk version during the &#8220;Diving into the StoryTeller Series&#8221; I already stumbled over this killer
+feature.</p>
+
+<figure class='code'><figcaption><span>Convention based registration</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">_container</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Container</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Scan</span><span class="p">(</span><span class="n">s</span> <span class="p">=&gt;</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>   <span class="n">s</span><span class="p">.</span><span class="n">AssemblyContainingType</span><span class="p">&lt;</span><span class="n">ISomeService</span><span class="p">&gt;();</span>
+</span><span class='line'>   <span class="n">s</span><span class="p">.</span><span class="n">ConnectImplementationsToTypesClosing</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IHandler</span><span class="p">&lt;&gt;));</span>
+</span><span class='line'><span class="p">}));</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Jimmy Bogard has already written an <a href="http://www.lostechies.com/blogs/jimmy_bogard/archive/2009/12/17/advanced-structuremap-connecting-implementations-to-open-generic-types.aspx">excellent article</a>
+about that particular feature. So instead let us take a look at this new ability.</p>
+
+<figure class='code'><figcaption><span>Accessing the container model</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">ObjectFactory</span><span class="p">.</span><span class="n">Model</span><span class="p">.</span><span class="n">GetAllPossible</span><span class="p">&lt;</span><span class="n">IInitializable</span><span class="p">&gt;();</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This resolves all instances from the configuration model which implement the <code>IInitializable</code> interface.</p>
+
+<h2>Stuff you don&#8217;t see</h2>
+
+<p>If you&#8217;ve followed Jeremy D. Miller closely on Twitter you may have heard that the biggest
+change in the new release has happened under the hood of StructureMap.  In previous versions StructureMap used Reflection.Emit to emit an
+assembly for the construction of the types at runtime. This has been completely rewritten using <code>ExpressionTrees</code>. I&#8217;m quite curious how he
+implemented that.</p>
+
+<p>Feels like yet another source to learn has emerged ;-)</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">BjRo</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2010-01-05T23:45:14+01:00" pubdate  data-updated="true" >Jan 5<span>th</span>, 2010</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/structuremap/'>StructureMap</a>, <a class='category' href='/blog/categories/dotnet/'>dotnet</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://www.bjoernrochel.de/2010/01/05/changes-in-structuremap-254/" data-via="bjoernrochel" data-counturl="http://www.bjoernrochel.de/2010/01/05/changes-in-structuremap-254/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+</div>
+
+    
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+	<h1>About me</h1>
+  <p><br/><img src="/images/bjro-eyes.jpg" alt="portrait" /></p>
+	<p>
+  My name is <strong>Björn Rochel</strong>.  I'm a 32 year old geek, who's crazy about software development, living in Cologne and
+  currently working for <a href="http://www.intercomponentware.com">ICW</a> as a .NET Developer / Architect.
+	</p>
+	<ul class="badges">
+		<li><a href="http://www.xing.com/profile/Bjoern_Rochel"><img src="/images/badges/xing2-small.png" alt="Xing" /></a></li>
+		<li><a href="http://www.github.com/BjRo"><img src="/images/badges/github-small.png" alt="Github" /></a></li>
+		<li><a href="http://www.twitter.com/bjoernrochel"><img src="/images/badges/twitter-square-small.png" alt="Twitter" /></a></li>
+		<li><a href="/atom.xml"><img src="/images/badges/rss-circle-small.png" alt="Rss" /></a></li>
+	</ul>
+</section>
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/Conferences/'>Conferences (8)</a></li>
+<li class='category'><a href='/blog/categories/FSharp/'>FSharp (3)</a></li>
+<li class='category'><a href='/blog/categories/Katas/'>Katas (2)</a></li>
+<li class='category'><a href='/blog/categories/StoryTeller/'>StoryTeller (14)</a></li>
+<li class='category'><a href='/blog/categories/StructureMap/'>StructureMap (9)</a></li>
+<li class='category'><a href='/blog/categories/Testing/'>Testing (20)</a></li>
+<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (7)</a></li>
+<li class='category'><a href='/blog/categories/dotnet/'>dotnet (65)</a></li>
+<li class='category'><a href='/blog/categories/ruby/'>ruby (3)</a></li>
+<li class='category'><a href='/blog/categories/sw-design/'>sw-design (13)</a></li>
+<li class='category'><a href='/blog/categories/xUnitBDDExtensions/'>xUnitBDDExtensions (15)</a></li>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("bjoernrochel", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/bjoernrochel" class="twitter-follow-button" data-width="208px" data-show-count="false">Follow @bjoernrochel</a>
+  
+</section>
+
+<section>
+<h1>Disclaimer</h1>
+<p>
+The opinions expressed herein are my own personal opinions and do not necessarily represent the opinion of any other organization or person, including (but not limited to) my fellow employees, my employer, its clients or their agents. 
+</p>
+<p>
+ Copyright &copy; 2011 - Björn Rochel
+</p>
+<section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Björn Rochel -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'bjro';
+      
+        
+
+				//TODO: comment disqus_developer out
+				var disqus_developer = 1;
+				var disqus_identifier = 'http://www.bjoernrochel.de/2010/01/05/changes-in-structuremap-254/';
+				var disqus_url = 'http://www.bjoernrochel.de/2010/01/05/changes-in-structuremap-254/';
+        var disqus_script = 'embed.js';
+      
+
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>

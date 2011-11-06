@@ -1,0 +1,504 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Pimp my CAB, or how to integrate an existing IoC with SCSF - Dude, where's my Kaizen?</title>
+  <meta name="author" content="Björn Rochel">
+
+  
+  <meta name="description" content="A LITTLE WARNING: This post goes pretty deep into the CAB frameworkwithout examining the CAB basics. If you&#8217;re unfamiliar with CAB or SCSFthis &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.bjoernrochel.de/2009/08/31/pimp-my-cab-or-how-to-integrate-an-existing-ioc-with-scsf/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Dude, where's my Kaizen?" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+</head>
+
+<body   >
+  <header role="banner"><div id="logo">
+	<img src="/images/kaizen.png" alt="Kaizen" title="Kaizen" />
+</div>
+<hgroup>
+  <h1><a href="/">Dude, where's my Kaizen?</a></h1>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.bjoernrochel.de" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Pimp My CAB, or How to Integrate an Existing IoC With SCSF</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-08-31T21:14:53+02:00" pubdate  data-updated="true" >Aug 31<span>st</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>A LITTLE WARNING: This post goes pretty deep into the CAB framework
+without examining the CAB basics. If you&#8217;re unfamiliar with CAB or SCSF
+this post is probably not going to be very handy for you &#8230;</p>
+
+<p>My current project uses the Smart Client Software Factory which is build on
+top of the Composite UI Application Block from Microsofts Patterns &amp;
+Practices department. SCSF is an organizational standard at my current
+client and we&#8217;re reusing some components of earlier projects (Large
+Parts of the Shell, Changetracking model etc.)</p>
+
+<p>CAB is build around a very simple Dependency Injection machinery called the <code>ObjectBuilder</code>. I
+consider having the <code>ObjectBuilder</code> a good thing, compared to having no
+Dependency Injection at all. However if you&#8217;ve ever worked with any
+other IoC be it StructureMap, Unity, Windsor, NInject or some other
+container, you&#8217;ll recognize pretty fast some limitations. Its dependency
+injection mechanism</p>
+
+<ul>
+<li>can&#8217;t really be used without attributes.</li>
+<li>doesn&#8217;t separate registration and creation very well, which often
+leads to ordering problems.</li>
+<li>can&#8217;t close open generic types. If you&#8217;ve ever used generic
+specialization you&#8217;re going to miss this.</li>
+<li>is pretty tightly coupled to the concept of <code>WorkItems</code> inside CAB.</li>
+</ul>
+
+
+<p>The last point is actually the real pain point for me. The whole
+<code>WorkItem</code> API is way to general purpose and generic (meaning string
+based!!!) in many parts and actually not the kind of concept I would
+like to be a central piece of my application design. It&#8217;s not intuitive
+to work with it and imho doesn&#8217;t fall into the pit of success at all.</p>
+
+<p>Interestingly when you compare PRISM (which was also build by P&amp;P about
+two years later) to CAB you&#8217;re going to recognize that the concept of
+WorkItems is completely missing in PRISM. Maybe I&#8217;m not the only one who
+feels that way. Our team decided very early that the whole contact area
+of our application to the CAB framework should be limited to the
+presentation layer. We wanted to use a fully fledged IoC on the lower
+layers. This lead to an intersting challenge: How to integrate those two
+pipelines? My initial thought was to replace the <code>CreationStrategy</code> used
+in CABs <code>Builder</code> class with something that reaches into our main
+container. This turned out not to be the best choice since a lot of CABs
+internal structure kind of relates to the standard behavior. I got
+something working for about half of the use cases, but it didn&#8217;t really
+feel good.</p>
+
+<p>You know the best ideas come up when you stand under the
+shower. At least this happened yesterday. Actually integrating those two
+things is pretty straight forward. I just needed to approach the problem
+differently. CAB is build around attributes. A typical CAB service might
+look like this.</p>
+
+<figure class='code'><figcaption><span>A service using CAB</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">NavigationService</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="nf">NavigationService</span><span class="p">([</span><span class="n">ServiceDependency</span><span class="p">]</span> <span class="n">IShell</span> <span class="n">shell</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>ServiceDependencyAttribute</code> tells the
+<code>ObjectBuilder</code> that it should get the dependency from the collection of
+services associated with the related <code>WorkItem</code> used to create the class.
+The interesting part is that this isn&#8217;t a marker attribute. It&#8217;s a fully
+fledged extension point to which the <code>ObjectBuilder</code> delegates the
+essential work of resolving an instance.</p>
+
+<blockquote><p>Here&#8217;s the deal: You can write a custom tailored attribute which is
+called by the ObjectBuilder but uses your main IoC in order to resolve
+the dependency</p></blockquote>
+
+<p>The implementation of this is actually pretty easy. Here are the steps
+you need to implement.</p>
+
+<h2>1. Create a Static Gateway into your container</h2>
+
+<p>Attributes are by their nature kind of static and created by the
+framework. In order to be able to call into my container from an
+attribute I created a static class which holds a reference to my
+container (You can of course also use the P&amp;P CommonServiceLocator for
+this).</p>
+
+<figure class='code'><figcaption><span>Create a static gateway into your container</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">Container</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">static</span> <span class="n">IContainer</span> <span class="n">_container</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">SetContainer</span><span class="p">(</span><span class="n">IContainer</span> <span class="n">container</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">_container</span> <span class="p">=</span> <span class="n">container</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="kt">object</span> <span class="nf">Resolve</span><span class="p">(</span><span class="n">Type</span> <span class="n">type</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">_container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">(</span><span class="n">type</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>2. Create an attribute deriving from ParameterAttribute</h2>
+
+<p>The responsibility of <code>ParameterAttributes</code> in the <code>ObjectBuilder</code> is pretty
+limited. All they have to do is to create an implementation of the
+<code>IParameter</code> interface which will than be used to do the actual resolving.
+If you&#8217;re wondering what the membertype is, that&#8217;s the type of the
+parameter marked with the attribute (in the example code above this
+would be <code>IShell</code>). The <code>CreateParameter</code> method will automatically be
+called by the <code>ObjectBuilder</code> during the creation process.</p>
+
+<figure class='code'><figcaption><span>Creating a custom ParameterAttribute</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">ContainerDependencyAttribute</span> <span class="p">:</span> <span class="n">ParameterAttribute</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="k">override</span> <span class="n">IParameter</span> <span class="nf">CreateParameter</span><span class="p">(</span><span class="n">Type</span> <span class="n">memberType</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">new</span> <span class="nf">ContainerParameter</span><span class="p">(</span><span class="n">memberType</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>3. Create an implementation of IParameter which calls into your static gateway</h2>
+
+<p>The <code>IParameter</code> interface defines two methods <code>GetParameterType</code> and <code>GetValue</code>.</p>
+
+<figure class='code'><figcaption><span>The IParameter interface</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">IParameter</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">Type</span> <span class="nf">GetParameterType</span><span class="p">(</span><span class="n">IBuilderContext</span> <span class="n">buildContext</span><span class="p">);</span>
+</span><span class='line'>  <span class="kt">object</span> <span class="nf">Getvalue</span><span class="p">(</span><span class="n">IBuilderContext</span> <span class="n">buildContext</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We simply implement the first one with returning the member type and the the
+second one with a call into our Gateway.</p>
+
+<figure class='code'><figcaption><span>A parameter that calls into our container</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">ContainerParameter</span> <span class="p">:</span> <span class="n">IParameter</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">Type</span> <span class="n">_typeToResolve</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="nf">ContainerParameter</span><span class="p">(</span><span class="n">Type</span> <span class="n">typeToResolve</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">_typeToResolve</span> <span class="p">=</span> <span class="n">typeToResolve</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="n">Type</span> <span class="nf">GetParameterType</span><span class="p">(</span><span class="n">IBuilderContext</span> <span class="n">buildContext</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">_typeToResolve</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="kt">object</span> <span class="nf">Getvalue</span><span class="p">(</span><span class="n">IBuilderContext</span> <span class="n">buildContext</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">Container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">(</span><span class="n">_typeToResolve</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Here is an example how it is used</h2>
+
+<figure class='code'><figcaption><span>Using the new attribute</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">SomePresenter</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">public</span> <span class="nf">SomePresenter</span><span class="p">(</span>
+</span><span class='line'><span class="na">    [ServiceDependency]</span> <span class="n">INavigationService</span> <span class="n">navigationService</span><span class="p">,</span>
+</span><span class='line'><span class="na">    [ContainerDependency]</span> <span class="n">ISomeService</span> <span class="n">someService</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>At least for us, this works like a charm. What I like about the solution is
+that it plays nicely by the rules of the CAB framework and doesn&#8217;t fight
+the framework design, but still enables us to use the framework in a way
+we want to use it. The interesting aspect in this approach is that
+you&#8217;re now able to haved mixed dependencies where one part is resolved
+using the surrounding CAB <code>WorkItem</code> and the other part is resolved using
+your container of choice. The whole attribute usage is limited to the
+presentation layer while the rest of the application can take advantage
+of fully fledged dependency injection without attribute, with generic
+specicialization and dynamic proxy generation, just to name a few
+options.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">BjRo</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-08-31T21:14:53+02:00" pubdate  data-updated="true" >Aug 31<span>st</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/dotnet/'>dotnet</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://www.bjoernrochel.de/2009/08/31/pimp-my-cab-or-how-to-integrate-an-existing-ioc-with-scsf/" data-via="bjoernrochel" data-counturl="http://www.bjoernrochel.de/2009/08/31/pimp-my-cab-or-how-to-integrate-an-existing-ioc-with-scsf/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+</div>
+
+    
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+	<h1>About me</h1>
+  <p><br/><img src="/images/bjro-eyes.jpg" alt="portrait" /></p>
+	<p>
+  My name is <strong>Björn Rochel</strong>.  I'm a 32 year old geek, who's crazy about software development, living in Cologne and
+  currently working for <a href="http://www.intercomponentware.com">ICW</a> as a .NET Developer / Architect.
+	</p>
+	<ul class="badges">
+		<li><a href="http://www.xing.com/profile/Bjoern_Rochel"><img src="/images/badges/xing2-small.png" alt="Xing" /></a></li>
+		<li><a href="http://www.github.com/BjRo"><img src="/images/badges/github-small.png" alt="Github" /></a></li>
+		<li><a href="http://www.twitter.com/bjoernrochel"><img src="/images/badges/twitter-square-small.png" alt="Twitter" /></a></li>
+		<li><a href="/atom.xml"><img src="/images/badges/rss-circle-small.png" alt="Rss" /></a></li>
+	</ul>
+</section>
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/Conferences/'>Conferences (8)</a></li>
+<li class='category'><a href='/blog/categories/FSharp/'>FSharp (3)</a></li>
+<li class='category'><a href='/blog/categories/Katas/'>Katas (2)</a></li>
+<li class='category'><a href='/blog/categories/StoryTeller/'>StoryTeller (14)</a></li>
+<li class='category'><a href='/blog/categories/StructureMap/'>StructureMap (9)</a></li>
+<li class='category'><a href='/blog/categories/Testing/'>Testing (20)</a></li>
+<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (7)</a></li>
+<li class='category'><a href='/blog/categories/dotnet/'>dotnet (65)</a></li>
+<li class='category'><a href='/blog/categories/ruby/'>ruby (3)</a></li>
+<li class='category'><a href='/blog/categories/sw-design/'>sw-design (13)</a></li>
+<li class='category'><a href='/blog/categories/xUnitBDDExtensions/'>xUnitBDDExtensions (15)</a></li>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("bjoernrochel", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/bjoernrochel" class="twitter-follow-button" data-width="208px" data-show-count="false">Follow @bjoernrochel</a>
+  
+</section>
+
+<section>
+<h1>Disclaimer</h1>
+<p>
+The opinions expressed herein are my own personal opinions and do not necessarily represent the opinion of any other organization or person, including (but not limited to) my fellow employees, my employer, its clients or their agents. 
+</p>
+<p>
+ Copyright &copy; 2011 - Björn Rochel
+</p>
+<section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Björn Rochel -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'bjro';
+      
+        
+
+				//TODO: comment disqus_developer out
+				var disqus_developer = 1;
+				var disqus_identifier = 'http://www.bjoernrochel.de/2009/08/31/pimp-my-cab-or-how-to-integrate-an-existing-ioc-with-scsf/';
+				var disqus_url = 'http://www.bjoernrochel.de/2009/08/31/pimp-my-cab-or-how-to-integrate-an-existing-ioc-with-scsf/';
+        var disqus_script = 'embed.js';
+      
+
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,829 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Diving into the StoryTeller trunk, Part 10: Coordination Baby! - Dude, where's my Kaizen?</title>
+  <meta name="author" content="Björn Rochel">
+
+  
+  <meta name="description" content="So far in this series I&#8217;ve talked extensively about what I consider themost of the important parts in the StoryTeller UI design. This &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.bjoernrochel.de/2009/11/30/diving-into-the-storyteller-trunk-part-10-coordination-baby/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="Dude, where's my Kaizen?" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+</head>
+
+<body   >
+  <header role="banner"><div id="logo">
+	<img src="/images/kaizen.png" alt="Kaizen" title="Kaizen" />
+</div>
+<hgroup>
+  <h1><a href="/">Dude, where's my Kaizen?</a></h1>
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.bjoernrochel.de" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Diving Into the StoryTeller Trunk, Part 10: Coordination Baby!</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-11-30T10:13:22+01:00" pubdate  data-updated="true" >Nov 30<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>So far in this series I&#8217;ve talked extensively about what I consider the
+most of the important parts in the StoryTeller UI design. This includes
+<a href="/2009/08/14/diving-into-the-storyteller-trunk-part-7-screens/">Screens</a>,
+<a href="/2009/08/21/diving-into-the-storyteller-trunk-part-8-the-screencollection/">the ScreenCollection</a>,
+<a href="/2009/09/07/diving-into-the-storyteller-trunk-part-9-screensubject-screenfactory/">ScreenSubject</a>,
+<a href="/2009/09/07/diving-into-the-storyteller-trunk-part-9-screensubject-screenfactory/">ScreenFactory</a>,
+<a href="/2009/07/20/diving-into-the-storyteller-trunk-part-5-the-eventaggregator/">EventAggregation</a>
+and the application of <a href="/2009/07/13/diving-into-the-storyteller-trunk-part1-convention-based-registration/">Convention of Configuration</a>
+in general. You could say that we mostly talked about ingredients. Today
+I would like to take some additional time in order to show how this is
+all assembled into an actual API. Those of you who&#8217;ve already spend
+some time with the StoryTeller codebase too or have watched one of the
+many screencasts about the <a href="http://www.jeremydmiller.com/ppatterns/Default.aspx?Page=ScreenActivationLifecycle&amp;AspxAutoDetectCookieSupport=1">Screen Activation Lifecycle</a>
+probably know what I&#8217;m going to show today. Today is all about the
+<code>ScreenConductor</code>.</p>
+
+<h2>ScreenConductor vs. Application Controller</h2>
+
+<p>Before we dive into the actual code, let&#8217;s take a short break and talk a
+little bit about a more high level view on the <code>ScreenConductor</code> and the
+role the conductor is fulfilling in an application. Martin Fowler
+identified the pattern <code>ApplicationController</code> some years ago as</p>
+
+<blockquote><p>A centralized point for handling screen navigation and the flow of an<br/>application.</p><footer><strong>Martin Fowler</strong><cite><a href='http://martinfowler.com/eaaCatalog/applicationController.html'>martinfowler.com/eaaCatalog/&hellip;</a></cite></footer></blockquote>
+
+
+<p>It&#8217;s kind of a coordination structure which manages / coordinates the
+lifecylcle of child screens in an application as well as the lifecycle
+of the application shell itself (think about controlled shutdown for
+instance). You can think of the <code>ApplicationController</code> as a <em>Facade</em> client
+code can call in order to create/activate/deactivate screens in an
+application. This <em>Facade</em> defines a nice separation between application
+code on the one side and the UI infrastructure on the other side. It
+shields away implementation details of how the application is actually
+displaying screens (tab style, web style, etc) from the client and also
+provides a nice point for handling scenarios like dirty checks on
+screens. As an application grows over time, it&#8217;s a good idea to break
+down the <code>ApplicationController</code> into several collaborating classes and
+decouple its implementation details from another in order to make the
+system more manageable and maintainable. Adding a new screen to the
+application for instance should not require a change in one of the UI
+infrastructure classes. When breaking down the <code>ApplicationController</code>
+into several collaborating classes a good lead is to use the <em>Single
+Responsibility Principle</em> in order to identify responsibilities which can
+be extracted.</p>
+
+<p>That&#8217;s exactly what Jeremy D. Miller did in his <a href="http://www.jeremydmiller.com/ppatterns/Default.aspx?Page=ScreenActivationLifecycle&amp;AspxAutoDetectCookieSupport=1">Screen Activation Lifecycle</a>.
+He broke down the ApplicationController pattern into several smaller
+responsibilities, the most important beeing</p>
+
+<ul>
+<li>the <code>ScreenCollection</code> (which keeps track of all existing screens and the one beeing the active screen)</li>
+<li>the <code>ScreenSubject</code> (which is used to separate identification and creation of a screen from the screen itself)</li>
+<li><code>Screens</code> (which provide the content beeing displayed and hooks for instance for the dirty check when the application closes)</li>
+<li>and the <code>ScreenConductor</code>.</li>
+</ul>
+
+
+<p>Jeremy describes the <code>ScreenConductor</code> and its responsibilities as the
+following:</p>
+
+<p><em>&#8220;Controls the activation and deactivation lifecycle of the
+screens within the application. Depending on the application, the
+conductor may be synchronizing the menu state of the shell, attaching
+views in the main panel or otherwise, and calling hook methods on the
+Presenter&#8217;s to bootstrap the screen. It may also be just as important to
+deactivate a screen when it&#8217;s made the inactive tab to stop timers. My
+first exposure to a ScreenConductor was an insurance application that
+was built with web style navigation. Anytime the user moved away from a
+screen we needed to check for &#8220;dirty&#8221; screens to give the user a chance
+to deal with unsaved work. On the other hand, we also had to check the
+entry into a requested screen to see if we could really open the screen
+based on pessimistic locking or permission rules. We pulled our a Layer
+SuperType for our Presenters for methods like CanLeave() and CanEnter().
+The ScreenConductor would use these methods and others to manage screen
+navigation.&#8221;</em></p>
+
+<p>To me the ScreenConductor is more or less an OCP-fied
+subset of the original <code>ApplicationController</code> pattern, focussing on the
+coordination and facade ideas of the original pattern.</p>
+
+<h2>A short episode in the Screen Activation Lifecycle </h2>
+
+<p>Let&#8217;s give our discussion a bit more detail. So far it was rather abstract. Before looking into the
+actual code I would like to walk you through a typical usecase which
+depicts how those components actually work together. The example Jeremy
+mostly uses for this is &#8220;Opening a source code file in Visual Studio&#8221; .
+I&#8217;m lazy, so I&#8217;m going to reuse this one.</p>
+
+<p><em>&#8220;Consider you double-click a file in the Solution Explorer of VS. When you do this for the first
+time a new tab displaying the contents of the file will be opened. Doing
+the same thing a second time will not open a new tab, but rather focus
+the existing tab displaying the contents of the file.&#8221;</em></p>
+
+<p>It&#8217;s actually easy to translate this story into a more abstract version using the
+responsibilities described in this post so far.</p>
+
+<p><em>&#8220;Consider you want to open a <code>Screen</code> via a <code>ScreenSubject</code>. When the <code>ScreenSubject</code>
+detects that no related <code>Screen</code> is being displayed to the user, a new
+<code>Screen</code> will be created by the subject and then added to the
+<code>ScreenCollection</code>. Doing the same thing a second time will not open
+up a <code>Screen</code>, but rather activate the existing <code>SCREEN</code>, because
+the <code>ScreenSubject</code> detected that the <code>Screen</code> is already open.&#8221;</em></p>
+
+<p>The interesting sidenode in this design is that from a client code
+perspective there is no difference between opening up a screen and
+activating a screen. Really nice &#8230;</p>
+
+<h2>Usecase: Opening a Screen </h2>
+
+<p>Now that you&#8217;re familiar with the first scenario, time to show some code.  I&#8217;ve shown parts of this before in the previous post (Sorry for the
+duplication), but added some bits in order to illustrate this example.
+From the outside world a call to the <code>ScreenConductor</code> for this usecase
+might look like this.</p>
+
+<figure class='code'><figcaption><span>Opening a Screen</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">var</span> <span class="n">subject</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CSharpFileSubject</span><span class="p">(</span><span class="s">@&quot;C:\\end\\of\\the\\world.cs&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="n">screenConductor</span><span class="p">.</span><span class="n">OpenScreen</span><span class="p">(</span><span class="n">subject</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Notice that all data needed for creating the actual Screen will be passed in with the
+concrete <code>ScreenSubject</code> implementation.</p>
+
+<figure class='code'><figcaption><span>A ScreenSubject</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">CSharpFileSubject</span> <span class="p">:</span> <span class="n">IScreenSubject</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="n">_fileName</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="nf">CSharpFileSubject</span><span class="p">(</span><span class="kt">string</span> <span class="n">fileName</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">_fileName</span> <span class="p">=</span> <span class="n">fileName</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="kt">bool</span> <span class="nf">Matches</span><span class="p">(</span><span class="n">IScreen</span> <span class="n">screen</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">screen</span> <span class="k">is</span> <span class="n">SourceCodeScreen</span> <span class="p">&amp;&amp;</span>
+</span><span class='line'>      <span class="kt">string</span><span class="p">.</span><span class="n">Equals</span><span class="p">((</span><span class="n">SourceCodeScreen</span><span class="p">)</span><span class="n">screen</span><span class="p">.</span><span class="n">FileName</span><span class="p">,</span> <span class="n">_fileName</span><span class="p">));</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="n">IScreen</span> <span class="nf">CreateScreen</span><span class="p">(</span><span class="n">IScreenFactory</span> <span class="n">screenFactory</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">var</span> <span class="n">screen</span> <span class="p">=</span> <span class="n">screenFactory</span><span class="p">.</span><span class="n">Build</span><span class="p">&lt;</span><span class="n">SourceCodeScreen</span><span class="p">&gt;();</span>
+</span><span class='line'>    <span class="n">screen</span><span class="p">.</span><span class="n">File</span> <span class="p">=</span> <span class="n">_fileName</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">screen</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is not quite the code I would write for a real
+system, but I think you get the point. Two methods need to be
+implemented for the <code>IScreenSubject</code> interface. This is <code>bool
+Matches(IScreen)</code> which identifies a related screen and <code>IScreen
+CreateScreen(IScreenFactory)</code> which is used to create the screens. I
+really like this kind of API design since it gives you all sorts of
+extension points without the need to open up the actual infrastructure.
+Want to show a <code>WaitCursor</code> while you create the <code>Screen</code>? Go ahead. Want to
+do some loading before the screen is opened? Here&#8217;s the place to do it .
+. . Anyway, the <code>ScreenConductors</code> side of things looks like this.</p>
+
+<figure class='code'><figcaption><span>Opening a Screen</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">virtual</span> <span class="k">void</span> <span class="nf">OpenScreen</span><span class="p">(</span><span class="n">IScreenSubject</span> <span class="n">subject</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">subject</span><span class="p">.</span><span class="n">Matches</span><span class="p">(</span><span class="n">_screens</span><span class="p">.</span><span class="n">Active</span><span class="p">))</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span><span class="p">;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">IScreen</span> <span class="n">screen</span> <span class="p">=</span> <span class="n">findScreenMatchingSubject</span><span class="p">(</span><span class="n">subject</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">screen</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">screen</span> <span class="p">=</span> <span class="n">createNewActiveScreen</span><span class="p">(</span><span class="n">subject</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="k">else</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">activate</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">_screens</span><span class="p">.</span><span class="n">Show</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Pretty slick, isn&#8217;t it? The whole code is really dense. Most of the methods involved are not more
+than 5 lines long. Finding the related screen for instance is just a
+matter of a LINQ-Query on the ScreenCollection using the <code>Matches</code> method
+as its predicate.</p>
+
+<figure class='code'><figcaption><span>Finding a matching Screen</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">private</span> <span class="n">IScreen</span> <span class="nf">findScreenMatchingSubject</span><span class="p">(</span><span class="n">IScreenSubject</span> <span class="n">subject</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">_screens</span><span class="p">.</span><span class="n">AllScreens</span><span class="p">.</span><span class="n">FirstOrDefault</span><span class="p">(</span><span class="n">subject</span><span class="p">.</span><span class="n">Matches</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Creation of the target screen on the other hand is just a matter of
+handing the <code>ScreenFactory</code> (which is actually just a facade to the
+IoC-Container of choice) to the subject, activating the created Screen
+and adding it to the <code>ScreenCollection</code>.</p>
+
+<figure class='code'><figcaption><span>Creating a new Screen</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">private</span> <span class="n">IScreen</span> <span class="nf">createNewActiveScreen</span><span class="p">(</span><span class="n">IScreenSubject</span> <span class="n">subject</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">IScreen</span> <span class="n">screen</span> <span class="p">=</span> <span class="n">subject</span><span class="p">.</span><span class="n">CreateScreen</span><span class="p">(</span><span class="n">_factory</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">activate</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">_screens</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">return</span> <span class="n">screen</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The last missing piece here is the actual activation of the Screen.</p>
+
+<figure class='code'><figcaption><span>Activating a Screen</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">private</span> <span class="k">void</span> <span class="nf">activate</span><span class="p">(</span><span class="n">IScreen</span> <span class="n">screen</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">_shellService</span><span class="p">.</span><span class="n">ActivateScreen</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is delegated to the so called <code>IShellService</code>. You might ask yourself why this
+particular dependency exists (at least I did). The main purpose of this
+service is mostly the topic of registering Commands and filling up
+option panes related to the current Screen. This will be a post on its
+own, so don&#8217;t be mad at me, when I don&#8217;t cover it today. Instead I would
+like to take a look at another common use case:</p>
+
+<h2>Usecase: Closing a Screen </h2>
+
+<p>Now that we&#8217;ve seen how a Screen gets opened, let&#8217;s take a look
+at the other side of the coin, at how it&#8217;s closed.</p>
+
+<figure class='code'><figcaption><span>Closing a Screen</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">virtual</span> <span class="k">void</span> <span class="nf">Close</span><span class="p">(</span><span class="n">IScreen</span> <span class="n">screen</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">removeScreen</span><span class="p">(</span><span class="n">screen</span><span class="p">))</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">activateCurrentScreen</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Most of the handling is in the removeScreen-method (btw, where does this
+convention of having all private methods beeing camel-cased come from?
+Is this some Java-exposure leaking through? ;-))</p>
+
+<figure class='code'><figcaption><span>Removing a Screen</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">private</span> <span class="kt">bool</span> <span class="nf">removeScreen</span><span class="p">(</span><span class="n">IScreen</span> <span class="n">screen</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(!</span><span class="n">screen</span><span class="p">.</span><span class="n">CanClose</span><span class="p">())</span> <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">_events</span><span class="p">.</span><span class="n">RemoveListener</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">_screens</span><span class="p">.</span><span class="n">Remove</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span>
+</span><span class='line'>  <span class="n">_shellService</span><span class="p">.</span><span class="n">ClearTransient</span><span class="p">();</span>
+</span><span class='line'>  <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It delegates the decision whether a screen can be closed
+to the screen and in case it can be closed, it removes the screen from
+the <code>EventAggregator</code> (<code>_events</code>), from the <code>ScreenCollection</code> (<code>_screens</code>) and
+clears its Command-registration (<code>_shellService.ClearTransient()</code>),
+before it activates the next screen becoming visible (in case there is one).</p>
+
+<figure class='code'><figcaption><span>Activating the current Screen</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">private</span> <span class="k">void</span> <span class="nf">activateCurrentScreen</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">IScreen</span> <span class="n">screen</span> <span class="p">=</span> <span class="n">_screens</span><span class="p">.</span><span class="n">Active</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">screen</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">activate</span><span class="p">(</span><span class="n">screen</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Usecase: App shutdown coordination </h2>
+
+<p>There is another common usecase implemented by the
+<code>ScreenConductor</code> I would like to show you. This is how the whole app
+shutdown is coordinated. Prerequesites for this: Instances interested in
+beeing notified when the user tries to shut the application down, need
+to a) implement the <code>IClosable</code> interface and b) be registered at the
+<code>EventAggregator</code>. The latter is done automatically for screens by
+the <code>ScreenConductor</code>.</p>
+
+<figure class='code'><figcaption><span>The IClosable interface</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">interface</span> <span class="n">ICloseable</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">void</span> <span class="nf">AddCanCloseMessages</span><span class="p">(</span><span class="n">CloseToken</span> <span class="n">token</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">void</span> <span class="nf">PerformShutdown</span><span class="p">();</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The <code>IClosable</code> interface just consists of two methods. <code>void AddCanCloseMessage(CloseToken)</code> is called in order
+to get feedback from listeners whether the application is allowed to be
+shutdown. You can think of <code>CloseToken</code> as a more or less extended version
+of <code>CancelEventArgs</code>.</p>
+
+<figure class='code'><figcaption><span>The CloseToken class</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="k">class</span> <span class="nc">CloseToken</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="k">private</span> <span class="k">readonly</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">_messages</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="kt">string</span><span class="p">[]</span> <span class="n">Messages</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">_messages</span><span class="p">.</span><span class="n">ToArray</span><span class="p">();</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">public</span> <span class="k">void</span> <span class="nf">AddMessage</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">_messages</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The following code piece is hooked into the Closing - event of
+StoryTellers main window (the shell). It heavily leverages the delegate
+based eventing of StoryTellers <code>EventBroker</code> in order to interact with all
+interested listeners.</p>
+
+<figure class='code'><figcaption><span>Shutdown as implemented in StoryTeller</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="k">public</span> <span class="kt">bool</span> <span class="nf">CanClose</span><span class="p">()</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="n">var</span> <span class="n">token</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CloseToken</span><span class="p">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">_events</span><span class="p">.</span><span class="n">SendMessage</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">AddCanCloseMessages</span><span class="p">(</span><span class="n">token</span><span class="p">));</span>
+</span><span class='line'>  <span class="kt">bool</span> <span class="n">returnValue</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">token</span><span class="p">.</span><span class="n">Messages</span><span class="p">.</span><span class="n">Length</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="kt">string</span> <span class="n">userMessage</span> <span class="p">=</span> <span class="kt">string</span><span class="p">.</span><span class="n">Join</span><span class="p">(</span><span class="s">&quot;\\n&quot;</span><span class="p">,</span> <span class="n">token</span><span class="p">.</span><span class="n">Messages</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">returnValue</span> <span class="p">=</span> <span class="n">_messageBox</span><span class="p">.</span><span class="n">AskUser</span><span class="p">(</span><span class="n">CAN_CLOSE_TITLE</span><span class="p">,</span> <span class="n">userMessage</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="p">(</span><span class="n">returnValue</span><span class="p">)</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>    <span class="n">_events</span><span class="p">.</span><span class="n">SendMessage</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">PerformShutdown</span><span class="p">());</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="n">returnValue</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>One remark to the <code>CanClose()</code> code: <code>_messageBox</code> is just a small wrapper abstraction
+in order to make user interaction via message prompts testable. There&#8217;s
+nothing really fancy behind that. I really like the way the app shutdown
+is implemented. In fact we&#8217;ve added something very similar in my current
+project. However, I&#8217;m not so sure when it comes to the question whether
+this particular code piece should be part of the <code>ScreenConductor</code>. You
+could argue that this method has only very limited cohesion with the
+rest of the <code>ScreenConductors</code> methods. In fact most of the stuff the
+<code>ScreenConductor</code> interacts with (<code>ScreenCollection</code>, <code>Screens</code>,
+<code>ScreenFactory</code>, <code>ScreenSubject</code>) isn&#8217;t touched in this method. Besides
+that, it&#8217;s code that client application code normally IMHO doesn&#8217;t need
+to or even should call. In our current app we&#8217;ve extracted this
+responsibillity into a separate class called the
+<code>ApplicationShutdownCoordinator</code> because of that.</p>
+
+<h2>Some more impressions on StoryTellers ScreenConductor </h2>
+
+<p>The exposed API of the <code>ScreenConductor</code> is pretty small, actually only 6 &#8220;core&#8221; methods and some overloads.
+Most of the API really shines. However, besides the already mentioned
+<code>CanClose()</code> functionality, there is another functionality which in my
+opinion should not be in the ScreenConductor. Can you spot it?</p>
+
+<p><img src="/images/posts/screenconductorinterface1.jpg" alt="image" /></p>
+
+<p><code>LoadHierarchy(Func&lt;Hierarchy&gt;))</code> looks a bit misplaced to me because it
+seems to work on a different abstraction level than the rest of the
+methods. It looks very application specific, while the rest of the
+StoryTeller APIs look very general purpose (independent from the fact
+whether Jeremy actually wanted to achieve this or this being just the
+result of applying good design practices). Same applies to one of the
+messages / events the <code>ScreenConductor</code> is registered for at the
+<code>EventBroker</code>, namely <code>DeleteTestMessage</code>. I don&#8217;t think it should be
+directly handled in the <code>ScreenConductor</code>.</p>
+
+<p><img src="/images/posts/screenconductorhandlers.jpg" alt="image" /></p>
+
+<p>A static code analysis might indicate that the <code>ScreenConductor</code> has too
+many dependencies. In fact there&#8217;re 7 direct dependencies injected into
+the constructor,</p>
+
+<ul>
+<li><code>IEventAggregator</code></li>
+<li><code>IScreenCollection</code></li>
+<li><code>IScreenFactory</code></li>
+<li><code>IApplicationShell</code></li>
+<li><code>IShellService</code></li>
+<li><code>IScreenObjectLocator</code></li>
+<li><code>IMessageCreator</code></li>
+</ul>
+
+
+<p>6 transient dependencies (method parameters or local scope),</p>
+
+<ul>
+<li><code>IScreen</code></li>
+<li><code>IScreenSubject</code></li>
+<li><code>CloseToken</code></li>
+<li><code>UserScreenActivation</code></li>
+<li><code>OpenItemMessage</code></li>
+<li><code>DeleteTestMessage</code></li>
+</ul>
+
+
+<p>and 3 Message interests</p>
+
+<ul>
+<li><code>UserscreenActivation</code></li>
+<li><code>OpenItemMessage</code></li>
+<li><code>DeleteTestMessage</code></li>
+</ul>
+
+
+<p>in the <code>ScreenConductor</code> class. Sounds pretty heavy and like a refactoring
+candidate at first. However, as I mentioned earlier, the <code>ScreenConductor</code>
+is mostly a <em>Facade</em> with some additional coordination logic in it. When I
+say &#8220;some additional coordination logic&#8221; I mean this literally.
+<strong>ScreenConductor has just round about 250 LOC</strong>.</p>
+
+<p>I&#8217;m totally ok with this. It certainly has some potential for optimization of the
+dependencies (<code>IScreenObjectLocator</code> seems to be at least partially
+obsolete, <code>IApplicationShell</code> and <code>IShellService</code> could be merged I guess),
+but even without that I consider it a really good example of strong
+extensible design for composite desktop apps. For me personally the
+<code>ScreenConductor</code> fills a really important gap in the p&amp;p composite app
+guidance (be it CAB / SCSF or PRISM). I always had the feeling that I&#8217;m
+missing something there, but was unable to point out exactly what I&#8217;ve
+been missing. This feeling mostly came up when I added some screen
+activation or screen creation logic in places that didn&#8217;t felt right.
+Now I know why. Interestingly others <a href="http://neverindoubtnet.blogspot.com/2009/05/birth-and-death-of-m-v-vm-triads.html">observed the need for something similar as well</a>.
+Having a <code>ScreenConductor</code> in your application makes IMHO the whole UI
+infrastructure a lot more approchable and easier to understand.</p>
+
+<h2>Some final thoughts </h2>
+
+<p>I left the rest of the <code>ScreenConductors</code> code out of
+this post intentionally, because if there&#8217;s one thing I&#8217;d like you to
+take from this post or even the complete series is that StoryTeller is a
+really good learning resource. I really value, what I&#8217;ve learned from
+the Dovetail guys while inspecting the code. I wish I had done this
+earlier. Good design matters. If you&#8217;re looking for a place to learn
+more about it, the <a href="http://storyteller.tigris.org/source/browse/storyteller/">StoryTeller codebase</a>
+might just be the place for you. See you next time, when we take some
+time to dig into the command structure of StoryTeller &#8230;</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">BjRo</span></span>
+
+      
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-11-30T10:13:22+01:00" pubdate  data-updated="true" >Nov 30<span>th</span>, 2009</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/storyteller/'>StoryTeller</a>, <a class='category' href='/blog/categories/dotnet/'>dotnet</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://www.bjoernrochel.de/2009/11/30/diving-into-the-storyteller-trunk-part-10-coordination-baby/" data-via="bjoernrochel" data-counturl="http://www.bjoernrochel.de/2009/11/30/diving-into-the-storyteller-trunk-part-10-coordination-baby/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+</div>
+
+    
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+	<h1>About me</h1>
+  <p><br/><img src="/images/bjro-eyes.jpg" alt="portrait" /></p>
+	<p>
+  My name is <strong>Björn Rochel</strong>.  I'm a 32 year old geek, who's crazy about software development, living in Cologne and
+  currently working for <a href="http://www.intercomponentware.com">ICW</a> as a .NET Developer / Architect.
+	</p>
+	<ul class="badges">
+		<li><a href="http://www.xing.com/profile/Bjoern_Rochel"><img src="/images/badges/xing2-small.png" alt="Xing" /></a></li>
+		<li><a href="http://www.github.com/BjRo"><img src="/images/badges/github-small.png" alt="Github" /></a></li>
+		<li><a href="http://www.twitter.com/bjoernrochel"><img src="/images/badges/twitter-square-small.png" alt="Twitter" /></a></li>
+		<li><a href="/atom.xml"><img src="/images/badges/rss-circle-small.png" alt="Rss" /></a></li>
+	</ul>
+</section>
+
+<section>
+  <h1>Categories</h1>
+  <ul id="categories">
+    <li class='category'><a href='/blog/categories/Conferences/'>Conferences (8)</a></li>
+<li class='category'><a href='/blog/categories/FSharp/'>FSharp (3)</a></li>
+<li class='category'><a href='/blog/categories/Katas/'>Katas (2)</a></li>
+<li class='category'><a href='/blog/categories/StoryTeller/'>StoryTeller (14)</a></li>
+<li class='category'><a href='/blog/categories/StructureMap/'>StructureMap (9)</a></li>
+<li class='category'><a href='/blog/categories/Testing/'>Testing (20)</a></li>
+<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (7)</a></li>
+<li class='category'><a href='/blog/categories/dotnet/'>dotnet (65)</a></li>
+<li class='category'><a href='/blog/categories/ruby/'>ruby (3)</a></li>
+<li class='category'><a href='/blog/categories/sw-design/'>sw-design (13)</a></li>
+<li class='category'><a href='/blog/categories/xUnitBDDExtensions/'>xUnitBDDExtensions (15)</a></li>
+
+  </ul>
+</section>
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("bjoernrochel", 4, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/bjoernrochel" class="twitter-follow-button" data-width="208px" data-show-count="false">Follow @bjoernrochel</a>
+  
+</section>
+
+<section>
+<h1>Disclaimer</h1>
+<p>
+The opinions expressed herein are my own personal opinions and do not necessarily represent the opinion of any other organization or person, including (but not limited to) my fellow employees, my employer, its clients or their agents. 
+</p>
+<p>
+ Copyright &copy; 2011 - Björn Rochel
+</p>
+<section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2011 - Björn Rochel -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'bjro';
+      
+        
+
+				//TODO: comment disqus_developer out
+				var disqus_developer = 1;
+				var disqus_identifier = 'http://www.bjoernrochel.de/2009/11/30/diving-into-the-storyteller-trunk-part-10-coordination-baby/';
+				var disqus_url = 'http://www.bjoernrochel.de/2009/11/30/diving-into-the-storyteller-trunk-part-10-coordination-baby/';
+        var disqus_script = 'embed.js';
+      
+
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+
+</body>
+</html>
