@@ -9,7 +9,7 @@
   <meta name="author" content="Björn Rochel">
 
   
-  <meta name="description" content="If you ever need to locate the directory of the CLR version which runsyour .NET application, this little helper might be exactly what youneed. At &hellip;">
+  <meta name="description" content="xUnit.BDDExtensions and is now completely merged into a single assembly.However, getting to that state wasn&#8217;t as straight forward as &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -60,6 +60,179 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/07/07/how-to-shoot-yourself-in-the-foot-with-ilmerge/">How to Shoot Yourself in the Foot With ILMerge</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-07-07T18:48:04+02:00" pubdate  data-updated="true" >Jul 7<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>xUnit.BDDExtensions and is now completely merged into a single assembly.
+However, getting to that state wasn&#8217;t as straight forward as I
+originally expected.</p>
+
+<h2>The initial problem</h2>
+
+<p>xUnit.BDDExtensions internally depends on StructureMap,
+StructureMap.AutoMocking and Rhino.Mocks. However, I don&#8217;t like the need
+to carry around 3 extra assemblies with me, especially if I don&#8217;t use
+them directly in the xUnit.BDDExtensions API. So I decided to give
+<a href="http://research.microsoft.com/en-us/people/mbarnett/ilmerge.aspx">ILMerge</a>
+a try and started with this: \</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ILMerge.exe /t:library /out:<span class="s1">&#39;Deploy/xUnit.BDDExtensions.dll&#39;</span>
+</span><span class='line'>  <span class="s1">&#39;xUnit.BDDExtensions.dll&#39;</span>
+</span><span class='line'>  <span class="s1">&#39;StructureMap.dll&#39;</span>
+</span><span class='line'>  <span class="s1">&#39;StructureMap.AutoMocking.dll&#39;</span>
+</span><span class='line'>  <span class="s1">&#39;Rhino.Mocks.dll&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Initial merging went fine, but when I tried to actually use the merged
+assembly in a solution also containing a StructureMap binary, I received
+a lot of build errors indicating duplicate types. The solution simply
+didn&#8217;t compile any more. Crap !</p>
+
+<h2>What went wrong</h2>
+
+<p>The way I merged the assemblies, all public types of the dependent
+assemblies stayed public (although they&#8217;re only internally used). The
+merged assembly exposed all public APIs of the merged-in assemblies.
+When using the assembly in conjunction with one of the original
+assemblies (for instance StructureMap) the compiler basically didn&#8217;t
+know which type my code was actually referring to. Hence the error.</p>
+
+<p>Besides the observed effect those APIs can clearly be confusing to a
+developer with no knowledge that the assembly at hand is actually a
+merged one. So imho definitely a situation which needed to be fixed.</p>
+
+<h2>How to fix it</h2>
+
+<p>What needed to be done is to internalize the all public types of the
+merged-in assemblies. The related switch for this in ILMerge is <code>/internalize</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ILMerge.exe /t:library /internalize
+</span><span class='line'>      /out:<span class="s1">&#39;Deploy/xUnit.BDDExtensions.dll&#39;</span>
+</span><span class='line'>      <span class="s1">&#39;xUnit.BDDExtensions.dll&#39;</span>
+</span><span class='line'>      <span class="s1">&#39;StructureMap.dll&#39;</span>
+</span><span class='line'>      <span class="s1">&#39;StructureMap.AutoMocking.dll&#39;</span>
+</span><span class='line'>      <span class="s1">&#39;Rhino.Mocks.dll&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>`
+The solution using both xUnit.BDDExtensions and StructureMap now
+compiled without errors. Duplicate type issue solved. Everything fine
+now? Nope, obviously internalization created some other problems: Specs
+driven by xUnit.BDDExtensions showed that neither the auto-mocking
+feature nor the mock support worked anymore. Nearly every test failed
+due to an internal exception.</p>
+
+<h2>How to fix it (Take 2) </h2>
+
+<p>The problem with the internalization of all public types is that
+sometimes the merged APIs somehow depend on several types being public.
+If you take that away, you effectively break their functionality. In my
+case my problems where created by Castle.DynamicProxy2 (which is used by
+Rhino.Mocks internally) and StructureMap. Both tools are doing dynamic
+type generation internally and the generated types wanted to implement
+some interfaces which were formally public but now weren&#8217;t accessible
+any more. To my luck ILMerge provides a workaround for situations like
+that: You can exclude types from being internalized. Here&#8217;s what I did
+in order to make it work:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>ILMerge.exe /t:library
+</span><span class='line'>  /internalize:<span class="s1">&#39;Build/ILMergeIncludes.txt&#39;</span>
+</span><span class='line'>  /out:<span class="s1">&#39;Deploy/xUnit.BDDExtensions.dll&#39;</span>
+</span><span class='line'>  <span class="s1">&#39;xUnit.BDDExtensions.dll&#39;</span>
+</span><span class='line'>  <span class="s1">&#39;StructureMap.dll&#39;</span>
+</span><span class='line'>  <span class="s1">&#39;StructureMap.AutoMocking.dll&#39;</span>
+</span><span class='line'>  <span class="s1">&#39;Rhino.Mocks.dll&#39;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Notice the modified <code>/internalize</code> switch. A file now specifies the
+types to exclude from the internalization. ILMerge expects the file to
+contain a regular expression per line. Every line is evaluated against
+each type name and automatically excluded from the internalization
+process in case the regular expression matches. My exclude file looks
+like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='csharp'><span class='line'><span class="n">StructureMap</span><span class="p">.</span><span class="n">InstanceBuilder</span>
+</span><span class='line'><span class="n">StructureMap</span><span class="p">.</span><span class="n">Pipeline</span><span class="p">.</span><span class="err">\</span><span class="p">*</span>
+</span><span class='line'><span class="n">Rhino</span><span class="p">.</span><span class="n">Mocks</span><span class="p">.</span><span class="n">Interfaces</span><span class="p">.</span><span class="n">IMockedObject</span>
+</span><span class='line'><span class="n">Castle</span><span class="p">.</span><span class="n">Core</span><span class="p">.</span><span class="n">Interceptor</span><span class="p">.</span><span class="n">IProxyTargetAccessor</span>
+</span><span class='line'><span class="n">Castle</span><span class="p">.</span><span class="n">DynamicProxy</span><span class="p">.</span><span class="n">AbstractInvocation</span>
+</span><span class='line'><span class="n">Castle</span><span class="p">.</span><span class="n">DynamicProxy</span><span class="p">.</span><span class="n">Generators</span><span class="p">.</span><span class="n">AttributesToAvoidReplicating</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Lessons learned </h2>
+
+<p>Merging for deployment isn&#8217;t that hard, but you have to be careful
+that everything works as expected after you&#8217;ve created the merged
+assembly. A successful ILMerge call doesn&#8217;t necessarily mean that
+everything&#8217;s fine and works as expected. On the other hand the ILMerge
+documentation is very good and provided me with a simple solution to the
+problem. I&#8217;ve shot myself in the foot, but it&#8217;s bandaged and I can walk
+again, so to say. If you&#8217;re interested in doing something similar (not
+the shooting part) I highly suggest that you should give ILMerge a try .
+. .</p>
+
+<h2>Sidenotes</h2>
+
+<p>Is it possible that ILMerge fails to merge WPF based assemblies? I&#8217;m
+currently experiencing strange effects when trying to merge them. Anyone?</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1765,118 +1938,6 @@ capabilities of Rhino.Mocks really close a gap for me and they&#8217;re what I&#
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2009/01/27/ilmerge-and-rake-go-xunitbddextensions/">ILMerge and Rake Go xunit.BDDExtensions</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-  
-
-
-
-<time datetime="2009-01-27T14:48:54+01:00" pubdate  data-updated="true" >Jan 27<span>th</span>, 2009</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Today I added this little piece of code to the trunk of xUnit.BDDExtensions. It&#8217;s a rake task for merging assemblies via the ILMerge tool.</p>
-
-<figure class='code'><figcaption><span>Merging assemblies with ILMerge</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">desc</span> <span class="s2">&quot;Merges the assemblies&quot;</span>
-</span><span class='line'><span class="n">task</span> <span class="ss">:merge</span> <span class="k">do</span>
-</span><span class='line'>  <span class="n">mkdir</span> <span class="no">DEPLOY_DIR</span> <span class="k">unless</span> <span class="no">File</span><span class="o">.</span><span class="n">exists?</span><span class="p">(</span><span class="no">DEPLOY_DIR</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">cp</span> <span class="s2">&quot;xunit.dll&quot;</span><span class="o">.</span><span class="n">expand_to</span><span class="p">(</span><span class="ss">:build_dir</span><span class="p">),</span> <span class="s2">&quot;xunit.dll&quot;</span><span class="o">.</span><span class="n">expand_to</span><span class="p">(</span><span class="ss">:deploy_dir</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">cp</span> <span class="s2">&quot;Rhino.Mocks.dll&quot;</span><span class="o">.</span><span class="n">expand_to</span><span class="p">(</span><span class="ss">:build_dir</span><span class="p">),</span> <span class="s2">&quot;Rhino.Mocks.dll&quot;</span><span class="o">.</span><span class="n">expand_to</span><span class="p">(</span><span class="ss">:deploy_dir</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">assemblies_to_merge</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;xUnit.BDDExtensions.dll&quot;</span><span class="p">,</span> <span class="s2">&quot;StructureMap.dll&quot;</span><span class="p">,</span> <span class="s2">&quot;StructureMap.AutoMocking.dll&quot;</span><span class="o">]</span>
-</span><span class='line'>  <span class="n">ilmerge</span> <span class="s2">&quot;xunit.bddextensions.dll&quot;</span><span class="p">,</span> <span class="n">assemblies_to_merge</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ruby is a fantastic language. The more I learn about it the more I actually like it. Let&#8217;s have a look at how this task is implemented.
-First of all I opened up Ruby&#8217;s string class and added new methods to it (this is called MonkeyPatching, and worth a blog post on its own :-))</p>
-
-<figure class='code'><figcaption><span>Extending the String class</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">String</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">escape</span>
-</span><span class='line'>    <span class="s2">&quot;&quot;</span><span class="c1">#{self.to_s}&quot;&quot; </span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">expand_to</span> <span class="n">dir_symbol</span>
-</span><span class='line'>    <span class="k">case</span> <span class="n">dir_symbol</span>
-</span><span class='line'>      <span class="k">when</span> <span class="ss">:build_dir</span> <span class="n">path</span> <span class="o">=</span> <span class="no">BUILD_DIR</span>
-</span><span class='line'>      <span class="k">when</span> <span class="ss">:source_dir</span> <span class="n">path</span> <span class="o">=</span> <span class="no">SOURCE_DIR</span>
-</span><span class='line'>      <span class="k">when</span> <span class="ss">:externals_dir</span> <span class="n">path</span> <span class="o">=</span> <span class="no">EXTERNALS_DIR</span>
-</span><span class='line'>      <span class="k">when</span> <span class="ss">:deploy_dir</span> <span class="n">path</span> <span class="o">=</span> <span class="no">DEPLOY_DIR</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>    <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">self</span><span class="o">.</span><span class="n">to_s</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And here is the actual <code>ilmerge</code> - method. It simply gets the complete path to the ILMerge.exe (not shown here), expands the name to all
-assemblies that have to be merged and escapes them, before the actual call to ILMerge is issued over the console &#8230;</p>
-
-<figure class='code'><figcaption><span>The ilmerge method</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">ilmerge</span><span class="p">(</span><span class="n">output_name</span><span class="p">,</span> <span class="n">assemblies</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">ilmerge</span> <span class="o">=</span> <span class="n">get_tool</span> <span class="ss">:ILMerge</span> <span class="n">expanded_assemblies</span> <span class="o">=</span> <span class="n">assemblies</span><span class="o">.</span><span class="n">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span>
-</span><span class='line'>    <span class="n">x</span><span class="o">.</span><span class="n">expand_to</span><span class="p">(</span><span class="ss">:build_dir</span><span class="p">)</span><span class="o">.</span><span class="n">escape</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>  <span class="n">sh</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">ilmerge</span><span class="o">.</span><span class="n">escape</span><span class="si">}</span><span class="s2"> /out:</span><span class="si">#{</span><span class="n">output_name</span><span class="o">.</span><span class="n">expand_to</span><span class="p">(</span><span class="ss">:deploy_dir</span><span class="p">)</span><span class="o">.</span><span class="n">escape</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">expanded_assemblies</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Currently 3 assemblies pop out of the Rake build. These are <code>xunit.dll</code>, <code>xunit.bddextensions.dll</code> and <code>Rhino.Mocks.dll</code>. While it&#8217;s technically no
-problem to merge them into a single assembly (and of course I would love to have it that way) there are two problems currently not solved. The
-R# runner dynamically loads the <code>xunit.dll</code> to run the tests and <code>StructureMap.AutoMocking.dll</code> dynamically loads <code>Rhino.Mocks.dll</code>. That&#8217;s
-the reason why I&#8217;m currently not able to merge it.</p>
-
-<p>Any suggestions how to solve that?</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <nav class="pagination">
     <div>
       
@@ -1915,7 +1976,7 @@ the reason why I&#8217;m currently not able to merge it.</p>
 <li class='category'><a href='/blog/categories/StoryTeller/'>StoryTeller (14)</a></li>
 <li class='category'><a href='/blog/categories/StructureMap/'>StructureMap (9)</a></li>
 <li class='category'><a href='/blog/categories/Testing/'>Testing (20)</a></li>
-<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (7)</a></li>
+<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (8)</a></li>
 <li class='category'><a href='/blog/categories/dotnet/'>dotnet (65)</a></li>
 <li class='category'><a href='/blog/categories/ruby/'>ruby (3)</a></li>
 <li class='category'><a href='/blog/categories/sw-design/'>sw-design (13)</a></li>

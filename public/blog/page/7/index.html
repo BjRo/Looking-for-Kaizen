@@ -9,7 +9,7 @@
   <meta name="author" content="Björn Rochel">
 
   
-  <meta name="description" content="Monday (Tutorials): Stuart Charlton: &#8220;Cloud Computing for Developers and Architects&#8221;Ola Bini &amp; Nick Sieger: Getting started with &hellip;">
+  <meta name="description" content="Today I attended a tutorial about JRuby and JRuby on Rails. It was presented by Ola Bini from Thoughtworks, who did the more general parton (J)Ruby &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -60,6 +60,71 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2008/11/18/thoughts-on-j-ironruby/">Thoughts on (J / Iron)Ruby</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2008-11-18T06:36:27+01:00" pubdate  data-updated="true" >Nov 18<span>th</span>, 2008</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today I attended a tutorial about JRuby and JRuby on Rails. It was presented by Ola Bini from Thoughtworks, who did the more general part
+on (J)Ruby and Nick Sieger from Sun, who did the Rails stuff. What can I say, it was really cool.</p>
+
+<p>I&#8217;ve been curious about Ruby for quite a while now, mostly because of its influence on the .NET open source community (MSpec, MonoRail,
+Asp.net MCV, etc.) , but also because my personal interest in internal domain specific languages. It&#8217;s a lot easier to build internal domain
+specific languages with Ruby than it&#8217;s with a statically typed languages like C# or Java. Compare RSpec for instance with its C# counterpart
+MSpec and you instantly realize the difference when it comes to terms of readability and less code to write in order to get things done.</p>
+
+<p>What was interesting in this talk in particular is the fact that most of the things that apply to JRuby and Java also apply (or will apply) to
+IronRuby and .NET:</p>
+
+<ul>
+<li><strong>The reuse of existing IT infrastructure</strong>. In the not so far future Rails will be able to be run on top of .NET and IIS. No
+existing Ruby infrastructure will be needed in order to get it running. No new server / infrastructure know how will be needed for
+running Rails in a .NET environment.</li>
+<li><strong>The integration between a statically typed platform and Ruby in both directions</strong>. C# will be able to integrate dynamically typed
+code (C# keyword dynamic) and pure Ruby applications can be run on top of .NET. Besides that IronRuby will also have a fantastic
+integration of the .NET framework libraries and will be able to extend its view of the .NET world with Ruby concepts (I think it&#8217;s
+called monkey patching). Opening up and extending .NET types from IronRuby and support for snake casing for members on .NET Framework
+built-in types are some of the nice features.</li>
+</ul>
+
+
+<p>It&#8217;ll be interesting to see the impact of IronRuby on the .NET OS community. My guess is that the overall adoption rate of IronRuby in
+that circle will be pretty high (assuming that Microsoft succeeds in delivering a first class implementation of Ruby). Ruby has the potential
+to enable a more language oriented style of programming on the platform, which is exactly what a lot of .NET OS key players are striving for.</p>
+
+<p>Writing more expressive, readable and maintainable code has always been important for me too and one of the consequences of today is that I&#8217;ll
+definitely will invest more time into Ruby and IronRuby in the near future. I&#8217;m curious to hear opinions about IronRuby and its impact on
+the .NET community &#8230;</p>
+
+<p>Bye the way: Is Rails a software factory? A lot of the things I saw today reminded me of software factories &#8230;</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1015,73 +1080,6 @@ memoization, etc &#8230;)</li>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2008/09/24/nothing-but-net-germany-half-time-recap/">Nothing but .NET Germany - Half Time Recap</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-  
-
-
-
-<time datetime="2008-09-24T23:04:36+02:00" pubdate  data-updated="true" >Sep 24<span>th</span>, 2008</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>We&#8217;re now half way through the course and I must say that it&#8217;s even a
-better experience than I originally expected. I&#8217;ve got to know a lot of
-very interesting, smart and also very kind people this week. The
-chemistry in the course is just amazing. The course itself is radically
-different from any training I&#8217;ve ever received. The level of interaction
-between JP and the participants is REALLY high. The content of the
-course is worth a lot of posts. Just to give you a sneak peak on what
-we&#8217;re currently doing: We&#8217;re actually developing software. JP showed not
-a single PowerPoint-slide this week. In a Jeremy Miller you could
-headline some of the things we&#8217;re currently developing &#8220;Build your own
-ASP.NET MVC&#8221;. We&#8217;re basically developing a web application from scratch</p>
-
-<ol>
-<li>based on a FronController architecture &#8230;</li>
-<li>build iterative in a top down manner &#8230;</li>
-<li>in pair programming sessions &#8230;</li>
-<li>using a test first approach with BDD &#8230; .</li>
-<li>continuously integrated &#8230;</li>
-<li>with extensive usage of fluent interfaces / internal DSLs.</li>
-</ol>
-
-
-<p>It&#8217;s a bit like being a kid at toy shop (of course in a developer way ;-) ) .
-It&#8217;s pretty exhausting, though. To give you an idea how long a day with JP can actually be:</p>
-
-<ol>
-<li>Monday 14h</li>
-<li>Thursday 14h</li>
-<li>Wednesday 16h</li>
-</ol>
-
-
-<p>Conclusion There is one thing I can already say at the current stage of the course:
-If you ever get the opportunity to be a week with JP and you&#8217;re passionate about .NET software development: <em>DON&#8217;T MISS IT</em>.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <nav class="pagination">
     <div>
       
@@ -1120,7 +1118,7 @@ If you ever get the opportunity to be a week with JP and you&#8217;re passionate
 <li class='category'><a href='/blog/categories/StoryTeller/'>StoryTeller (14)</a></li>
 <li class='category'><a href='/blog/categories/StructureMap/'>StructureMap (9)</a></li>
 <li class='category'><a href='/blog/categories/Testing/'>Testing (20)</a></li>
-<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (7)</a></li>
+<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (8)</a></li>
 <li class='category'><a href='/blog/categories/dotnet/'>dotnet (65)</a></li>
 <li class='category'><a href='/blog/categories/ruby/'>ruby (3)</a></li>
 <li class='category'><a href='/blog/categories/sw-design/'>sw-design (13)</a></li>

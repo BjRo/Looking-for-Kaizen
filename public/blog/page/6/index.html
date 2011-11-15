@@ -9,7 +9,7 @@
   <meta name="author" content="Björn Rochel">
 
   
-  <meta name="description" content="Automocking in xUnit.BDDExtensions123456789101112131415161718192021222324252627282930public class &hellip;">
+  <meta name="description" content="Today I added this little piece of code to the trunk of xUnit.BDDExtensions. It&#8217;s a rake task for merging assemblies via the ILMerge tool. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -60,6 +60,118 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/2009/01/27/ilmerge-and-rake-go-xunitbddextensions/">ILMerge and Rake Go xunit.BDDExtensions</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+  
+
+
+
+<time datetime="2009-01-27T14:48:54+01:00" pubdate  data-updated="true" >Jan 27<span>th</span>, 2009</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today I added this little piece of code to the trunk of xUnit.BDDExtensions. It&#8217;s a rake task for merging assemblies via the ILMerge tool.</p>
+
+<figure class='code'><figcaption><span>Merging assemblies with ILMerge</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">desc</span> <span class="s2">&quot;Merges the assemblies&quot;</span>
+</span><span class='line'><span class="n">task</span> <span class="ss">:merge</span> <span class="k">do</span>
+</span><span class='line'>  <span class="n">mkdir</span> <span class="no">DEPLOY_DIR</span> <span class="k">unless</span> <span class="no">File</span><span class="o">.</span><span class="n">exists?</span><span class="p">(</span><span class="no">DEPLOY_DIR</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">cp</span> <span class="s2">&quot;xunit.dll&quot;</span><span class="o">.</span><span class="n">expand_to</span><span class="p">(</span><span class="ss">:build_dir</span><span class="p">),</span> <span class="s2">&quot;xunit.dll&quot;</span><span class="o">.</span><span class="n">expand_to</span><span class="p">(</span><span class="ss">:deploy_dir</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">cp</span> <span class="s2">&quot;Rhino.Mocks.dll&quot;</span><span class="o">.</span><span class="n">expand_to</span><span class="p">(</span><span class="ss">:build_dir</span><span class="p">),</span> <span class="s2">&quot;Rhino.Mocks.dll&quot;</span><span class="o">.</span><span class="n">expand_to</span><span class="p">(</span><span class="ss">:deploy_dir</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">assemblies_to_merge</span> <span class="o">=</span> <span class="o">[</span><span class="s2">&quot;xUnit.BDDExtensions.dll&quot;</span><span class="p">,</span> <span class="s2">&quot;StructureMap.dll&quot;</span><span class="p">,</span> <span class="s2">&quot;StructureMap.AutoMocking.dll&quot;</span><span class="o">]</span>
+</span><span class='line'>  <span class="n">ilmerge</span> <span class="s2">&quot;xunit.bddextensions.dll&quot;</span><span class="p">,</span> <span class="n">assemblies_to_merge</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ruby is a fantastic language. The more I learn about it the more I actually like it. Let&#8217;s have a look at how this task is implemented.
+First of all I opened up Ruby&#8217;s string class and added new methods to it (this is called MonkeyPatching, and worth a blog post on its own :-))</p>
+
+<figure class='code'><figcaption><span>Extending the String class</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">String</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">escape</span>
+</span><span class='line'>    <span class="s2">&quot;&quot;</span><span class="c1">#{self.to_s}&quot;&quot; </span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">expand_to</span> <span class="n">dir_symbol</span>
+</span><span class='line'>    <span class="k">case</span> <span class="n">dir_symbol</span>
+</span><span class='line'>      <span class="k">when</span> <span class="ss">:build_dir</span> <span class="n">path</span> <span class="o">=</span> <span class="no">BUILD_DIR</span>
+</span><span class='line'>      <span class="k">when</span> <span class="ss">:source_dir</span> <span class="n">path</span> <span class="o">=</span> <span class="no">SOURCE_DIR</span>
+</span><span class='line'>      <span class="k">when</span> <span class="ss">:externals_dir</span> <span class="n">path</span> <span class="o">=</span> <span class="no">EXTERNALS_DIR</span>
+</span><span class='line'>      <span class="k">when</span> <span class="ss">:deploy_dir</span> <span class="n">path</span> <span class="o">=</span> <span class="no">DEPLOY_DIR</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>    <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="nb">self</span><span class="o">.</span><span class="n">to_s</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And here is the actual <code>ilmerge</code> - method. It simply gets the complete path to the ILMerge.exe (not shown here), expands the name to all
+assemblies that have to be merged and escapes them, before the actual call to ILMerge is issued over the console &#8230;</p>
+
+<figure class='code'><figcaption><span>The ilmerge method</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">ilmerge</span><span class="p">(</span><span class="n">output_name</span><span class="p">,</span> <span class="n">assemblies</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">ilmerge</span> <span class="o">=</span> <span class="n">get_tool</span> <span class="ss">:ILMerge</span> <span class="n">expanded_assemblies</span> <span class="o">=</span> <span class="n">assemblies</span><span class="o">.</span><span class="n">map</span> <span class="k">do</span> <span class="o">|</span><span class="n">x</span><span class="o">|</span>
+</span><span class='line'>    <span class="n">x</span><span class="o">.</span><span class="n">expand_to</span><span class="p">(</span><span class="ss">:build_dir</span><span class="p">)</span><span class="o">.</span><span class="n">escape</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>  <span class="n">sh</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="n">ilmerge</span><span class="o">.</span><span class="n">escape</span><span class="si">}</span><span class="s2"> /out:</span><span class="si">#{</span><span class="n">output_name</span><span class="o">.</span><span class="n">expand_to</span><span class="p">(</span><span class="ss">:deploy_dir</span><span class="p">)</span><span class="o">.</span><span class="n">escape</span><span class="si">}</span><span class="s2"> </span><span class="si">#{</span><span class="n">expanded_assemblies</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Currently 3 assemblies pop out of the Rake build. These are <code>xunit.dll</code>, <code>xunit.bddextensions.dll</code> and <code>Rhino.Mocks.dll</code>. While it&#8217;s technically no
+problem to merge them into a single assembly (and of course I would love to have it that way) there are two problems currently not solved. The
+R# runner dynamically loads the <code>xunit.dll</code> to run the tests and <code>StructureMap.AutoMocking.dll</code> dynamically loads <code>Rhino.Mocks.dll</code>. That&#8217;s
+the reason why I&#8217;m currently not able to merge it.</p>
+
+<p>Any suggestions how to solve that?</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1026,71 +1138,6 @@ Meeting people like you justifies the whole traveling to San Francisco alone &#8
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/2008/11/18/thoughts-on-j-ironruby/">Thoughts on (J / Iron)Ruby</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-  
-
-
-
-<time datetime="2008-11-18T06:36:27+01:00" pubdate  data-updated="true" >Nov 18<span>th</span>, 2008</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Today I attended a tutorial about JRuby and JRuby on Rails. It was presented by Ola Bini from Thoughtworks, who did the more general part
-on (J)Ruby and Nick Sieger from Sun, who did the Rails stuff. What can I say, it was really cool.</p>
-
-<p>I&#8217;ve been curious about Ruby for quite a while now, mostly because of its influence on the .NET open source community (MSpec, MonoRail,
-Asp.net MCV, etc.) , but also because my personal interest in internal domain specific languages. It&#8217;s a lot easier to build internal domain
-specific languages with Ruby than it&#8217;s with a statically typed languages like C# or Java. Compare RSpec for instance with its C# counterpart
-MSpec and you instantly realize the difference when it comes to terms of readability and less code to write in order to get things done.</p>
-
-<p>What was interesting in this talk in particular is the fact that most of the things that apply to JRuby and Java also apply (or will apply) to
-IronRuby and .NET:</p>
-
-<ul>
-<li><strong>The reuse of existing IT infrastructure</strong>. In the not so far future Rails will be able to be run on top of .NET and IIS. No
-existing Ruby infrastructure will be needed in order to get it running. No new server / infrastructure know how will be needed for
-running Rails in a .NET environment.</li>
-<li><strong>The integration between a statically typed platform and Ruby in both directions</strong>. C# will be able to integrate dynamically typed
-code (C# keyword dynamic) and pure Ruby applications can be run on top of .NET. Besides that IronRuby will also have a fantastic
-integration of the .NET framework libraries and will be able to extend its view of the .NET world with Ruby concepts (I think it&#8217;s
-called monkey patching). Opening up and extending .NET types from IronRuby and support for snake casing for members on .NET Framework
-built-in types are some of the nice features.</li>
-</ul>
-
-
-<p>It&#8217;ll be interesting to see the impact of IronRuby on the .NET OS community. My guess is that the overall adoption rate of IronRuby in
-that circle will be pretty high (assuming that Microsoft succeeds in delivering a first class implementation of Ruby). Ruby has the potential
-to enable a more language oriented style of programming on the platform, which is exactly what a lot of .NET OS key players are striving for.</p>
-
-<p>Writing more expressive, readable and maintainable code has always been important for me too and one of the consequences of today is that I&#8217;ll
-definitely will invest more time into Ruby and IronRuby in the near future. I&#8217;m curious to hear opinions about IronRuby and its impact on
-the .NET community &#8230;</p>
-
-<p>Bye the way: Is Rails a software factory? A lot of the things I saw today reminded me of software factories &#8230;</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <nav class="pagination">
     <div>
       
@@ -1129,7 +1176,7 @@ the .NET community &#8230;</p>
 <li class='category'><a href='/blog/categories/StoryTeller/'>StoryTeller (14)</a></li>
 <li class='category'><a href='/blog/categories/StructureMap/'>StructureMap (9)</a></li>
 <li class='category'><a href='/blog/categories/Testing/'>Testing (20)</a></li>
-<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (7)</a></li>
+<li class='category'><a href='/blog/categories/Uncategorized/'>Uncategorized (8)</a></li>
 <li class='category'><a href='/blog/categories/dotnet/'>dotnet (65)</a></li>
 <li class='category'><a href='/blog/categories/ruby/'>ruby (3)</a></li>
 <li class='category'><a href='/blog/categories/sw-design/'>sw-design (13)</a></li>
