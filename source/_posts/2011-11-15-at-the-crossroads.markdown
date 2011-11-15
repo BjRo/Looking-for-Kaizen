@@ -12,6 +12,8 @@ time has gone by since I've written something down here.
 
 Today is probably going to be a very personal post and for that matter also non-technical one.
 
+<!--more-->
+
 So, what happened in those 512 days?
 -------------------------------------
 First of all, 512 days ago I deliberately stopped blogging. I had lost all fun in writing. 
@@ -26,7 +28,7 @@ work. Not via blogging, but rather by
 - Building [Machine.Fakes](http://www.github.com/bjro/machine.fakes/),
 - speaking at several conferences, user groups and open spaces,
 - facilitating the F# bookclub in Munich 2010 where we worked through [Real-World 
-Functional Programming](http://www.manning.com/petricekt/),
+Functional Programming](http://www.manning.com/petricek/),
 - and helping [Albert Weinert](http://www.der-albert.com/) to get the [.NET Online User Group](http://onlineusergroup.de) off the ground.
 
 Besides I helped sucesfully delivering 3 large projects in the time. Two of them exceeded the customers expectations.
@@ -53,25 +55,25 @@ platform.
 
 Besides I'm planning to learn a new (non .NET) programming language next year, that currently feels completely alien to me, namely [Clojure](http://www.clojure.org).
 If everything goes as planned we're going to re-use the bookclub format we used in 2010 for the F# bookclub in Munich, though
-in a somewhat virtualized form, and try to get into the [Joy of Clojure](http://www.joyofclosure.com).
+in a somewhat virtualized form, and try to get into the [Joy of Clojure](http://www.joyofclojure.com).
 
 Last but not least, I'm not nuts and discard everything I learned during the last years. 
-I'm probably going to play with MonoDevelop and try to learn how to build IPhone, Android, IPad and Cocoa apps using Mono.
+
+I'm probably going to play with [MonoDevelop](http://monodevelop.com/) and try to learn how to build [iOS](http://xamarin.com/monotouch), [Android](http://android.xamarin.com/) and [Cocoa](http://www.mono-project.com/MonoMac) apps using [Mono](http://www.mono-project.com/).
 At least that's the plan. 
 
 On leaving .NET
 -------------------------------------
-What does leaving acutally mean? Let's break this down a bit. 
+What does leaving acutally mean? Let's break this down a bit: 
 
-### Am I going to stop playing the active role for Machine.Fakes?
+- **Am I going to stop playing the active role for Machine.Fakes?**
 Undecided, but probable since I won't be using it on a day to day basis next year. 
-I've ideas for re-using it under mono, but I haven't actually tried so far. We'll see ...
+I've ideas for re-using it under Mono, but I haven't actually tried so far. We'll see ...
 
-### Do I stop being in touch with parts of the .NET community?
+- **Do I stop being in touch with parts of the .NET community?** 
 Don't be silly
 
-### Do I stop visiting .NET Open Spaces or UserGroups?
-Well, that is at least not my plan. 
+- **Do I stop visiting .NET Open Spaces or UserGroups** Well, that is at least not my plan. 
 
 What, no leaving .NET rant?
 ---------------------------------------
@@ -81,7 +83,7 @@ to know a great bunch of .NET developers. Talented and gifted people, from all o
 
 Just to name a few [@agross](http://www.twitter.com/agross), [@sforkmann](http://www.twitter.com/sforkmann), [@ilkerde](http://www.twitter.com/ilkerde), [@StefanLieser](http://www.twitter.com/stefanlieser),
 [@mikebild](http://www.twitter.com/mikebild), [@sshishkin](http://www.twitter.com/sshishkin), [@lanwin](http://www.twitter.com/lanwin), [@cdeger](http://www.twitter.com/cdeger), [@oakinger](http://www.twitter.com/oakinger), [@jpboodhoo](http://www.twitter.com/jpboodhoo),
-[@kostjaklein](), [@torstenweber](http://www.twitter.com/torstenweber), [@gregyoung](http://www.twitter.com/gregyoung) and a lot more.  I could probably make the list a lot longer, but those are the people that managed to
+[@kostjaklein](http://www.twitter.com/kostjaklein), [@torstenweber](http://www.twitter.com/torstenweber), [@gregyoung](http://www.twitter.com/gregyoung) and a lot more.  I could probably make the list a lot longer, but those are the people that managed to
 leave a lasting impact on me. Thank you all!
 
 The German .NET community has changed tremendously (for the good) in the time I've been
@@ -110,9 +112,9 @@ developers they ever worked with.
 
 I often wondered how I managed to pull that off, but I guess it boils down to this: I really, really, really badly want to be
 good at what I'm doing (whatever that is) and am willing to work as hard as necessary in order to reach that goal. I've had
-my ups and downs with this strategy, but in the end it made me how I am and helped me to get where I am today. I honestly believe that you 
-can achieve much more than you might think, if you step out of what comforts you as often as possible 
-(though some people prefer to tell you the opposite and are very resistant with that). 
+my ups and downs with this strategy, but in the end it made me how I am and helped me to get where I am today. 
+
+I honestly believe that you can achieve much more than you might think (though some people prefer to tell you the opposite and are very resistant with that). 
 
 {% blockquote Catherine Pulsifer, %}
 If you remain in your comfort zone you will not go any further
@@ -125,14 +127,13 @@ way or another and failing is ok if and only if you learn from failure,
 and last but not least **if** you accept that for the most of us being good at something
 actually is the result of continuous learning, hard work, deliberate practice and experience (as
 opposed to talent only), ** than you define what's possible for you and not somebody else.**
+At least that's my way of thinking ... 
 
 I'd like to think about myself as a developer, not as a C# developer, not as a OO 
 developer, not as an ASP.NET developer, nor Javascript developer for that matters.
 Developer, just developer. Building awesome products in teams is my passion, but not building 
 awesome products with technlogy X,Y or Z. Languages, technlogies are **part of my toolset, not something I'm
 married to** till death tears us apart. 
-
-Number 1 reason for making a technology change is that I want to extend my personal toolset
 
 ### Is that all?
 It's no big secret that being an engaged person that likes to think outside the
@@ -150,7 +151,7 @@ I like the .NET framework and I especially like C#, but I'm more and
 more frustrated with their sales driven approach to software development.  The frustrating part is that in 
 the end I can understand why they bundle/entangle their products from a sales perspective. 
 It's probably my fault for not realizing earlier that this somewhat clashes 
-with my slightly opinionated approach to building software.
+with the idea of continuous improvement.
 
 I sometimes tend to think that a greater part of us (of the .NET community) 
 would live a lot happier professional live outside the MS ecosystem and those 
@@ -171,7 +172,7 @@ a new language and a new platform.
 ###Why Ruby?
 
 {% blockquote Wayne Gretzky, %}
-I skate to where the puk is going to be, not where it has been
+I skate to where the puck is going to be, not where it has been
 {% endblockquote %}
 
 I really, really like the quote, I really do, but do I think Ruby is the next 
@@ -196,7 +197,10 @@ The Moslems have a proverb,  to understand a man, you've got to walk a mile in h
 The Ruby community seems to be a great starting point for my venture. 
 Lots of innovation going on, lots of passion involved, very OSS centered 
 and goal orientated.  However, I will never know for sure if those expectations 
-hold up to the reality unless I work amongst them for a while ...
+hold up to the reality unless I work amongst them for a while.
+
+So as you might have guessed, the focus of future posts will probably a lot less 
+.NET centric ...
 
 
 
