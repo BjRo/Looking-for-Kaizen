@@ -8,17 +8,35 @@ ul.badges {
 		border-style: none;
 		border-width:0px;
 		@include box-shadow(#fff 0px 0px 0px);
-
-		img {
-			border-style: none;
-			@include box-shadow(#fff 0px 0px 0px);
-		}
 	}
+
+	a {
+		display: inline-block;
+		border-style: none;
+		width:50px;
+		height:50px;
+		@include box-shadow(#fff 0px 0px 0px);
+	}
+
+	.xing {
+		@include background(image-url("badges/xing2-small.png"))
+	}
+
+	.github {
+		@include background(image-url("badges/github-small.png"))
+	}
+
+	.twitter {
+		@include background(image-url("badges/twitter-square-small.png"))
+	}
+
+	.rss {
+		@include background(image-url("badges/rss-circle-small.png"))
+	}
+
+	span { display:none; }
 }
 
-#logo {
-	display: none;
-}
 
 @media only screen and (min-width: 550px) {
 	#logo {
