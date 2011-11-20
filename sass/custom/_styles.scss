@@ -1,6 +1,6 @@
 // This File is imported last, and will override other styles in the cascade
 // Add styles here to make changes without digging in too much
-ul.badges {
+ul#badges {
 
 	li {
 		display: inline;
@@ -18,19 +18,19 @@ ul.badges {
 		@include box-shadow(#fff 0px 0px 0px);
 	}
 
-	.xing {
+	#xing {
 		@include background(image-url("badges/xing2-small.png"))
 	}
 
-	.github {
+	#github {
 		@include background(image-url("badges/github-small.png"))
 	}
 
-	.twitter {
+	#twitter {
 		@include background(image-url("badges/twitter-square-small.png"))
 	}
 
-	.rss {
+	#rss {
 		@include background(image-url("badges/rss-circle-small.png"))
 	}
 
