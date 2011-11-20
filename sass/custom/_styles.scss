@@ -40,8 +40,10 @@ ul#badges {
 
 @media only screen and (min-width: 550px) {
 	#logo {
-		display: inline-block;
+		@include background(image-url("kaizen.png"));
 		float: left;
+		width: 95px;
+		height: 60px;
 		margin-right: 1em;
 	}
 }
