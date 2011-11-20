@@ -3,10 +3,16 @@ module Jekyll
     def render(context)
       html = ""
       categories = context.registers[:site].categories.keys
+     
+      html << "<ul id='categories'>\n"
+
       categories.sort.each do |category|
         posts_in_category = context.registers[:site].categories[category].size
-        html << "<li class='category'><a href='/blog/categories/#{category}/'>#{category} (#{posts_in_category})</a></li>\n"
+        html << "<li><a href='/blog/categories/#{category}/'>#{category} (#{posts_in_category})</a></li>\n"
       end
+
+      html << "</ul>\n"
+
       html
     end
   end
