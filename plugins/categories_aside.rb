@@ -9,7 +9,7 @@ module Jekyll
 
       site.categories.keys.sort.each do |category|
         posts_in_category = site.categories[category].size
-        html << "<li><a href='#{category_dir}/#{category}/'>#{category} (#{posts_in_category})</a></li>\n"
+        html << "<li><a href='#{site.config['url']}/#{category_dir}/#{category}/'>#{category} (#{posts_in_category})</a></li>\n"
       end
 
       html << "</ul>\n"
