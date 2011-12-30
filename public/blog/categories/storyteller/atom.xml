@@ -4,7 +4,7 @@
   <title><![CDATA[Category: StoryTeller | Dude, where's my Kaizen?]]></title>
   <link href="http://www.bjoernrochel.de/blog/categories/storyteller/atom.xml" rel="self"/>
   <link href="http://www.bjoernrochel.de/"/>
-  <updated>2011-11-20T21:10:56+01:00</updated>
+  <updated>2011-12-30T19:16:35+01:00</updated>
   <id>http://www.bjoernrochel.de/</id>
   <author>
     <name><![CDATA[Björn Rochel]]></name>
@@ -388,7 +388,7 @@ little bit about a more high level view on the <code>ScreenConductor</code> and 
 role the conductor is fulfilling in an application. Martin Fowler
 identified the pattern <code>ApplicationController</code> some years ago as</p>
 
-<p><blockquote><p>A centralized point for handling screen navigation and the flow of an<br/>application.</p><footer><strong>Martin Fowler</strong><cite><a href='http://martinfowler.com/eaaCatalog/applicationController.html'>martinfowler.com/eaaCatalog/&hellip;</a></cite></footer></blockquote></p>
+<p><blockquote><p>A centralized point for handling screen navigation and the flow of an<br/>application.</p><footer><strong>Martin Fowler</strong> <cite><a href='http://martinfowler.com/eaaCatalog/applicationController.html'>martinfowler.com/eaaCatalog/&hellip;</a></cite></footer></blockquote></p>
 
 <p>It's kind of a coordination structure which manages / coordinates the
 lifecylcle of child screens in an application as well as the lifecycle

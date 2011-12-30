@@ -4,7 +4,7 @@
   <title><![CDATA[Dude, where's my Kaizen?]]></title>
   <link href="http://www.bjoernrochel.de/atom.xml" rel="self"/>
   <link href="http://www.bjoernrochel.de/"/>
-  <updated>2011-11-20T21:10:56+01:00</updated>
+  <updated>2011-12-30T19:16:35+01:00</updated>
   <id>http://www.bjoernrochel.de/</id>
   <author>
     <name><![CDATA[Björn Rochel]]></name>
@@ -133,7 +133,7 @@ my ups and downs with this strategy, but in the end it made me how I am and help
 
 <p>I honestly believe that you can achieve much more than you might think (though some people prefer to tell you the opposite and are very resistant with that).</p>
 
-<blockquote><p>If you remain in your comfort zone you will not go any further</p><footer><strong>Catherine Pulsifer</strong><cite></cite></footer></blockquote>
+<blockquote><p>If you remain in your comfort zone you will not go any further</p><footer><strong>Catherine Pulsifer</strong> <cite></cite></footer></blockquote>
 
 
 <p><strong>If</strong> you&#8217;re passionate about what you do, <strong>if</strong> you put yourself in the
@@ -188,7 +188,7 @@ a new language and a new platform.</p>
 
 <h3>Why Ruby?</h3>
 
-<blockquote><p>I skate to where the puck is going to be, not where it has been</p><footer><strong>Wayne Gretzky</strong><cite></cite></footer></blockquote>
+<blockquote><p>I skate to where the puck is going to be, not where it has been</p><footer><strong>Wayne Gretzky</strong> <cite></cite></footer></blockquote>
 
 
 <p>I really, really like the quote, I really do, but do I think Ruby is the next
@@ -206,7 +206,7 @@ they look far ahead than the common denominator in the Microsoft world.  Lots an
 .NET OSS frameworks and tools have been influenced by the Ruby community
 in one way or another.</p>
 
-<blockquote><p>The Moslems have a proverb,  to understand a man, you&#8217;ve got to walk a mile in his shoes, whether they fit or not.</p><footer><strong>Raymond Wiley Miller</strong><cite>1964</cite></footer></blockquote>
+<blockquote><p>The Moslems have a proverb,  to understand a man, you&#8217;ve got to walk a mile in his shoes, whether they fit or not.</p><footer><strong>Raymond Wiley Miller</strong> <cite>1964</cite></footer></blockquote>
 
 
 <p>The Ruby community seems to be a great starting point for my venture.
@@ -860,7 +860,7 @@ Yeah a short look into the calendar indicates that I’m a little late, but I th
 
 <p>In his tweet he basically states (my translation from German to English) that</p>
 
-<blockquote><p>If a domain model consists only of POCOs it should be called data model</p><footer><strong>Ralf Westphal</strong><cite><a href='http://twitter.com/ralfw/status/9446904971'>twitter.com/ralfw/status/&hellip;</a></cite></footer></blockquote>
+<blockquote><p>If a domain model consists only of POCOs it should be called data model</p><footer><strong>Ralf Westphal</strong> <cite><a href='http://twitter.com/ralfw/status/9446904971'>twitter.com/ralfw/status/&hellip;</a></cite></footer></blockquote>
 
 
 <p>My first thought was a) does he mean anemic domain models and b) what has POCO to do with that? As I found out he didn’t mean
@@ -876,7 +876,7 @@ I’m a .NET guy, but same applies of course to all other versions.
 The English <a href="http://en.wikipedia.org/wiki/Plain_Old_CLR_Object">Wikipedia site</a> defines the term “Plain Old CLR Object” as the
 following:</p>
 
-<blockquote><p>The term is used to contrast a simple object with one that is designed to be used with a complicated, special object frameworks such as an ORM component. <br/>Another way to put it is that POCO&#8217;s are objects unencumbered with inheritance or attributes needed for specific frameworks …</p><footer><strong>Wikipedia</strong><cite><a href='http://en.wikipedia.org/wiki/Plain_Old_CLR_Object'>en.wikipedia.org/wiki/&hellip;</a></cite></footer></blockquote>
+<blockquote><p>The term is used to contrast a simple object with one that is designed to be used with a complicated, special object frameworks such as an ORM component. <br/>Another way to put it is that POCO&#8217;s are objects unencumbered with inheritance or attributes needed for specific frameworks …</p><footer><strong>Wikipedia</strong> <cite><a href='http://en.wikipedia.org/wiki/Plain_Old_CLR_Object'>en.wikipedia.org/wiki/&hellip;</a></cite></footer></blockquote>
 
 
 <p>To me personally, POCO is just a simple, but very important principle or guideline. POCO for me means,
@@ -1709,7 +1709,7 @@ little bit about a more high level view on the <code>ScreenConductor</code> and 
 role the conductor is fulfilling in an application. Martin Fowler
 identified the pattern <code>ApplicationController</code> some years ago as</p>
 
-<blockquote><p>A centralized point for handling screen navigation and the flow of an<br/>application.</p><footer><strong>Martin Fowler</strong><cite><a href='http://martinfowler.com/eaaCatalog/applicationController.html'>martinfowler.com/eaaCatalog/&hellip;</a></cite></footer></blockquote>
+<blockquote><p>A centralized point for handling screen navigation and the flow of an<br/>application.</p><footer><strong>Martin Fowler</strong> <cite><a href='http://martinfowler.com/eaaCatalog/applicationController.html'>martinfowler.com/eaaCatalog/&hellip;</a></cite></footer></blockquote>
 
 
 <p>It&#8217;s kind of a coordination structure which manages / coordinates the
