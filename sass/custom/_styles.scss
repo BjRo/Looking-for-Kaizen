@@ -30,8 +30,8 @@ ul#badges {
 		@include background(image-url("badges/twitter-square-small.png"))
 	}
 
-	#rss {
-		@include background(image-url("badges/rss-circle-small.png"))
+	#googleplus {
+		@include background(image-url("badges/googleplus-small.png"))
 	}
 
 	span { display:none; }
