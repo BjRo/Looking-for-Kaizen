@@ -5,4 +5,10 @@
   {% if site.google_plus_one %}
   <div class="g-plusone" data-size="{{ site.google_plus_one_size }}"></div>
   {% endif %}
+  {% if site.xing_sharing %}
+  <div id="xing-share">
+    <script type="XING/Share" data-counter="right" data-lang="en" data-url="{{ site.url }}{{ page.url }}"></script>
+    <script src="https://www.xing-share.com/js/external/share.js" type="text/javascript"></script>
+  </div>
+  {% endif %}
 </div>
