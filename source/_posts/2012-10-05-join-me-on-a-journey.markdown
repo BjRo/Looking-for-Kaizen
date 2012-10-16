@@ -35,4 +35,5 @@ So, what do you think? Are you in?
 
 ## Table of contents
 
-1. The pain of a non Hypermedia HTTP API (upcoming)
+1. [My pain with a non Hypermedia HTTP API](/2012/10/16/the-pain-of-a-non-hypermedia-http-api/)
+2. Coupling (upcoming)
