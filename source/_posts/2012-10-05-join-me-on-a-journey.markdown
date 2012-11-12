@@ -36,4 +36,4 @@ So, what do you think? Are you in?
 ## Table of contents
 
 1. [My pain with a non Hypermedia HTTP API](/2012/10/16/the-pain-of-a-non-hypermedia-http-api/)
-2. Coupling (upcoming)
+2. [Fighting coupling, let the games begin!](/2012/11/12/fighting-coupling/)
