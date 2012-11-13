@@ -13,7 +13,7 @@ Judging from what I've learned so far from the Hypermedia guys, there are soluti
 
 So what is our battleplan? How can we turn our RPC approach into something with less coupling? The short answer is: **By systematically reducing the amount of necessary out-of-band information**.
 
-I can almost here you shouting out 'What is that supposed to mean?'. 'out-of-band information' is that kind of information which isn't present in the API itself, but is necessary to work with the API. It's a synonym for 'external documentation' or in other words nearly every question you answer politely with 'RTFM'. Coincidently the stuff that's typically hardcoded in clients: URLs, data structures, parameters, response codes and relationships between API calls.** We need to make this information available to a client as part of the API**.  
+I can almost hear you shouting out 'What is that supposed to mean?'. 'out-of-band information' is that kind of information which isn't present in the API itself, but is necessary to work with the API. It's a synonym for 'external documentation' or in other words nearly every question you answer politely with 'RTFM'. Coincidently the stuff that's typically hardcoded in clients: URLs, data structures, parameters, response codes and relationships between API calls.** We need to make this information available to a client as part of the API**.  
 
 In the best possible scenario all a client should need to know is the root url of the API. Everything else should be available via the API itself. Ok, I'm getting ahead of myself here. Let's start a bit smaller. How could we enhance a pure HTTP RPC API to reduce coupling? 
 
