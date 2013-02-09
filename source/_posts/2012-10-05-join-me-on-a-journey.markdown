@@ -37,3 +37,5 @@ So, what do you think? Are you in?
 
 1. [My pain with a non Hypermedia HTTP API](/2012/10/16/the-pain-of-a-non-hypermedia-http-api/)
 2. [Fighting coupling, let the games begin!](/2012/11/12/fighting-coupling/)
+3. [HTTP + client side middleware stack == Win](/2013/01/13/http-plus-middlewarestack-equals-win/)
+4. [Oh my Faraday](/2013/02/09/oh-my-faraday/)
