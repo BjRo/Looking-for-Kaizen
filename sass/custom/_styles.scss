@@ -2,6 +2,12 @@
 .jumbotron {
   padding: 30px 0;
   .container {
-    display: none
+    display: none;
   }
+}
+
+p code, li code {
+  border:     1px solid #ddd;
+  color:      $text-color !important;
+  background: #ffffff !important;
 }
