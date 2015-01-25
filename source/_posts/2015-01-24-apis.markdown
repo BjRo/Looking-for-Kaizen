@@ -1,0 +1,16 @@
+---
+layout: post
+title: "Some thoughts APIs, SDKs and native apps"
+date: 2015-01-24 10:29:19 +0100
+comments: true
+categories: 
+---
+Twitter is awesome for a lot of things. A discussion is certainly not one of them. Knowing that, I still often fall into the trap of wanting to explain my opinion on certain topics on Twitter itself. It never feels satisfactorily.  The latest edition of this started with this tweet of mine:
+
+{% blockquote @bjoernrochel https://twitter.com/BjoernRochel/status/557569775090417666 %}
+Is it just me, or are SDKs over HTTP APIs an indicator for an RPC-like API design?
+Is there something like a sdk-rest-smell?
+{% endblockquote %}
+
+This tweet (and probably some follow-up tweets) promted some of my friends to chime in with lots of questions and different perspectives. So, [@ilkerde](https://twitter.com/ilkerde), [@mikebild](https://twitter.com/mikebild) and [@lanwin](https://twitter.com/lanwin), here's the longer version, with a more context, more time to think about what I really wanted to say, minus the ranty nature.
+
