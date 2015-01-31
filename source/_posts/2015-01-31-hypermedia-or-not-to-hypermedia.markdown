@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Hypermedia or not to Hypermedia"
-date: 2015-01-24 10:29:19 +0100
+date: 2015-01-31 18:15:19 +0100
 comments: true
 categories: [hypermedia]
 ---
