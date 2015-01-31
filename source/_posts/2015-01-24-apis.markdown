@@ -1,9 +1,9 @@
 ---
 layout: post
-title: "Some thoughts on REST APIs, SDKs and native apps"
+title: "Hypermedia or not to Hypermedia"
 date: 2015-01-24 10:29:19 +0100
 comments: true
-categories: 
+categories: [hypermedia]
 ---
 Ask 10 people to describe what they think REST is and you likely get 10 different answers. For some it's 'only' HTTP APIs. Other extend this to CRUD over HTTP and fancy urls. Some talk of Hypermedia and always end up quoting [Inigo Montoya](http://knowyourmeme.com/memes/you-keep-using-that-word-i-do-not-think-it-means-what-you-think-it-means). What's THE right way to build HTTP APIs? Who of them is right and who is wrong?
 
@@ -28,9 +28,12 @@ The more you get to the edges of your platform, the likelier it is that Hypermed
 * if you have a SOA or are getting funky with microservices, but you are still able to change both sides in a reasonable amount of time, not going down the hypermedia route is perfectly fine for me.
 * Integration points with consumers you can't change in a reasonable amount of time (for instance native mobile apps) are a different beast and require special attention.
 
-##Public APIs
-Public APIs like the one provided by Linkedin, Facebook, XING et al fall under the second category, but I don't think they're a good candidate for Hypermedia.  They usally have a very low change frequency (people outside your company are not so fond to upgrade the integration of your API every second week ^^) and are often designed to be dead easy to use (anybody who can spell 'Curl' should be able to use it).  In the absence of established standard media types and widely available hypermedia enabled libraries, at least at the moment, Hypermedia doesn't bring a lot benefit for that to the table.
+##Not for public APIs
+Public APIs like the one provided by Linkedin, Facebook, XING et al fall under the second category, but **I don't think they're a good candidate for Hypermedia**. They usally have a very low change frequency (people outside your company are not so fond to upgrade the integration of your API every second week ^^) and are often designed to be dead easy to use (anybody who can spell 'Curl' should be able to use it).  In the absence of established standard media types and widely available hypermedia enabled libraries, at least at the moment, Hypermedia doesn't bring a lot benefit for that to the table.
 
-##Semi-public/private APIs
-Native mobile apps on the other hand are a really interesting kind of consumers. In a competitive marked I assume that, 
-a fast feedback cycle is something a company should strive for.
+##When native apps are involved
+Native mobile apps on the other hand are more worth the effort of Hypermedia. I'm pretty convinced that in a competitive mobile marked the ability to have fast feedback cycles is a key differentiator. We had the cool web, where we could enhance the product anytime we want, where fixing bugs didn't require rolling out a new version of the software, but unfortunately for us poor developer-souls the industry moved back to more traditional software release models. We can loudly complain about that, but I think it's also part of our job to deal with that as best as we can.
+
+Hypermedia as a concept is actually a pretty decent approach for not falling back to the way software was developed and released 10-20 years ago. Think of old versions of your mobile apps that automatically disable functionality that has been deprecated. Think about new functionality appearing in already shipped mobile apps without having to roll out new versions of the native apps. Try to imagine a world where APIs not only act as the data provider for a mobile app, but more like an engine powering them. 
+
+I really like that view on the mobile / backend integration, but I'm not naive. Bringing Hypermedia into existing apps is not an all-or-nothing approach. Some areas of a native app benefit more than others from Hypermedia. That's the area worth investing. Use it where it matters the most.
