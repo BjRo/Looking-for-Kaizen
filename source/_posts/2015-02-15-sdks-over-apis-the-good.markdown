@@ -25,5 +25,9 @@ integrators, as they mostly abstract the tough parts of an API away from the con
 provide a clean, easy to use interface in the programming language of choice. Integrating with
 a product, if you view it this way, just boils down to filling out the blanks.
 
-They are also, like public APIs, a stability promise to their consumers. Being easy to use and to maintain
-also very often implies a very low change frequency.
+Another aspect that makes SDKs convenient for consumers, is that they are also, like public APIs, a stability promise.
+SDKs often imply a low change frequency, reducing maintenance effort on the consuming side
+
+# The Bad
+As always in life there's no such thing as 'free lunch' and SDKs also come with potential downsides associated.
+
